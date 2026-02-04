@@ -1,0 +1,168 @@
+@prefix : <https://twin-ship.eu/ontology#> .
+@prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# #################################################################
+# #
+# #    Ontology
+# #
+# #################################################################
+
+<https://twin-ship.eu/ontology> a owl:Ontology ;
+    rdfs:label "TwinShip Ontology" ;
+    pav:createdOn "2025-01-21T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.0.1" ;
+    rdfs:comment """Base/foundation ontology for TwinShip. Defines core classes, properties, and patterns that all TwinShip modules extend. This includes the base TwinShip physical object class, property hierarchies, and fundamental object properties. Domain-specific classes are defined in separate modules (engine, hull, weather).
+
+Modeling Practice: This ontology uses OWL restrictions (owl:Restriction with owl:someValuesFrom) to define relationships between classes and properties, rather than rdfs:domain assertions. This approach avoids unwanted inferences that would occur with rdfs:domain (where any entity using a property would be inferred to belong to the domain class). For visualization purposes, a separate visualization-friendly version is automatically generated that extracts rdfs:domain and rdfs:range assertions from the restriction patterns to enable proper rendering in tools like WIDOCO and WebVOWL.""" ;
+    owl:imports <http://purl.org/pav/>,
+        <http://qudt.org/schema/qudt/>,
+        <http://qudt.org/vocab/quantitykind/>,
+        <http://qudt.org/vocab/unit/>,
+        <http://rds.posccaesar.org/ontology/lis14/ont/core/1.0>,
+        <http://www.vesselAI-project.eu/vesselai> ;
+    owl:versionIRI <https://twin-ship.eu/ontology/0.0.1> .
+
+# #################################################################
+# #
+# #    IDO Extensions and Annotations
+# #
+# #################################################################
+
+ido:Object rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:hasPart ;
+            owl:someValuesFrom :TwinShipInanimatePhysicalObject ] .
+
+ido:containedBy a owl:ObjectProperty ;
+    rdfs:comment "Relates an object to another object that contains it (inverse of contains)." .
+
+ido:contains a owl:ObjectProperty ;
+    rdfs:comment "Relates an object to another object that it contains (inverse of containedBy)." .
+
+ido:directlyConnectedTo a owl:ObjectProperty ;
+    rdfs:label "directly connected to" ;
+    rdfs:comment "Relates two inanimate physical objects that are directly connected." ;
+    rdfs:domain ido:InanimatePhysicalObject ;
+    rdfs:range ido:InanimatePhysicalObject .
+
+# #################################################################
+# #
+# #    XSD Extensions
+# #
+# #################################################################
+
+xsd:gYear a rdfs:Datatype .
+
+# #################################################################
+# #
+# #    OWL Annotations
+# #
+# #################################################################
+
+owl:maxQualifiedCardinality a owl:AnnotationProperty .
+
+owl:minQualifiedCardinality a owl:AnnotationProperty .
+
+# #################################################################
+# #
+# #    Base Classes
+# #
+# #################################################################
+
+:TwinShipInanimatePhysicalObject a owl:Class ;
+    rdfs:label "TwinShip Inanimate Physical Object" ;
+    rdfs:comment "Base class for all physical objects in the TwinShip ontology. Subclass of IDO InanimatePhysicalObject. All vessel systems, components, and physical entities extend this class." ;
+    rdfs:subClassOf ido:InanimatePhysicalObject .
+
+:EnergySystem a owl:Class ;
+    rdfs:label "Energy System" ;
+    rdfs:comment "A system that manages or distributes energy on a vessel (e.g., PMS, shaft generators, electrical distribution)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:MechanicalConfiguration a owl:Class ;
+    rdfs:label "Mechanical Configuration" ;
+    rdfs:comment "Classifies the mechanical configuration or arrangement of an engine (e.g., inline, V-type, opposed). Used alongside stroke type classifications." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+# #################################################################
+# #
+# #    Organizational Classes
+# #
+# #################################################################
+
+:Fleet a owl:Class ;
+    rdfs:label "Fleet" ;
+    rdfs:comment "A collection of ships operated by the same organization." .
+
+:Organization a owl:Class ;
+    rdfs:label "Organization" ;
+    rdfs:comment "An organized group of people with a particular purpose, such as a shipping company or vessel operator." .
+
+# #################################################################
+# #
+# #    System Classes
+# #
+# #################################################################
+
+:Pms a owl:Class ;
+    rdfs:label "PMS" ;
+    rdfs:comment "Power Management System - manages electrical power distribution on a vessel." ;
+    rdfs:subClassOf :EnergySystem .
+
+# #################################################################
+# #
+# #    Object Properties
+# #
+# #################################################################
+
+:twinshipObjectProperties a owl:ObjectProperty ;
+    rdfs:label "twinship object properties" ;
+    rdfs:comment "Parent property for all TwinShip-specific object properties." .
+
+:associatedEntity a owl:ObjectProperty,
+        owl:SymmetricProperty ;
+    rdfs:label "associated entity" ;
+    rdfs:comment "Relates an entity to another associated entity." ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+:componentOf a owl:ObjectProperty ;
+    rdfs:label "component of" ;
+    rdfs:comment "Relates a component to the ship or system it is part of." ;
+    rdfs:subPropertyOf ido:partOf ;
+    owl:inverseOf :hasComponent .
+
+:hasComponent a owl:ObjectProperty ;
+    rdfs:label "has component" ;
+    rdfs:comment "Relates a ship or system to a component that is part of it." ;
+    rdfs:subPropertyOf ido:hasPart .
+
+:ownedBy a owl:ObjectProperty ;
+    rdfs:label "owned by" ;
+    rdfs:comment "Relates an entity to its owner (typically an Organization)." ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+# #################################################################
+# #
+# #    Datatype Properties
+# #
+# #################################################################
+
+:TwinShipDataProperties a owl:DatatypeProperty ;
+    rdfs:label "TwinShip Data Properties" ;
+    rdfs:comment "Parent property for all TwinShip-specific datatype properties. All measurement and data properties should be subproperties of this." .
+
+# #################################################################
+# #
+# #    Restrictions
+# #
+# #################################################################
+
+[] a owl:Restriction ;
+    owl:onProperty ido:directlyConnectedTo ;
+    owl:someValuesFrom :TwinShipInanimatePhysicalObject .

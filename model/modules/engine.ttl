@@ -1,0 +1,1044 @@
+@prefix : <https://twin-ship.eu/ontology#> .
+@prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# #################################################################
+# #
+# #    Ontology
+# #
+# #################################################################
+
+<https://twin-ship.eu/ontology/modules/engine> a owl:Ontology ;
+    rdfs:label "TwinShip Engine Module" ;
+    pav:createdOn "2026-02-03T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.0.1" ;
+    rdfs:comment "Engine module for TwinShip ontology. Defines all engine-related classes, properties, and individuals including propulsion systems, auxiliary power generation, propellers, gearboxes, shaft generators, boilers, and fuel types. Extends twinship-base foundation classes." ;
+    owl:imports <https://twin-ship.eu/ontology> .
+
+# #################################################################
+# #
+# #    Classes
+# #
+# #################################################################
+
+:AuxiliaryEngineSystem a owl:Class ;
+    rdfs:label "Auxiliary Engine System" ;
+    rdfs:comment "Auxiliary engine system for power generation. Typically diesel engines, so individuals are often typed as both AuxiliaryEngineSystem and DieselEngine." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twAuxiliaryDOMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twAuxiliaryFuelRateMassNetKgPerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDieselEnginePowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDieselEngineSpeedInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGeneratorPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGeneratorSpeedInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        :EngineSystem .
+
+:Boiler a owl:Class ;
+    rdfs:label "Boiler" ;
+    rdfs:comment "A vessel's boiler system for generating steam." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twBoilerBLRFuelMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerDOTemperatureInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerDOVolInLitrePerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerEmergencyDOMode ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerEmergencyDOMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :consume ;
+            owl:someValuesFrom :Fuel ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerFuelTempInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerFuelVolLitrePerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerMGOInUse ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerMassInKgPerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBoilerSpeedMaxInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+        :TwinShipInanimatePhysicalObject .
+
+:CPP a owl:Class ;
+    rdfs:label "Controllable Pitch Propeller" ;
+    rdfs:comment "Controllable Pitch Propeller - a propeller where the blade pitch can be adjusted while rotating to optimize thrust and efficiency." ;
+    rdfs:subClassOf :PropellerSystem .
+
+:DieselEngine a owl:Class ;
+    rdfs:label "Diesel Engine" ;
+    rdfs:comment "A diesel-powered internal combustion engine." ;
+    rdfs:subClassOf :EngineSystem .
+
+:DirectDrive a owl:Class ;
+    rdfs:label "Direct Drive" ;
+    rdfs:comment "A direct drive mechanism where the engine is directly coupled to the propeller shaft without a reduction gearbox." ;
+    rdfs:subClassOf :GearboxSystem .
+
+:EmergencyEquipment a owl:Class ;
+    rdfs:label "Emergency Equipment" ;
+    rdfs:comment "Equipment designated for emergency use." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+        :TwinShipInanimatePhysicalObject .
+
+:EngineSystem a owl:Class ;
+    rdfs:label "Engine System" ;
+    rdfs:comment "A machine that converts energy into mechanical motion." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+        [ a owl:Restriction ;
+            owl:onProperty :consume ;
+            owl:someValuesFrom :Fuel ],
+        :TwinShipInanimatePhysicalObject .
+
+:FPP a owl:Class ;
+    rdfs:label "Fixed Pitch Propeller" ;
+    rdfs:comment "Fixed Pitch Propeller - a propeller with blades permanently set at a fixed angle." ;
+    rdfs:subClassOf :PropellerSystem .
+
+:FourStroke a owl:Class ;
+    rdfs:label "Four Stroke" ;
+    rdfs:comment "A four-stroke internal combustion engine." ;
+    rdfs:subClassOf :EngineSystem .
+
+:Fuel a owl:Class ;
+    rdfs:label "Fuel" ;
+    rdfs:comment "Fuel type (e.g., HFO, MGO, MDO). Defined as individuals to allow engines and components to reference specific fuel types via the consume property." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twFuelDensityGrav15DegCKgPerLitre ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelEmissionFactorCH4InGPerKgFuel ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelEmissionFactorCo2InGPerKgFuel ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelEmissionFactorN2OInGPerKgFuel ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelLHVKJPerKg ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelSulphurPercentage ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelTempInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelVolLitrePerHr ;
+            owl:someValuesFrom xsd:double ],
+        :TwinShipInanimatePhysicalObject .
+
+:GearboxSystem a owl:Class ;
+    rdfs:label "Gearbox System" ;
+    rdfs:comment "A mechanical device for transmitting and modifying rotational motion. Subclasses include DirectDrive, Reduction, SingleSpeed, and TISO (Twin-In Single-Out)." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGearboxRatio ;
+            owl:someValuesFrom xsd:string ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGearboxShaftGenerator ;
+            owl:someValuesFrom xsd:integer ],
+        :TwinShipInanimatePhysicalObject .
+
+:MainEngineSystem a owl:Class ;
+    rdfs:label "Main Engine System" ;
+    rdfs:comment "Main propulsion engine system. Includes shaft-related properties (power, torque, speed) as the main engine drives the propeller shaft." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twCommonDOMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCommonFuelMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFlowrateMaxInKgPerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelConsumptionTotalInMT ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelFlowTemperatureMaxInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twInletAirPressureMaxInHPa ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twInletAirTemperatureMaxInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twLtCoolingSeawater1TemperatureMaxInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twLtCoolingSeawater2TemperatureMaxInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twMeCoolingWaterTemperatureMaxInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPowerPropulsionTotalInKw ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twScavengerAirRecTemperatureMaxInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftSpeedMaxInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftTorqueMaxInKnm ;
+            owl:someValuesFrom xsd:double ],
+        :EngineSystem .
+
+:Maneuvering a owl:Class ;
+    rdfs:label "Maneuvering" ;
+    rdfs:comment "Equipment used for vessel maneuvering, such as bow and stern thrusters." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+        :TwinShipInanimatePhysicalObject .
+
+:PropellerSystem a owl:Class ;
+    rdfs:label "Propeller System" ;
+    rdfs:comment "A rotating device with blades that converts rotational motion into thrust. Subclasses: CPP (Controllable Pitch Propeller) and FPP (Fixed Pitch Propeller)." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPropellerBlades ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPropellerDiameterMm ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPropellerEfficiency ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPropellerExpandedAreaRatioPercentage ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPropellerHubRatio ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPropellerPitchDiameterRatio ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPropellerPitchMaxInPercentage ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twPropellerSkewAngleDegree ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twRudderAngleDegree ;
+            owl:someValuesFrom xsd:double ],
+        :TwinShipInanimatePhysicalObject .
+
+:PTO a owl:Class ;
+    rdfs:label "Power Take-Off" ;
+    rdfs:comment "Power Take-Off - a component or system that derives power from the main propulsion system." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:Reduction a owl:Class ;
+    rdfs:label "Reduction" ;
+    rdfs:comment "A reduction gearbox that reduces input speed to output speed." ;
+    rdfs:subClassOf :GearboxSystem .
+
+:RGShaftGenerator a owl:Class ;
+    rdfs:label "Reduction Gearbox Shaft Generator" ;
+    rdfs:comment "A shaft generator connected to a reduction gearbox via power take-off (PTO). Generates electrical power from the main propulsion system." ;
+    rdfs:subClassOf :ShaftGeneratorSystem .
+
+:ShaftGeneratorSystem a owl:Class ;
+    rdfs:label "Shaft Generator System" ;
+    rdfs:comment "A generator that derives power from the propulsion shaft. Subclass RGShaftGenerator is connected via reduction gearbox with PTO (Power Take-Off)." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorBLRFuelMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorDOTemperatureInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorDOVolInLitrePerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorEmergencyDOMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorFuelTempInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorFuelVolLitrePerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorMGOInUse ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorMGOMassInKgPerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorMassInKgPerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftGeneratorSpeedMaxInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+:SingleSpeed a owl:Class ;
+    rdfs:label "Single Speed" ;
+    rdfs:comment "A single-speed gearbox with a fixed gear ratio." ;
+    rdfs:subClassOf :GearboxSystem .
+
+:TISO a owl:Class ;
+    rdfs:label "TISO" ;
+    rdfs:comment "Twin-In Single-Out gearbox - combines power from two engines to a single output shaft." ;
+    rdfs:subClassOf :GearboxSystem .
+
+:TwoStroke a owl:Class ;
+    rdfs:label "Two Stroke" ;
+    rdfs:comment "A two-stroke internal combustion engine." ;
+    rdfs:subClassOf :EngineSystem .
+
+# #################################################################
+# #
+# #    Object Properties
+# #
+# #################################################################
+
+:consume a owl:ObjectProperty ;
+    rdfs:label "consumes" ;
+    rdfs:comment "Relates an engine or system to the fuel it consumes." ;
+    rdfs:range :Fuel ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+# #################################################################
+# #
+# #    Data Properties
+# #
+# #################################################################
+
+:twAuxiliaryDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship auxiliary DO mode" ;
+    rdfs:comment "Diesel Oil mode for auxiliary engine. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :twDOMode .
+
+:twAuxiliaryFuelRateMassNetKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship auxiliary fuel rate mass net kg per hr" ;
+    rdfs:comment "Net fuel consumption rate for auxiliary engine in kg per hour. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twBLRFuelMode a owl:DatatypeProperty ;
+    rdfs:label "twinship BLR fuel mode" ;
+    rdfs:comment "Boiler fuel mode indicator. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twBoilerBLRFuelMode a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler BLR fuel mode" ;
+    rdfs:comment "Boiler BLR fuel mode for boiler system. Inherits semantics from twBLRFuelMode." ;
+    rdfs:subPropertyOf :twBLRFuelMode .
+
+:twBoilerDOTemperatureInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler DO temperature in degrees C" ;
+    rdfs:comment "Boiler Diesel Oil input temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOTemperatureInDegC .
+
+:twBoilerDOTemperatureRetInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler DO temperature return in degrees C" ;
+    rdfs:comment "Boiler DO temperature return in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double .
+
+:twBoilerDOVolInLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler DO vol in litre per hr" ;
+    rdfs:comment "Boiler Diesel Oil volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOVolInLitrePerHr .
+
+:twBoilerDOVolRetInLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler DO vol return in litre per hr" ;
+    rdfs:comment "Boiler DO volume return in litres per hour. Value -1 indicates unknown." ;
+    rdfs:range xsd:double .
+
+:twBoilerEmergencyDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler emergency DO mode" ;
+    rdfs:comment "Boiler emergency Diesel Oil mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twEmergencyDOMode .
+
+:twBoilerFuelTempInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler fuel temp in degrees C" ;
+    rdfs:comment "Boiler fuel temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelTempInDegC .
+
+:twBoilerFuelVolLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler fuel vol litre per hr" ;
+    rdfs:comment "Boiler fuel volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelVolLitrePerHr .
+
+:twBoilerMGOInUse a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler MGO in use" ;
+    rdfs:comment "Indicates if boiler is using Marine Gas Oil. Values: 1 (yes), 0 (no), -1 (unknown)." ;
+    rdfs:subPropertyOf :twMGOInUse .
+
+:twBoilerMGOMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler MGO mass in kg per hr" ;
+    rdfs:comment "Boiler Marine Gas Oil mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twMGOMassInKgPerHr .
+
+:twBoilerMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler mass in kg per hr" ;
+    rdfs:comment "Boiler fuel mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twEmergencyMassInKgPerHr .
+
+:twBoilerPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler power max in kW" ;
+    rdfs:comment "Maximum boiler power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twBoilerSpeedMaxInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship boiler speed max in rev per min" ;
+    rdfs:comment "Maximum boiler motor speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
+
+:twBowThrusterBLRFuelMode a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster BLR fuel mode" ;
+    rdfs:comment "Bow thruster BLR fuel mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twBLRFuelMode .
+
+:twBowThrusterDOTemperatureInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster DO temperature in degrees C" ;
+    rdfs:comment "Bow thruster Diesel Oil input temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOTemperatureInDegC .
+
+:twBowThrusterDOVolInLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster DO vol in litre per hr" ;
+    rdfs:comment "Bow thruster Diesel Oil volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOVolInLitrePerHr .
+
+:twBowThrusterEmergencyDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster emergency DO mode" ;
+    rdfs:comment "Bow thruster emergency Diesel Oil mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twEmergencyDOMode .
+
+:twBowThrusterFuelTempInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster fuel temp in degrees C" ;
+    rdfs:comment "Bow thruster fuel temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelTempInDegC .
+
+:twBowThrusterFuelVolLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster fuel vol litre per hr" ;
+    rdfs:comment "Bow thruster fuel volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelVolLitrePerHr .
+
+:twBowThrusterMGOInUse a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster MGO in use" ;
+    rdfs:comment "Indicates if bow thruster is using Marine Gas Oil. Values: 1 (yes), 0 (no), -1 (unknown)." ;
+    rdfs:subPropertyOf :twMGOInUse .
+
+:twBowThrusterMGOMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster MGO mass in kg per hr" ;
+    rdfs:comment "Bow thruster Marine Gas Oil mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twMGOMassInKgPerHr .
+
+:twBowThrusterMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster mass in kg per hr" ;
+    rdfs:comment "Bow thruster fuel mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twEmergencyMassInKgPerHr .
+
+:twBowThrusterPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster power max in kW" ;
+    rdfs:comment "Maximum bow thruster power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twBowThrusterSpeedMaxInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship bow thruster speed max in rev per min" ;
+    rdfs:comment "Maximum bow thruster motor speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
+
+:twCommonDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship common DO mode" ;
+    rdfs:comment "Common Diesel Oil mode across systems. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :twDOMode .
+
+:twCommonFuelMode a owl:DatatypeProperty ;
+    rdfs:label "twinship common fuel mode" ;
+    rdfs:comment "Common fuel mode indicator across systems. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twCompositeExhaustGasBoilerBLRFuelMode a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler BLR fuel mode" ;
+    rdfs:comment "Composite exhaust gas boiler BLR fuel mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twBLRFuelMode .
+
+:twCompositeExhaustGasBoilerDOTemperatureInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler DO temperature in degrees C" ;
+    rdfs:comment "Composite exhaust gas boiler Diesel Oil input temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOTemperatureInDegC .
+
+:twCompositeExhaustGasBoilerDOVolInLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler DO vol in litre per hr" ;
+    rdfs:comment "Composite exhaust gas boiler Diesel Oil volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOVolInLitrePerHr .
+
+:twCompositeExhaustGasBoilerEmergencyDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler emergency DO mode" ;
+    rdfs:comment "Composite exhaust gas boiler emergency Diesel Oil mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twEmergencyDOMode .
+
+:twCompositeExhaustGasBoilerFuelTempInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler fuel temp in degrees C" ;
+    rdfs:comment "Composite exhaust gas boiler fuel temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelTempInDegC .
+
+:twCompositeExhaustGasBoilerFuelVolLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler fuel vol litre per hr" ;
+    rdfs:comment "Composite exhaust gas boiler fuel volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelVolLitrePerHr .
+
+:twCompositeExhaustGasBoilerMGOInUse a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler MGO in use" ;
+    rdfs:comment "Indicates if composite exhaust gas boiler is using Marine Gas Oil. Values: 1 (yes), 0 (no), -1 (unknown)." ;
+    rdfs:subPropertyOf :twMGOInUse .
+
+:twCompositeExhaustGasBoilerMGOMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler MGO mass in kg per hr" ;
+    rdfs:comment "Composite exhaust gas boiler Marine Gas Oil mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twMGOMassInKgPerHr .
+
+:twCompositeExhaustGasBoilerMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler mass in kg per hr" ;
+    rdfs:comment "Composite exhaust gas boiler fuel mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twEmergencyMassInKgPerHr .
+
+:twCompositeExhaustGasBoilerPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler power max in kW" ;
+    rdfs:comment "Maximum composite exhaust gas boiler power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twCompositeExhaustGasBoilerSpeedMaxInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship composite exhaust gas boiler speed max in rev per min" ;
+    rdfs:comment "Maximum composite exhaust gas boiler motor speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
+
+:twDieselEnginePowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship diesel engine power max in kW" ;
+    rdfs:comment "Maximum diesel engine power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twDieselEngineSpeedInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship diesel engine speed in rev per min" ;
+    rdfs:comment "Diesel engine rotational speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship DO mode" ;
+    rdfs:comment "Diesel Oil mode indicator. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDOTemperatureInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship DO temperature in degrees C" ;
+    rdfs:comment "Diesel Oil temperature input in degrees Celsius. See also twDOTemperatureRetInDegC for return temperature. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDOVolInLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship DO vol in litre per hr" ;
+    rdfs:comment "Diesel Oil volume input flow in litres per hour. See also twDOVolRetInLitrePerHr for return volume. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twEmergencyDieselGeneratorBLRFuelMode a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator BLR fuel mode" ;
+    rdfs:comment "Emergency diesel generator BLR fuel mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twBLRFuelMode .
+
+:twEmergencyDieselGeneratorDOTemperatureInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator DO temperature in degrees C" ;
+    rdfs:comment "Emergency diesel generator Diesel Oil input temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOTemperatureInDegC .
+
+:twEmergencyDieselGeneratorDOVolInLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator DO vol in litre per hr" ;
+    rdfs:comment "Emergency diesel generator Diesel Oil volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOVolInLitrePerHr .
+
+:twEmergencyDieselGeneratorEmergencyDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator emergency DO mode" ;
+    rdfs:comment "Emergency diesel generator emergency Diesel Oil mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twEmergencyDOMode .
+
+:twEmergencyDieselGeneratorFuelTempInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator fuel temp in degrees C" ;
+    rdfs:comment "Emergency diesel generator fuel temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelTempInDegC .
+
+:twEmergencyDieselGeneratorFuelVolLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator fuel vol litre per hr" ;
+    rdfs:comment "Emergency diesel generator fuel volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelVolLitrePerHr .
+
+:twEmergencyDieselGeneratorMGOInUse a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator MGO in use" ;
+    rdfs:comment "Indicates if emergency diesel generator is using Marine Gas Oil. Values: 1 (yes), 0 (no), -1 (unknown)." ;
+    rdfs:subPropertyOf :twMGOInUse .
+
+:twEmergencyDieselGeneratorMGOMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator MGO mass in kg per hr" ;
+    rdfs:comment "Emergency diesel generator Marine Gas Oil mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twMGOMassInKgPerHr .
+
+:twEmergencyDieselGeneratorMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator mass in kg per hr" ;
+    rdfs:comment "Emergency diesel generator fuel mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twEmergencyMassInKgPerHr .
+
+:twEmergencyDieselGeneratorPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator power max in kW" ;
+    rdfs:comment "Maximum emergency diesel generator power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twEmergencyDieselGeneratorSpeedMaxInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency diesel generator speed max in rev per min" ;
+    rdfs:comment "Maximum emergency diesel generator speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
+
+:twEmergencyDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency DO mode" ;
+    rdfs:comment "Emergency Diesel Oil mode flag. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twEmergencyMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency mass in kg per hr" ;
+    rdfs:comment "Emergency mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twEmergencyMassRetInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship emergency mass return in kg per hr" ;
+    rdfs:comment "Emergency mass return flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFlowrateMaxInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship flowrate max in kg per hr" ;
+    rdfs:comment "Maximum flow rate in kilograms per hour. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelConsumptionTotalInMT a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel consumption total in MT" ;
+    rdfs:comment "Total fuel consumption in metric tons. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelDensityGrav15DegCKgPerLitre a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel density grav 15C kg per litre" ;
+    rdfs:comment "Fuel density at 15 degrees Celsius in kilograms per litre. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelEmissionFactorCH4InGPerKgFuel a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel emission factor CH4 in g per kg of fuel" ;
+    rdfs:comment "Methane (CH4) emission factor in grams per kilogram of fuel. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelEmissionFactorCo2InGPerKgFuel a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel emission factor CO2 in g per kg of fuel" ;
+    rdfs:comment "Carbon dioxide (CO2) emission factor in grams per kilogram of fuel. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelEmissionFactorN2OInGPerKgFuel a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel emission factor N2O in g per kg of fuel" ;
+    rdfs:comment "Nitrous oxide (N2O) emission factor in grams per kilogram of fuel. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelFlowTemperatureMaxInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel flow temperature max in degrees C" ;
+    rdfs:comment "Maximum fuel flow temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twTemperatureMaxInDegC .
+
+:twFuelLHVKJPerKg a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel LHV kJ per kg" ;
+    rdfs:comment "Fuel Lower Heating Value in kilojoules per kilogram. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelSulphurPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel sulphur percentage" ;
+    rdfs:comment "Fuel sulphur content as a percentage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelTempInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel temp in degrees C" ;
+    rdfs:comment "Fuel temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelVolLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel vol litre per hr" ;
+    rdfs:comment "Fuel volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twGearboxEfficiency a owl:DatatypeProperty ;
+    rdfs:label "twinship gearbox efficiency" ;
+    rdfs:comment "Gearbox efficiency. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twGearboxRatio a owl:DatatypeProperty ;
+    rdfs:label "twinship gearbox ratio" ;
+    rdfs:comment "Gearbox gear ratio as a string (e.g., '3.5:1'). Value '-1' indicates unknown." ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twGearboxShaftGenerator a owl:DatatypeProperty ;
+    rdfs:label "twinship gearbox shaft generator" ;
+    rdfs:comment "Indicates if gearbox has shaft generator. Values: 1 (yes), 0 (no), -1 (unknown)." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twGeneratorPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship generator power max in kW" ;
+    rdfs:comment "Maximum generator power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twGeneratorSpeedInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship generator speed in rev per min" ;
+    rdfs:comment "Generator rotational speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twInletAirPressureMaxInHPa a owl:DatatypeProperty ;
+    rdfs:label "twinship inlet air pressure max in hPa" ;
+    rdfs:comment "Maximum inlet air pressure in hectopascals. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPressureMaxInHPa .
+
+:twInletAirTemperatureMaxInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship inlet air temperature max in degrees C" ;
+    rdfs:comment "Maximum inlet air temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twTemperatureMaxInDegC .
+
+:twLtCoolingSeawater1TemperatureMaxInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship LT cooling seawater 1 temperature max in degrees C" ;
+    rdfs:comment "Maximum LT cooling seawater 1 temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twLtCoolingSeawaterTemperatureMaxInDegC .
+
+:twLtCoolingSeawater2TemperatureMaxInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship LT cooling seawater 2 temperature max in degrees C" ;
+    rdfs:comment "Maximum LT cooling seawater 2 temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twLtCoolingSeawaterTemperatureMaxInDegC .
+
+:twLtCoolingSeawaterTemperatureMaxInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship LT cooling seawater temperature max in degrees C" ;
+    rdfs:comment "Maximum low-temperature cooling seawater temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twTemperatureMaxInDegC .
+
+:twMeCoolingWaterTemperatureMaxInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship ME cooling water temperature max in degrees C" ;
+    rdfs:comment "Maximum main engine cooling water temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twTemperatureMaxInDegC .
+
+:twMGOInUse a owl:DatatypeProperty ;
+    rdfs:label "twinship MGO in use" ;
+    rdfs:comment "Indicates if Marine Gas Oil is in use. Values: 1 (yes), 0 (no), -1 (unknown)." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twMGOMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship MGO mass in kg per hr" ;
+    rdfs:comment "Marine Gas Oil mass flow in kilograms per hour. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship power max in kW" ;
+    rdfs:comment "Maximum power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPowerPropulsionTotalInKw a owl:DatatypeProperty ;
+    rdfs:label "twinship power propulsion total in kW" ;
+    rdfs:comment "Total propulsion power in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPressureMaxInHPa a owl:DatatypeProperty ;
+    rdfs:label "twinship pressure max in hPa" ;
+    rdfs:comment "Maximum pressure in hectopascals. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPropellerBlades a owl:DatatypeProperty ;
+    rdfs:label "twinship propeller blades" ;
+    rdfs:comment "Number of propeller blades. Value -1 indicates unknown." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPropellerDiameterMm a owl:DatatypeProperty ;
+    rdfs:label "twinship propeller diameter mm" ;
+    rdfs:comment "Propeller diameter in millimetres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPropellerEfficiency a owl:DatatypeProperty ;
+    rdfs:label "twinship propeller efficiency" ;
+    rdfs:comment "Propeller efficiency (0-1 ratio). Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPropellerExpandedAreaRatioPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship propeller expanded area ratio percentage" ;
+    rdfs:comment "Propeller expanded area ratio as a percentage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPropellerHubRatio a owl:DatatypeProperty ;
+    rdfs:label "twinship propeller hub ratio" ;
+    rdfs:comment "Propeller hub diameter ratio (hub diameter / propeller diameter). Typical values around 0.16-0.20. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPropellerPitchDiameterRatio a owl:DatatypeProperty ;
+    rdfs:label "twinship propeller pitch diameter ratio" ;
+    rdfs:comment "Propeller pitch to diameter ratio. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPropellerPitchMaxInPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship propeller pitch max in percentage" ;
+    rdfs:comment "Maximum propeller pitch as a percentage of design pitch. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twPropellerSkewAngleDegree a owl:DatatypeProperty ;
+    rdfs:label "twinship propeller skew angle degree" ;
+    rdfs:comment "Propeller skew angle in degrees. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twRudderAngleDegree a owl:DatatypeProperty ;
+    rdfs:label "twinship rudder angle degree" ;
+    rdfs:comment "Rudder angle in degrees. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twScavengerAirRecTemperatureMaxInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship scavenger air rec temperature max in degrees C" ;
+    rdfs:comment "Maximum scavenger air receiver temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twTemperatureMaxInDegC .
+
+:twShaftGeneratorBLRFuelMode a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator BLR fuel mode" ;
+    rdfs:comment "Shaft generator BLR fuel mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twBLRFuelMode .
+
+:twShaftGeneratorDOTemperatureInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator DO temperature in degrees C" ;
+    rdfs:comment "Shaft generator Diesel Oil input temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOTemperatureInDegC .
+
+:twShaftGeneratorDOVolInLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator DO vol in litre per hr" ;
+    rdfs:comment "Shaft generator Diesel Oil volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOVolInLitrePerHr .
+
+:twShaftGeneratorEmergencyDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator emergency DO mode" ;
+    rdfs:comment "Shaft generator emergency Diesel Oil mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twEmergencyDOMode .
+
+:twShaftGeneratorFuelTempInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator fuel temp in degrees C" ;
+    rdfs:comment "Shaft generator fuel temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelTempInDegC .
+
+:twShaftGeneratorFuelVolLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator fuel vol litre per hr" ;
+    rdfs:comment "Shaft generator fuel volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelVolLitrePerHr .
+
+:twShaftGeneratorMGOInUse a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator MGO in use" ;
+    rdfs:comment "Indicates if shaft generator is using Marine Gas Oil. Values: 1 (yes), 0 (no), -1 (unknown)." ;
+    rdfs:subPropertyOf :twMGOInUse .
+
+:twShaftGeneratorMGOMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator MGO mass in kg per hr" ;
+    rdfs:comment "Shaft generator Marine Gas Oil mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twMGOMassInKgPerHr .
+
+:twShaftGeneratorMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator mass in kg per hr" ;
+    rdfs:comment "Shaft generator fuel mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twEmergencyMassInKgPerHr .
+
+:twShaftGeneratorPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator power max in kW" ;
+    rdfs:comment "Maximum shaft generator power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twShaftGeneratorSpeedMaxInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft generator speed max in rev per min" ;
+    rdfs:comment "Maximum shaft generator speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
+
+:twShaftPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft power max in kW" ;
+    rdfs:comment "Maximum shaft power in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twShaftSpeedMaxInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft speed max in rev per min" ;
+    rdfs:comment "Maximum shaft rotational speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
+
+:twShaftTorqueMaxInKnm a owl:DatatypeProperty ;
+    rdfs:label "twinship shaft torque max in kNm" ;
+    rdfs:comment "Maximum shaft torque in kilonewton-metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twTorqueMaxInKnm .
+
+:twSpeedMaxInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship speed max in rev per min" ;
+    rdfs:comment "Maximum rotational speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twSternThrusterBLRFuelMode a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster BLR fuel mode" ;
+    rdfs:comment "Stern thruster BLR fuel mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twBLRFuelMode .
+
+:twSternThrusterDOTemperatureInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster DO temperature in degrees C" ;
+    rdfs:comment "Stern thruster Diesel Oil input temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOTemperatureInDegC .
+
+:twSternThrusterDOVolInLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster DO vol in litre per hr" ;
+    rdfs:comment "Stern thruster Diesel Oil volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twDOVolInLitrePerHr .
+
+:twSternThrusterEmergencyDOMode a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster emergency DO mode" ;
+    rdfs:comment "Stern thruster emergency Diesel Oil mode. Values: 1 (active), 0 (inactive), -1 (unknown)." ;
+    rdfs:subPropertyOf :twEmergencyDOMode .
+
+:twSternThrusterFuelTempInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster fuel temp in degrees C" ;
+    rdfs:comment "Stern thruster fuel temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelTempInDegC .
+
+:twSternThrusterFuelVolLitrePerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster fuel vol litre per hr" ;
+    rdfs:comment "Stern thruster fuel volume flow in litres per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twFuelVolLitrePerHr .
+
+:twSternThrusterMGOInUse a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster MGO in use" ;
+    rdfs:comment "Indicates if stern thruster is using Marine Gas Oil. Values: 1 (yes), 0 (no), -1 (unknown)." ;
+    rdfs:subPropertyOf :twMGOInUse .
+
+:twSternThrusterMGOMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster MGO mass in kg per hr" ;
+    rdfs:comment "Stern thruster Marine Gas Oil mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twMGOMassInKgPerHr .
+
+:twSternThrusterMassInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster mass in kg per hr" ;
+    rdfs:comment "Stern thruster fuel mass flow in kg per hour. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twEmergencyMassInKgPerHr .
+
+:twSternThrusterPowerMaxInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster power max in kW" ;
+    rdfs:comment "Maximum stern thruster power output in kilowatts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twSternThrusterSpeedMaxInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship stern thruster speed max in rev per min" ;
+    rdfs:comment "Maximum stern thruster motor speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
+
+:twTemperatureMaxInDegC a owl:DatatypeProperty ;
+    rdfs:label "twinship temperature max in degrees C" ;
+    rdfs:comment "Maximum temperature in degrees Celsius. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twTorqueMaxInKnm a owl:DatatypeProperty ;
+    rdfs:label "twinship torque max in kNm" ;
+    rdfs:comment "Maximum torque in kilonewton-metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .

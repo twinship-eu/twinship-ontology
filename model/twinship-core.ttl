@@ -1,0 +1,15 @@
+@prefix : <https://twin-ship.eu/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://twin-ship.eu/ontology/core> a owl:Ontology ;
+    rdfs:label "TwinShip Core Ontology (Complete)" ;
+    pav:createdOn "2025-01-21T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.0.1" ;
+    rdfs:comment "Complete TwinShip ontology for digital twins of ships. This is an aggregate ontology that imports the base foundation (twinship-base) plus all domain modules. Use this ontology to get the complete TwinShip conceptual model including vessels, engines, hulls, and weather. For modular development, import twinship-base and specific modules instead." ;
+    owl:imports <https://twin-ship.eu/ontology>,
+        <https://twin-ship.eu/ontology/modules/engine>,
+        <https://twin-ship.eu/ontology/modules/hull> ;
+    owl:versionIRI <https://twin-ship.eu/ontology/core/0.0.1> .

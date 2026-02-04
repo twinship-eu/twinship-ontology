@@ -1,0 +1,12 @@
+# Requirements for TwinShip Ontology Scripts
+
+# RDF processing library
+# TwinShip Ontology - Python Dependencies
+#
+# RECOMMENDED: Use uv for fast, modern package management
+#   uv sync
+#
+# ALTERNATIVE: Traditional pip installation
+#   pip install -r requirements.txt
+#
+rdflib>=7.0.0

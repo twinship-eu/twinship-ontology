@@ -1,0 +1,99 @@
+@prefix : <https://twin-ship.eu/ontology#> .
+@prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://twin-ship.eu/ontology/modules/hull> a owl:Ontology ;
+    rdfs:label "TwinShip Hull Module" ;
+    pav:createdOn "2026-02-03T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.0.1" ;
+    rdfs:comment "Hull and vessel module for TwinShip ontology. Defines vessel types and hull-related properties including displacement, draft measurements, and depth of water. Extends twinship-base foundation classes." ;
+    owl:imports <https://twin-ship.eu/ontology> ;
+    owl:versionIRI <https://twin-ship.eu/ontology/modules/hull/0.0.1> .
+
+# ========================================
+# Classes
+# ========================================
+
+:VesselSystem a owl:Class ;
+    rdfs:label "Vessel System" ;
+    rdfs:comment "A maritime vessel." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDisplacementMaxInMT ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twVesselDepthOfWaterMaxInM ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twVesselDraftAftMaxInM ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twVesselDraftForMaxInM ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twVesselDraftMidPortMaxInM ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twVesselDraftMidStbdMaxInM ;
+            owl:someValuesFrom xsd:double ],
+        :TwinShipInanimatePhysicalObject .
+
+:RoPax a owl:Class ;
+    rdfs:label "Roll-on/Roll-off PAXengers" ;
+    rdfs:comment "Roll-on/Roll-off Passenger vessel - a ferry that carries both vehicles and passengers." ;
+    rdfs:subClassOf :VesselSystem .
+
+:RoRo a owl:Class ;
+    rdfs:label "Roll-on/Roll-off" ;
+    rdfs:comment "Roll-on/Roll-off vessel - a cargo ship designed to carry wheeled cargo that is driven on and off the ship." ;
+    rdfs:subClassOf :VesselSystem .
+
+:Tanker a owl:Class ;
+    rdfs:label "Tanker" ;
+    rdfs:comment "A vessel designed for transporting liquid cargo in bulk, such as oil, chemicals, or liquefied gas." ;
+    rdfs:subClassOf :VesselSystem .
+
+# ========================================
+# Datatype Properties
+# ========================================
+
+:twDisplacementMaxInMT a owl:DatatypeProperty ;
+    rdfs:label "twinship displacement max in MT" ;
+    rdfs:comment "Maximum vessel displacement in metric tons. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twVesselDepthOfWaterMaxInM a owl:DatatypeProperty ;
+    rdfs:label "twinship vessel depth of water max in m" ;
+    rdfs:comment "Maximum depth of water under the vessel in metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twVesselDraftAftMaxInM a owl:DatatypeProperty ;
+    rdfs:label "twinship vessel draft aft max in m" ;
+    rdfs:comment "Maximum vessel draft at the aft in metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twVesselDraftForMaxInM a owl:DatatypeProperty ;
+    rdfs:label "twinship vessel draft for max in m" ;
+    rdfs:comment "Maximum vessel draft at the fore in metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twVesselDraftMidPortMaxInM a owl:DatatypeProperty ;
+    rdfs:label "twinship vessel draft mid port max in m" ;
+    rdfs:comment "Maximum vessel draft at midship port side in metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twVesselDraftMidStbdMaxInM a owl:DatatypeProperty ;
+    rdfs:label "twinship vessel draft mid stbd max in m" ;
+    rdfs:comment "Maximum vessel draft at midship starboard side in metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
