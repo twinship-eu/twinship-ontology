@@ -1,4 +1,4 @@
-@prefix : <https://twin-ship.eu/ontology#> .
+@prefix : <https://twin-ship.eu/twinship#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -9,11 +9,11 @@
 # #
 # #################################################################
 
-<https://twin-ship.eu/ontology/modules/draft_time_mode> a owl:Ontology ;
+<https://twin-ship.eu/twinship/draft-time-mode> a owl:Ontology ;
     rdfs:label "TwinShip Draft, Time, and Mode Module" ;
     rdfs:comment "Placeholder module for ship draft measurements, temporal aspects, and operational modes. To be developed." ;
-    owl:imports <https://twin-ship.eu/ontology> ;
-    owl:versionIRI <https://twin-ship.eu/ontology/modules/draft_time_mode/0.0.1> .
+    owl:imports <https://twin-ship.eu/twinship/base> ;
+    owl:versionIRI <https://twin-ship.eu/twinship/draft-time-mode/0.0.1> .
 
 # #################################################################
 # #

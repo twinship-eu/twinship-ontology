@@ -10,15 +10,15 @@ This directory contains the TwinShip ontology organized in a **modular architect
 │     Aggregate of base + all modules     │
 └─────────────────┬───────────────────────┘
                   │ imports
-        ┌─────────┴─────────┬──────────────────┬────────────┐
-        ▼                   ▼                  ▼            ▼
-┌───────────────┐  ┌─────────────────┐  ┌──────────┐  ┌────────┐
-│ twinship-base │  │ modules/        │  │ modules/ │  │modules/│
-│  (Foundation) │  │ engine.ttl      │  │ hull.ttl │  │ ...    │
-│               │◄─┤ Propulsion,     │◄─┤ Vessel   │◄─┤ Weather│
-│ Base classes, │  │ Fuel, Gearbox   │  │ types    │  │        │
-│ properties    │  │                 │  │          │  │        │
-└───────────────┘  └─────────────────┘  └──────────┘  └────────┘
+        ┌─────────┴─────────┬──────────────────┐
+        ▼                   ▼                  ▼
+┌───────────────┐  ┌─────────────────┐  ┌────────────────┐
+│ twinship-base │  │ modules/        │  │ modules/       │
+│  (Foundation) │  │ vessel.ttl      │  │ weathercondi-  │
+│               │◄─┤ Vessels, Engines│◄─┤ tions.ttl      │
+│ Base classes, │  │ Propulsion,     │  │ Weather, Env.  │
+│ properties    │  │ Fuel, Gearbox   │  │                │
+└───────────────┘  └─────────────────┘  └────────────────┘
         │
         │ imports
         ▼
@@ -34,8 +34,7 @@ model/                         # Source ontology files (version controlled)
 ├── twinship-base.ttl          # Foundation ontology (base classes, properties)
 ├── twinship-core.ttl          # Complete aggregate (imports base + all modules)
 ├── modules/                   # Domain-specific modules
-│   ├── engine.ttl            # Engine, propulsion, fuel, gearbox
-│   ├── hull.ttl              # Vessel types, hull properties
+│   ├── vessel.ttl            # Vessels, engines, propulsion, fuel, gearbox
 │   ├── weatherconditions.ttl # Weather-related classes
 │   └── draft_time_mode.ttl   # (Placeholder for future development)
 ├── external/                  # External ontology dependencies
@@ -73,7 +72,9 @@ build/                         # Auto-generated build artifacts (gitignored)
 
 ### Domain Modules
 
-3. **modules/engine.ttl** (1074 lines)
+3. **modules/vessel.ttl** (1134 lines)
+   - Vessel types: `VesselSystem`, `RoRo`, `RoPax`, `Tanker`
+   - Hull properties: displacement, draft (aft, fore, mid port/starboard), depth of water
    - Engine systems: `EngineSystem`, `MainEngineSystem`, `AuxiliaryEngineSystem`
    - Engine types: `DieselEngine`, `FourStroke`, `TwoStroke`, `Boiler`
    - Propulsion: `PropellerSystem`, `CPP`, `FPP`
@@ -81,13 +82,13 @@ build/                         # Auto-generated build artifacts (gitignored)
    - Power: `ShaftGeneratorSystem`, `RGShaftGenerator`, `PTO`
    - Equipment: `Maneuvering`, `EmergencyEquipment`
    - Fuel: `Fuel` class + individuals (HFO, MGO, MDO)
-   - 130+ engine-related properties
+   - 130+ engine and vessel properties
    - Imports: `twinship-base`
 
-4. **modules/hull.ttl** (99 lines)
-   - Vessel types: `VesselSystem`, `RoRo`, `RoPax`, `Tanker`
-   - Hull properties: displacement, draft (aft, fore, mid port/starboard), depth of water
-   - Imports: `twinship-base`
+4. **modules/weatherconditions.ttl** (56 lines)
+   - Reuses weather-related concepts from VesselAI ontology
+   - Weather conditions, environmental events, weather phenomena
+   - Imports: IDO, VesselAI
 
 ## Import Patterns
 
@@ -106,9 +107,9 @@ build/                         # Auto-generated build artifacts (gitignored)
 ```turtle
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 
-<http://example.org/myEngineExtension> a owl:Ontology ;
-    owl:imports <https://twin-ship.eu/twinship-base>,      # Foundation
-                <https://twin-ship.eu/modules/engine> .     # Just engine module
+<http://example.org/myVesselExtension> a owl:Ontology ;
+    owl:imports <https://twin-ship.eu/twinship/base>,      # Foundation
+                <https://twin-ship.eu/twinship/vessel> .    # Just vessel module
 ```
 
 ### For New TwinShip Modules
@@ -116,8 +117,8 @@ build/                         # Auto-generated build artifacts (gitignored)
 ```turtle
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 
-<https://twin-ship.eu/modules/myNewModule> a owl:Ontology ;
-    owl:imports <https://twin-ship.eu/twinship-base> .  # Only import base
+<https://twin-ship.eu/twinship/myNewModule> a owl:Ontology ;
+    owl:imports <https://twin-ship.eu/twinship/base> .  # Only import base
 ```
 
 ## Design Pattern
@@ -169,10 +170,10 @@ All TwinShip physical entities inherit from `TwinShipInanimatePhysicalObject` wh
 
 ```xml
 <!-- TwinShip Ontologies -->
-<uri name="https://twin-ship.eu/ontology" uri="twinship-base.ttl"/>
-<uri name="https://twin-ship.eu/ontology/core" uri="twinship-core.ttl"/>
-<uri name="https://twin-ship.eu/ontology/modules/engine" uri="modules/engine.ttl"/>
-<uri name="https://twin-ship.eu/ontology/modules/hull" uri="modules/hull.ttl"/>
+<uri name="https://twin-ship.eu/twinship/base" uri="twinship-base.ttl"/>
+<uri name="https://twin-ship.eu/twinship/core" uri="twinship-core.ttl"/>
+<uri name="https://twin-ship.eu/twinship/vessel" uri="modules/vessel.ttl"/>
+<uri name="https://twin-ship.eu/twinship/weatherconditions" uri="modules/weatherconditions.ttl"/>
 
 <!-- External Ontologies -->
 <uri name="http://www.vesselAI-project.eu/vesselai" uri="external/vesselai/vesselAI_ontology_v2.owl"/>
@@ -204,7 +205,7 @@ Open `model/twinship-core.ttl` - the catalog will automatically resolve all impo
 
 ### Query with SPARQL
 ```sparql
-PREFIX : <https://twin-ship.eu/>
+PREFIX : <https://twin-ship.eu/twinship#>
 PREFIX ido: <http://rds.posccaesar.org/ontology/lis14/rdl/>
 
 SELECT ?vessel ?name WHERE {

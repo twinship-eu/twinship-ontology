@@ -19,7 +19,7 @@
 
 <http://qudt.org/vocab/quantitykind/> rdf:type owl:Ontology ;
                              owl:versionIRI <http://qudt.org/simplified/vocab/quantitykind/> ;
-                             owl:imports <http://qudt.org/simplified/schema/qudt/> .
+                             owl:imports <http://qudt.org/schema/qudt/> .
 
 
 quantitykind:Force

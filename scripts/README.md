@@ -7,7 +7,7 @@ This directory contains utility scripts for working with the TwinShip modular on
 The TwinShip ontology uses a **modular architecture**:
 - **twinship-base.ttl** - Foundation ontology (base classes, properties)
 - **twinship-core.ttl** - Complete aggregate (imports base + all modules)
-- **modules/** - Domain-specific modules (engine.ttl, hull.ttl, etc.)
+- **modules/** - Domain-specific modules (vessel.ttl, weatherconditions.ttl, etc.)
 
 The scripts help process this modular structure for documentation and visualization.
 

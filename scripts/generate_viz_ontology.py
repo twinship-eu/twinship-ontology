@@ -84,10 +84,24 @@ def create_visualization_graph(source_graph):
             if not isinstance(parent, BNode):
                 viz_graph.add((cls, RDFS.subClassOf, parent))
     
-    # 4. Copy ontology metadata
-    for ontology in source_graph.subjects(RDF.type, OWL.Ontology):
-        for pred, obj in source_graph.predicate_objects(ontology):
-            viz_graph.add((ontology, pred, obj))
+    # 4. Copy ontology metadata - prefer the core ontology for documentation
+    core_ontology = None
+    all_ontologies = list(source_graph.subjects(RDF.type, OWL.Ontology))
+    
+    # First, look for the core ontology
+    for ontology in all_ontologies:
+        if str(ontology).endswith("/core"):
+            core_ontology = ontology
+            break
+    
+    # If core not found, use the first one
+    if not core_ontology and all_ontologies:
+        core_ontology = all_ontologies[0]
+    
+    # Copy only the core/main ontology metadata
+    if core_ontology:
+        for pred, obj in source_graph.predicate_objects(core_ontology):
+            viz_graph.add((core_ontology, pred, obj))
     
     # 5. Copy annotation properties
     for annot_prop in source_graph.subjects(RDF.type, OWL.AnnotationProperty):

@@ -1,4 +1,4 @@
-@prefix : <https://twin-ship.eu/ontology#> .
+@prefix : <https://twin-ship.eu/twinship#> .
 @prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
@@ -7,6 +7,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix unit: <http://qudt.org/vocab/unit/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
 # #################################################################
 # #
@@ -14,20 +15,41 @@
 # #
 # #################################################################
 
-<https://twin-ship.eu/ontology> a owl:Ontology ;
+<https://twin-ship.eu/twinship/base> a owl:Ontology ;
     rdfs:label "TwinShip Ontology" ;
     pav:createdOn "2025-01-21T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.0.1" ;
-    rdfs:comment """Base/foundation ontology for TwinShip. Defines core classes, properties, and patterns that all TwinShip modules extend. This includes the base TwinShip physical object class, property hierarchies, and fundamental object properties. Domain-specific classes are defined in separate modules (engine, hull, weather).
+    rdfs:comment """Base/foundation ontology for TwinShip. Defines core classes, properties, and patterns that all TwinShip modules extend. This includes the base TwinShip physical object class, property hierarchies, and fundamental object properties. Domain-specific classes are defined in separate modules (vessel, weatherconditions).
 
-Modeling Practice: This ontology uses OWL restrictions (owl:Restriction with owl:someValuesFrom) to define relationships between classes and properties, rather than rdfs:domain assertions. This approach avoids unwanted inferences that would occur with rdfs:domain (where any entity using a property would be inferred to belong to the domain class). For visualization purposes, a separate visualization-friendly version is automatically generated that extracts rdfs:domain and rdfs:range assertions from the restriction patterns to enable proper rendering in tools like WIDOCO and WebVOWL.""" ;
+Modeling Approach - Restriction-Based Design:
+
+The TwinShip ontology follows a restriction-based modeling approach in OWL, which is the recommended practice for precise ontological engineering. This means we use OWL class restrictions (owl:Restriction with owl:someValuesFrom, owl:allValuesFrom, etc.) to define which properties apply to which classes, rather than using simple rdfs:domain and rdfs:range assertions.
+
+Why Restrictions Instead of Domain/Range?
+
+The restriction-based approach provides several advantages:
+- Precise Semantics: Restrictions allow us to state that instances of a class CAN have certain properties, without forcing classification on any entity that happens to use those properties.
+- Avoids Unintended Inferences: Using rdfs:domain would cause any entity using a property to be automatically inferred as a member of the domain class, which is often not desired and can lead to incorrect reasoning results.
+- Flexible Modeling: Multiple classes can use the same property with different constraints without interference.
+- OWL Best Practice: This approach aligns with OWL 2 design patterns and enables proper use of reasoners.
+
+Visualization and Documentation:
+
+Most ontology visualization and documentation tools (including WIDOCO and WebVOWL) were designed primarily for RDFS-style ontologies and provide limited support for OWL restriction patterns. They expect simple rdfs:domain and rdfs:range assertions to generate property connection diagrams and to determine which properties are associated with which classes.
+
+To address this limitation while maintaining correct OWL semantics in our source files, we maintain two versions:
+
+1. Source Version (This File): Uses proper OWL restrictions throughout. This is the authoritative version used for reasoning, querying, and semantic operations.
+
+2. Visualization Version (Auto-Generated): A script automatically generates a simplified version that extracts domain and range information from the restriction patterns and adds explicit rdfs:domain and rdfs:range assertions. This version is used solely as input to WIDOCO and WebVOWL to produce human-readable documentation and interactive visualizations.
+
+The visualization version is regenerated whenever the source ontology changes, ensuring documentation stays synchronized with the authoritative OWL model.""" ;
     owl:imports <http://purl.org/pav/>,
-        <http://qudt.org/schema/qudt/>,
         <http://qudt.org/vocab/quantitykind/>,
         <http://qudt.org/vocab/unit/>,
         <http://rds.posccaesar.org/ontology/lis14/ont/core/1.0>,
         <http://www.vesselAI-project.eu/vesselai> ;
-    owl:versionIRI <https://twin-ship.eu/ontology/0.0.1> .
+    owl:versionIRI <https://twin-ship.eu/twinship/base/0.0.1> .
 
 # #################################################################
 # #
@@ -96,13 +118,25 @@ owl:minQualifiedCardinality a owl:AnnotationProperty .
 # #
 # #################################################################
 
+:TwinShipSystem a owl:Class ;
+    rdfs:label "TwinShip System" ;
+    rdfs:comment "Base class for all systems in the TwinShip ontology. Subclass of IDO System." ;
+    rdfs:subClassOf ido:System .
+
 :Fleet a owl:Class ;
     rdfs:label "Fleet" ;
-    rdfs:comment "A collection of ships operated by the same organization." .
+    rdfs:comment "A collection of ships operated by the same organization." ;
+    rdfs:subClassOf :TwinShipSystem .
+
+:TwinShipOrganization a owl:Class ;
+    rdfs:label "TwinShip Organization" ;
+    rdfs:comment "Base class for all organizations in the TwinShip ontology. Subclass of IDO Organization." ;
+    rdfs:subClassOf ido:Organization .
 
 :Organization a owl:Class ;
     rdfs:label "Organization" ;
-    rdfs:comment "An organized group of people with a particular purpose, such as a shipping company or vessel operator." .
+    rdfs:comment "An organized group of people with a particular purpose, such as a shipping company or vessel operator." ;
+    rdfs:subClassOf :TwinShipOrganization .
 
 # #################################################################
 # #

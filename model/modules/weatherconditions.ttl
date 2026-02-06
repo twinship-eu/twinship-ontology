@@ -1,4 +1,4 @@
-@prefix : <https://twin-ship.eu/ontology#> .
+@prefix : <https://twin-ship.eu/twinship#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
@@ -8,10 +8,9 @@
 @prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
 @prefix vesselai: <http://www.vesselAI-project.eu/vesselai#> .
 
-<https://twin-ship.eu/ontology/modules/weatherconditions> a owl:Ontology ;
-    owl:versionIRI <https://twin-ship.eu/ontology/modules/weatherconditions/0.0.1> ;
-    owl:imports <http://rds.posccaesar.org/ontology/lis14/ont/core> ,
-                <http://www.vesselAI-project.eu/vesselai> ;
+<https://twin-ship.eu/twinship/weatherconditions> a owl:Ontology ;
+    owl:versionIRI <https://twin-ship.eu/twinship/weatherconditions/0.0.1> ;
+    owl:imports <https://twin-ship.eu/twinship/base> ;
     dcterms:title "TwinShip Weather Conditions Module"@en ;
     dcterms:description "Ontology module for environmental and weather conditions affecting ship operations. Reuses weather-related classes and properties from the VesselAI ontology and extends the IDO upper ontology."@en ;
     dcterms:creator "TwinShip Project" ;

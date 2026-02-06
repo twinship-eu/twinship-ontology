@@ -21,13 +21,15 @@ from rdflib.namespace import SKOS, DCTERMS
 
 
 # TwinShip namespaces
-TWINSHIP_BASE = "https://twin-ship.eu/ontology"
+TWINSHIP_BASE = "https://twin-ship.eu/twinship"
 TWINSHIP_NAMESPACES = [
-    "https://twin-ship.eu/ontology",
-    "https://twin-ship.eu/ontology/core", 
-    "https://twin-ship.eu/ontology/modules/engine",
-    "https://twin-ship.eu/ontology/modules/hull",
-    "https://twin-ship.eu/ontology#",  # Hash URI namespace
+    "https://twin-ship.eu/twinship",
+    "https://twin-ship.eu/twinship/base",
+    "https://twin-ship.eu/twinship/core", 
+    "https://twin-ship.eu/twinship/vessel",
+    "https://twin-ship.eu/twinship/weatherconditions",
+    "https://twin-ship.eu/twinship/draft_time_mode",
+    "https://twin-ship.eu/twinship#",  # Hash URI namespace
 ]
 
 
@@ -81,10 +83,41 @@ def generate_docs_ontology(input_file, output_file):
     
     print(f"Found {len(twinship_resources)} TwinShip resources")
     
-    # Second pass: Copy all triples about TwinShip resources
+    # Second pass: Collect blank nodes related to TwinShip resources
+    related_bnodes = set()
+    
     for s, p, o in g:
-        # Skip triples where subject is NOT a TwinShip resource
+        # If subject is a TwinShip resource and object is a blank node
+        if isinstance(s, URIRef) and is_twinship_resource(s):
+            if not isinstance(o, URIRef):  # Blank node or literal
+                if hasattr(o, 'n3') and o.n3().startswith('_:'):  # It's a blank node
+                    related_bnodes.add(o)
+    
+    # Recursively find all blank nodes referenced by restrictions
+    def find_nested_bnodes(bnode):
+        """Recursively find all blank nodes nested within a blank node."""
+        nested = set()
+        for s, p, o in g.triples((bnode, None, None)):
+            if hasattr(o, 'n3') and o.n3().startswith('_:'):
+                nested.add(o)
+                nested.update(find_nested_bnodes(o))
+        return nested
+    
+    # Expand to include nested blank nodes
+    all_bnodes = set(related_bnodes)
+    for bnode in related_bnodes:
+        all_bnodes.update(find_nested_bnodes(bnode))
+    
+    print(f"Found {len(all_bnodes)} related blank nodes (restrictions, etc.)")
+    
+    # Third pass: Copy all triples about TwinShip resources and related blank nodes
+    for s, p, o in g:
+        # Skip triples where subject is NOT a TwinShip resource or related blank node
         if isinstance(s, URIRef) and not is_twinship_resource(s):
+            continue
+        
+        # Include blank nodes that are related to TwinShip resources
+        if hasattr(s, 'n3') and s.n3().startswith('_:') and s not in all_bnodes:
             continue
         
         # Skip owl:imports - we'll add these separately
@@ -110,12 +143,22 @@ def generate_docs_ontology(input_file, output_file):
             stats['other_triples'] += 1
     
     # Add back owl:imports for external ontologies (for reference)
-    # Find the main ontology URI
+    # Find the main ontology URI - prefer the "core" ontology
     main_ontology = None
+    core_ontology = URIRef("https://twin-ship.eu/twinship/core")
+    
+    # First, check if the core ontology exists
     for s in g.subjects(RDF.type, OWL.Ontology):
-        if is_twinship_resource(s):
-            main_ontology = s
+        if s == core_ontology:
+            main_ontology = core_ontology
             break
+    
+    # If core not found, fall back to any TwinShip ontology
+    if not main_ontology:
+        for s in g.subjects(RDF.type, OWL.Ontology):
+            if is_twinship_resource(s):
+                main_ontology = s
+                break
     
     if main_ontology:
         # Add ontology declaration
