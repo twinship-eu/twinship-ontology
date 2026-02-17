@@ -134,6 +134,7 @@ if [ "$SKIP_MERGE" = false ]; then
     
     uv run python scripts/merge_modules.py --catalog model/catalog-v001.xml "$SOURCE" "$COMPLETE_FILE" || {
         error "Failed to merge modules"
+        read -n 1 -r -s -p "Press any key to continue."
         exit 1
     }
     success "Merged ontology created: $COMPLETE_FILE"
@@ -149,6 +150,7 @@ if [ "$SKIP_VIZ" = false ]; then
     
     uv run python scripts/generate_viz_ontology.py --auto "$COMPLETE_FILE" || {
         error "Failed to generate viz ontology"
+        read -n 1 -r -s -p "Press any key to continue."
         exit 1
     }
     success "Visualization ontology created: $VIZ_FILE"
@@ -164,11 +166,13 @@ log "Running: uv run python scripts/generate_docs_ontology.py -o $DOCS_FILE $COM
 
 uv run python scripts/generate_docs_ontology.py -o "$DOCS_FILE" "$COMPLETE_FILE" || {
     error "Failed to generate docs ontology"
+    read -n 1 -r -s -p "Press any key to continue."
     exit 1
 }
 
 uv run python scripts/generate_viz_ontology.py --auto "$DOCS_FILE" || {
     error "Failed to generate docs viz ontology"
+    read -n 1 -r -s -p "Press any key to continue."
     exit 1
 }
 success "Documentation ontology created: $DOCS_VIZ_FILE"
@@ -182,6 +186,7 @@ if [ "$SKIP_WIDOCO" = false ]; then
     
     uv run python scripts/generate_widoco_docs.py -o "$WIDOCO_OUTPUT" "$DOCS_VIZ_FILE" || {
         error "Failed to generate WIDOCO documentation"
+        read -n 1 -r -s -p "Press any key to continue."
         exit 1
     }
     success "WIDOCO documentation created: $WIDOCO_OUTPUT"
@@ -198,6 +203,7 @@ if [ "$SKIP_WEBVOWL" = false ]; then
     
     uv run python scripts/setup_webvowl.py -o "$WEBVOWL_OUTPUT" "$VIZ_FILE" || {
         error "Failed to setup WebVOWL"
+        read -n 1 -r -s -p "Press any key to continue."
         exit 1
     }
     success "WebVOWL visualization setup: $WEBVOWL_OUTPUT"
@@ -399,3 +405,5 @@ echo "  • Landing page:     $OUTPUT_ABS/index.html"
 echo "  • Documentation:    $OUTPUT_ABS/documentation/index-en.html"
 echo "  • Visualization:    $OUTPUT_ABS/visualization/index.html"
 echo ""
+
+read -n 1 -r -s -p "Press any key to continue."
