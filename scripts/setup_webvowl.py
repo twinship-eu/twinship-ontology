@@ -302,7 +302,7 @@ python -m http.server 8000</code></pre>
 """
     
     index_path = Path(output_dir) / "index.html"
-    index_path.write_text(html_content)
+    index_path.write_text(html_content, encoding="utf-8")
     print(f"✓ Created viewer page: {index_path}")
 
 

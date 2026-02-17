@@ -17,6 +17,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# JetBrains environment
+.idea/
+
 # uv
 .uv/
 uv.lock
