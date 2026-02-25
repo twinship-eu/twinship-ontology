@@ -110,10 +110,20 @@ def generate_docs_ontology(input_file, output_file):
     
     print(f"Found {len(all_bnodes)} related blank nodes (restrictions, etc.)")
     
+    # Find external properties used in TwinShip restrictions (e.g. IDO properties)
+    # and include their type declarations so WebVOWL can render them
+    external_props = set()
+    for bnode in all_bnodes:
+        if (bnode, RDF.type, OWL.Restriction) in g:
+            prop = g.value(bnode, OWL.onProperty)
+            if prop and isinstance(prop, URIRef) and not is_twinship_resource(prop):
+                external_props.add(prop)
+    twinship_resources.update(external_props)
+
     # Third pass: Copy all triples about TwinShip resources and related blank nodes
     for s, p, o in g:
         # Skip triples where subject is NOT a TwinShip resource or related blank node
-        if isinstance(s, URIRef) and not is_twinship_resource(s):
+        if isinstance(s, URIRef) and not is_twinship_resource(s) and s not in twinship_resources:
             continue
         
         # Include blank nodes that are related to TwinShip resources

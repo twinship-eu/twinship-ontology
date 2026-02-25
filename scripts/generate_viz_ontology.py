@@ -21,30 +21,30 @@ Usage:
 import argparse
 import sys
 from pathlib import Path
-from rdflib import Graph, Namespace, RDF, RDFS, OWL, BNode, Literal
+from rdflib import Graph, Namespace, RDF, RDFS, OWL, BNode, Literal, URIRef
 from rdflib.namespace import XSD
 
+TWS = Namespace("https://twin-ship.eu/twinship#")
 
-def extract_domain_from_restrictions(graph):
+
+def extract_restriction_edges(graph):
     """
-    Extract rdfs:domain statements from owl:Restriction patterns.
-    
-    Returns a set of (property, class) tuples.
+    Extract (property, domain_class, range_value) triples from owl:Restriction patterns.
     """
-    domains = set()
-    
-    # Find all classes with restrictions
+    edges = set()
+
     for cls in graph.subjects(RDF.type, OWL.Class):
-        # Look for restrictions in subClassOf
+        if isinstance(cls, BNode):
+            continue
         for parent in graph.objects(cls, RDFS.subClassOf):
             if isinstance(parent, BNode):
-                # Check if it's a restriction
                 if (parent, RDF.type, OWL.Restriction) in graph:
                     prop = graph.value(parent, OWL.onProperty)
+                    range_val = graph.value(parent, OWL.someValuesFrom)
                     if prop:
-                        domains.add((prop, cls))
-    
-    return domains
+                        edges.add((prop, cls, range_val))
+
+    return edges
 
 
 def create_visualization_graph(source_graph):
@@ -64,10 +64,54 @@ def create_visualization_graph(source_graph):
             for pred, obj in source_graph.predicate_objects(prop):
                 viz_graph.add((prop, pred, obj))
     
-    # 2. Extract and add domain information from restrictions
-    domains = extract_domain_from_restrictions(source_graph)
-    for prop, cls in domains:
-        viz_graph.add((prop, RDFS.domain, cls))
+    # 2. Extract restriction edges and add domain/range information
+    edges = extract_restriction_edges(source_graph)
+
+    from collections import defaultdict
+    prop_edges = defaultdict(list)
+    for prop, domain_cls, range_val in edges:
+        prop_edges[prop].append((domain_cls, range_val))
+
+    for prop, domain_range_pairs in prop_edges.items():
+        domains = set(d for d, r in domain_range_pairs)
+        existing_ranges = set(source_graph.objects(prop, RDFS.range))
+
+        if len(domains) <= 1:
+            # Single domain: add domain/range directly on the property
+            for domain_cls, range_val in domain_range_pairs:
+                viz_graph.add((prop, RDFS.domain, domain_cls))
+                if range_val and range_val not in existing_ranges:
+                    viz_graph.add((prop, RDFS.range, range_val))
+        else:
+            # Multiple domains: create standalone properties in TwinShip namespace
+            # to avoid union blank nodes in WebVOWL
+            prop_name = str(prop).rsplit('#', 1)[-1].rsplit('/', 1)[-1]
+            prop_label = source_graph.value(prop, RDFS.label) or Literal(prop_name)
+            prop_type = OWL.ObjectProperty if (prop, RDF.type, OWL.ObjectProperty) in source_graph else OWL.DatatypeProperty
+
+            seen_pairs = set()
+            for domain_cls, range_val in domain_range_pairs:
+                pair_key = (str(domain_cls), str(range_val))
+                if pair_key in seen_pairs:
+                    continue
+                seen_pairs.add(pair_key)
+
+                domain_name = str(domain_cls).rsplit('#', 1)[-1].rsplit('/', 1)[-1]
+                range_name = str(range_val).rsplit('#', 1)[-1].rsplit('/', 1)[-1] if range_val else "unknown"
+                viz_prop = TWS[f"{prop_name}_{domain_name}_{range_name}"]
+
+                viz_graph.add((viz_prop, RDF.type, prop_type))
+                viz_graph.add((viz_prop, RDFS.label, prop_label))
+                viz_graph.add((viz_prop, RDFS.domain, domain_cls))
+                if range_val:
+                    viz_graph.add((viz_prop, RDFS.range, range_val))
+                elif existing_ranges:
+                    for r in existing_ranges:
+                        viz_graph.add((viz_prop, RDFS.range, r))
+
+            # Remove domain/range from the parent property to avoid union nodes
+            viz_graph.remove((prop, RDFS.domain, None))
+            viz_graph.remove((prop, RDFS.range, None))
     
     # 3. Copy class definitions (without blank node restrictions)
     for cls in source_graph.subjects(RDF.type, OWL.Class):
@@ -194,7 +238,6 @@ The --auto flag automatically creates output file with '-viz' suffix.
             print(f"  Generated {len(viz_graph)} triples")
             
             # Count changes
-            classes_before = len(list(source_graph.subjects(RDF.type, OWL.Class)))
             classes_after = len(list(viz_graph.subjects(RDF.type, OWL.Class)))
             domains_added = len(list(viz_graph.subject_objects(RDFS.domain)))
             
