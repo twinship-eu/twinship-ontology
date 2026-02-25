@@ -227,12 +227,6 @@
     rdfs:label "Gearbox System" ;
     rdfs:comment "A mechanical device for transmitting and modifying rotational motion. Subclasses include DirectDrive, Reduction, SingleSpeed, and TISO (Twin-In Single-Out)." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :MainEngineSystem ],
-        [ a owl:Restriction ;
-            owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :PropellerSystem ],
-        [ a owl:Restriction ;
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
@@ -439,19 +433,7 @@
 
 :Pms rdfs:subClassOf [ a owl:Restriction ;
             owl:onProperty ido:partOf ;
-            owl:someValuesFrom :VesselSystem ],
-        [ a owl:Restriction ;
-            owl:onProperty ido:connectedTo ;
-            owl:someValuesFrom :AuxiliaryEngineSystem ],
-        [ a owl:Restriction ;
-            owl:onProperty ido:connectedTo ;
-            owl:someValuesFrom :ShaftGeneratorSystem ],
-        [ a owl:Restriction ;
-            owl:onProperty ido:connectedTo ;
-            owl:someValuesFrom :EmergencyEquipment ],
-        [ a owl:Restriction ;
-            owl:onProperty ido:connectedTo ;
-            owl:someValuesFrom :Maneuvering ] .
+            owl:someValuesFrom :VesselSystem ] .
 
 # #################################################################
 # #
