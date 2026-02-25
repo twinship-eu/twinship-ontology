@@ -34,9 +34,6 @@
     rdfs:label "Vessel System" ;
     rdfs:comment "A maritime vessel." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
-        [ a owl:Restriction ;
             owl:onProperty :twDisplacementMaxInMT ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
@@ -81,6 +78,12 @@
     rdfs:label "Auxiliary Engine System" ;
     rdfs:comment "Auxiliary engine system for power generation. Typically diesel engines, so individuals are often typed as both AuxiliaryEngineSystem and DieselEngine." ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
             owl:onProperty :twAuxiliaryDOMode ;
             owl:someValuesFrom xsd:integer ],
         [ a owl:Restriction ;
@@ -104,6 +107,9 @@
     rdfs:label "Boiler" ;
     rdfs:comment "A vessel's boiler system for generating steam." ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
             owl:onProperty :twBoilerBLRFuelMode ;
             owl:someValuesFrom xsd:integer ],
         [ a owl:Restriction ;
@@ -139,9 +145,6 @@
         [ a owl:Restriction ;
             owl:onProperty :twBoilerSpeedMaxInRevPerMin ;
             owl:someValuesFrom xsd:double ],
-        [ a owl:Restriction ;
-            owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
         :TwinShipInanimatePhysicalObject .
 
 :CPP a owl:Class ;
@@ -163,19 +166,22 @@
     rdfs:label "Emergency Equipment" ;
     rdfs:comment "Equipment designated for emergency use." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
         :TwinShipInanimatePhysicalObject .
 
 :EngineSystem a owl:Class ;
     rdfs:label "Engine System" ;
     rdfs:comment "A machine that converts energy into mechanical motion." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
-        [ a owl:Restriction ;
             owl:onProperty :consume ;
             owl:someValuesFrom :Fuel ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
         :TwinShipInanimatePhysicalObject .
 
 :FPP a owl:Class ;
@@ -221,8 +227,8 @@
     rdfs:label "Gearbox System" ;
     rdfs:comment "A mechanical device for transmitting and modifying rotational motion. Subclasses include DirectDrive, Reduction, SingleSpeed, and TISO (Twin-In Single-Out)." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
             owl:onProperty :twGearboxRatio ;
             owl:someValuesFrom xsd:string ],
@@ -235,6 +241,9 @@
     rdfs:label "Main Engine System" ;
     rdfs:comment "Main propulsion engine system. Includes shaft-related properties (power, torque, speed) as the main engine drives the propeller shaft." ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :GearboxSystem ],
+        [ a owl:Restriction ;
             owl:onProperty :twCommonDOMode ;
             owl:someValuesFrom xsd:integer ],
         [ a owl:Restriction ;
@@ -297,8 +306,11 @@
     rdfs:label "Maneuvering" ;
     rdfs:comment "Equipment used for vessel maneuvering, such as bow and stern thrusters." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
         :TwinShipInanimatePhysicalObject .
 
 :PropellerSystem a owl:Class ;
@@ -306,7 +318,10 @@
     rdfs:comment "A rotating device with blades that converts rotational motion into thrust. Subclasses: CPP (Controllable Pitch Propeller) and FPP (Fixed Pitch Propeller)." ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onProperty ido:directlyConnectedTo ;
-            owl:someValuesFrom :TwinShipInanimatePhysicalObject ],
+            owl:someValuesFrom :GearboxSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
             owl:onProperty :twPropellerBlades ;
             owl:someValuesFrom xsd:integer ],
@@ -339,7 +354,13 @@
 :PTO a owl:Class ;
     rdfs:label "Power Take-Off" ;
     rdfs:comment "Power Take-Off - a component or system that derives power from the main propulsion system." ;
-    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :GearboxSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        :TwinShipInanimatePhysicalObject .
 
 :Reduction a owl:Class ;
     rdfs:label "Reduction" ;
@@ -355,6 +376,12 @@
     rdfs:label "Shaft Generator System" ;
     rdfs:comment "A generator that derives power from the propulsion shaft. Subclass RGShaftGenerator is connected via reduction gearbox with PTO (Power Take-Off)." ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
             owl:onProperty :twShaftGeneratorBLRFuelMode ;
             owl:someValuesFrom xsd:integer ],
         [ a owl:Restriction ;
@@ -403,6 +430,10 @@
     rdfs:label "Two Stroke" ;
     rdfs:comment "A two-stroke internal combustion engine." ;
     rdfs:subClassOf :EngineSystem .
+
+:Pms rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ] .
 
 # #################################################################
 # #
