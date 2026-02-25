@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.3] - 2026-02-25
+
+### Changed
+- Enhanced visualization script to extract property ranges from OWL restrictions, enabling proper display of `directlyConnectedTo`, `connectedTo`, and `partOf` relationships in WebVOWL
+- Fixed WebVOWL blank union nodes for multi-domain properties
+- Added inter-component relationships to vessel ontology
+- Specify UTF-8 when generating WebVOWL index.html
+
 ## [0.0.2] - 2026-02-06
 
 ### Changed

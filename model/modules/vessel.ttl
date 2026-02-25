@@ -19,10 +19,11 @@
 <https://twin-ship.eu/twinship/vessel> a owl:Ontology ;
     rdfs:label "TwinShip Vessel Module" ;
     pav:createdOn "2026-02-05T00:00:00+00:00"^^xsd:dateTime ;
-    pav:version "0.0.1" ;
+    pav:lastUpdateOn "2026-02-25T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.0.3" ;
     rdfs:comment "Vessel module for TwinShip ontology. Combines engine and hull concepts. Defines vessel types, hull-related properties, and all engine-related classes, properties, and individuals including propulsion systems, auxiliary power generation, propellers, gearboxes, shaft generators, boilers, and fuel types. Extends twinship-base foundation classes." ;
     owl:imports <https://twin-ship.eu/twinship/base> ;
-    owl:versionIRI <https://twin-ship.eu/twinship/vessel/0.0.1> .
+    owl:versionIRI <https://twin-ship.eu/twinship/vessel/0.0.3> .
 
 # #################################################################
 # #

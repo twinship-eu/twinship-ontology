@@ -25,13 +25,16 @@ from rdflib import Graph, Namespace, RDF, RDFS, OWL, BNode, Literal
 from rdflib.namespace import XSD
 
 
-def extract_domain_from_restrictions(graph):
+def extract_domain_range_from_restrictions(graph):
     """
-    Extract rdfs:domain statements from owl:Restriction patterns.
+    Extract rdfs:domain and rdfs:range from owl:Restriction patterns.
     
-    Returns a set of (property, class) tuples.
+    Returns:
+        domains: set of (property, domain_class) tuples
+        ranges: set of (property, range_class) tuples
     """
     domains = set()
+    ranges = set()
     
     # Find all classes with restrictions
     for cls in graph.subjects(RDF.type, OWL.Class):
@@ -43,13 +46,51 @@ def extract_domain_from_restrictions(graph):
                     prop = graph.value(parent, OWL.onProperty)
                     if prop:
                         domains.add((prop, cls))
+                        
+                        # Also extract range from someValuesFrom or allValuesFrom
+                        range_class = graph.value(parent, OWL.someValuesFrom)
+                        if not range_class:
+                            range_class = graph.value(parent, OWL.allValuesFrom)
+                        
+                        # Only add named classes (not blank nodes, literals, or datatypes)
+                        if range_class and not isinstance(range_class, BNode):
+                            # Check if it's a class (not a datatype like xsd:string)
+                            range_str = str(range_class)
+                            if not range_str.startswith('http://www.w3.org/2001/XMLSchema#'):
+                                ranges.add((prop, range_class))
     
-    return domains
+    return domains, ranges
+
+
+def extract_union_classes(graph, union_node):
+    """
+    Extract all classes from an owl:unionOf structure.
+    Returns a list of URIRefs for the classes in the union.
+    """
+    classes = []
+    union_list = graph.value(union_node, OWL.unionOf)
+    if union_list:
+        # Traverse the RDF list
+        from rdflib.collection import Collection
+        try:
+            for item in Collection(graph, union_list):
+                if not isinstance(item, BNode):
+                    classes.append(item)
+        except:
+            # Fallback: manual list traversal
+            current = union_list
+            while current and current != RDF.nil:
+                first = graph.value(current, RDF.first)
+                if first and not isinstance(first, BNode):
+                    classes.append(first)
+                current = graph.value(current, RDF.rest)
+    return classes
 
 
 def create_visualization_graph(source_graph):
     """
     Create a simplified graph suitable for visualization.
+    Flattens owl:unionOf in domain/range to avoid blank nodes in WebVOWL.
     """
     viz_graph = Graph()
     
@@ -57,17 +98,80 @@ def create_visualization_graph(source_graph):
     for prefix, namespace in source_graph.namespaces():
         viz_graph.bind(prefix, namespace)
     
+    # Track which properties already have domain/range to avoid multiples
+    # WIDOCO creates unionOf nodes when it sees multiple domain/range assertions
+    property_domains = {}
+    property_ranges = {}
+    
     # 1. Copy all property definitions (DataProperty and ObjectProperty)
+    # Handle domain/range with special care for unionOf
     for prop_type in [OWL.DatatypeProperty, OWL.ObjectProperty]:
         for prop in source_graph.subjects(RDF.type, prop_type):
-            # Copy all triples about this property
+            # Copy all triples about this property, except domain/range
             for pred, obj in source_graph.predicate_objects(prop):
-                viz_graph.add((prop, pred, obj))
+                if pred == RDFS.domain:
+                    # Only add ONE domain per property to avoid WIDOCO creating unions
+                    if prop not in property_domains:
+                        # Check if it's a blank node with unionOf
+                        if isinstance(obj, BNode):
+                            union_classes = extract_union_classes(source_graph, obj)
+                            if union_classes:
+                                # Pick ONLY THE FIRST class
+                                viz_graph.add((prop, pred, union_classes[0]))
+                                property_domains[prop] = union_classes[0]
+                        else:
+                            # Regular named class - add as is
+                            viz_graph.add((prop, pred, obj))
+                            property_domains[prop] = obj
+                elif pred == RDFS.range:
+                    # Only add ONE range per property to avoid WIDOCO creating unions
+                    if prop not in property_ranges:
+                        # Check if it's a blank node with unionOf
+                        if isinstance(obj, BNode):
+                            union_classes = extract_union_classes(source_graph, obj)
+                            if union_classes:
+                                # Pick ONLY THE FIRST class
+                                viz_graph.add((prop, pred, union_classes[0]))
+                                property_ranges[prop] = union_classes[0]
+                        else:
+                            # Regular named class - add as is
+                            viz_graph.add((prop, pred, obj))
+                            property_ranges[prop] = obj
+                else:
+                    # Copy other properties as is
+                    viz_graph.add((prop, pred, obj))
     
-    # 2. Extract and add domain information from restrictions
-    domains = extract_domain_from_restrictions(source_graph)
+    # 2. Extract and add domain/range information from restrictions
+    # Only add if not already set (to avoid multiple domains/ranges -> union nodes)
+    domains, ranges = extract_domain_range_from_restrictions(source_graph)
+    
+    # Collect all properties found in restrictions
+    restriction_properties = set()
+    
     for prop, cls in domains:
-        viz_graph.add((prop, RDFS.domain, cls))
+        restriction_properties.add(prop)
+        if prop not in property_domains:
+            viz_graph.add((prop, RDFS.domain, cls))
+            property_domains[prop] = cls
+    
+    for prop, cls in ranges:
+        restriction_properties.add(prop)
+        if prop not in property_ranges:
+            viz_graph.add((prop, RDFS.range, cls))
+            property_ranges[prop] = cls
+    
+    # Ensure properties from restrictions are typed as ObjectProperty
+    # (They might be from external ontologies without explicit type in merged file)
+    for prop in restriction_properties:
+        # Check if property doesn't have a type yet in viz_graph
+        if not (prop, RDF.type, OWL.ObjectProperty) in viz_graph and \
+           not (prop, RDF.type, OWL.DatatypeProperty) in viz_graph:
+            # Add it as ObjectProperty (since it connects classes)
+            viz_graph.add((prop, RDF.type, OWL.ObjectProperty))
+            # Try to copy label and comment from source
+            for pred in [RDFS.label, RDFS.comment]:
+                for obj in source_graph.objects(prop, pred):
+                    viz_graph.add((prop, pred, obj))
     
     # 3. Copy class definitions (without blank node restrictions)
     for cls in source_graph.subjects(RDF.type, OWL.Class):
