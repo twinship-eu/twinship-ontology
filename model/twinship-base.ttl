@@ -84,13 +84,25 @@ xsd:gYear a rdfs:Datatype .
 
 # #################################################################
 # #
-# #    OWL Annotations
+# #    Annotation Properties
 # #
 # #################################################################
 
+# OWL Annotation Properties
 owl:maxQualifiedCardinality a owl:AnnotationProperty .
 
 owl:minQualifiedCardinality a owl:AnnotationProperty .
+
+# SKOS Annotation Properties
+skos:notation a owl:AnnotationProperty ;
+    rdfs:label "notation" ;
+    rdfs:comment "A notation, such as a code or identifier, used to uniquely identify a concept." ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> .
+
+skos:altLabel a owl:AnnotationProperty ;
+    rdfs:label "alternative label" ;
+    rdfs:comment "An alternative lexical label for a resource." ;
+    rdfs:isDefinedBy <http://www.w3.org/2004/02/skos/core> .
 
 # #################################################################
 # #

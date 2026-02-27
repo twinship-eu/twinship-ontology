@@ -19,17 +19,13 @@ Welcome to the TwinShip Ontology repository! This project provides a modular, ex
 git clone https://github.com/twinship-eu/twinship-ontology.git
 cd twinship-ontology
 
-# 2. Install uv (fast Python package manager)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# Or: brew install uv
+# 2. Run setup script (installs uv if needed and sets up dependencies)
+./setup.sh
 
-# 3. Install dependencies
-uv sync
-
-# 4. Generate complete website (documentation + visualization)
+# 3. Generate complete website (documentation + visualization)
 ./scripts/generate_website.sh
 
-# 5. View the result
+# 4. View the result
 open docs/website/index.html
 ```
 
@@ -50,10 +46,10 @@ Generate complete website with WIDOCO documentation and WebVOWL visualization:
 ./scripts/generate_website.sh
 
 # Start local web server
-cd docs/website && python3 -m http.server 8000
+./serve_website.sh
 
-# Open in browser
-open http://localhost:8000
+# Or open directly
+open docs/website/index.html
 ```
 
 The landing page provides links to:

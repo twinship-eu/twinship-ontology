@@ -134,7 +134,6 @@ if [ "$SKIP_MERGE" = false ]; then
     
     uv run python scripts/merge_modules.py --catalog model/catalog-v001.xml "$SOURCE" "$COMPLETE_FILE" || {
         error "Failed to merge modules"
-        read -n 1 -r -s -p "Press any key to continue."
         exit 1
     }
     success "Merged ontology created: $COMPLETE_FILE"
@@ -150,7 +149,6 @@ if [ "$SKIP_VIZ" = false ]; then
     
     uv run python scripts/generate_viz_ontology.py --auto "$COMPLETE_FILE" || {
         error "Failed to generate viz ontology"
-        read -n 1 -r -s -p "Press any key to continue."
         exit 1
     }
     success "Visualization ontology created: $VIZ_FILE"
@@ -161,21 +159,47 @@ fi
 # Step 2.5: Generate documentation-only version (TwinShip classes only)
 DOCS_FILE="${COMPLETE_FILE%.ttl}-docs.ttl"
 DOCS_VIZ_FILE="${DOCS_FILE%.ttl}-viz.ttl"
+CLEAN_VIZ_FILE="${VIZ_FILE%.ttl}-clean.ttl"
+
 step "Step 2.5: Creating documentation-only ontology (TwinShip classes only)"
 log "Running: uv run python scripts/generate_docs_ontology.py -o $DOCS_FILE $COMPLETE_FILE"
 
 uv run python scripts/generate_docs_ontology.py -o "$DOCS_FILE" "$COMPLETE_FILE" || {
     error "Failed to generate docs ontology"
-    read -n 1 -r -s -p "Press any key to continue."
     exit 1
 }
 
-uv run python scripts/generate_viz_ontology.py --auto "$DOCS_FILE" || {
+# Generate docs-viz WITHOUT virtual properties (so WIDOCO shows single properties with multiple domains)
+uv run python scripts/generate_viz_ontology.py --no-virtual-properties --auto "$DOCS_FILE" || {
     error "Failed to generate docs viz ontology"
-    read -n 1 -r -s -p "Press any key to continue."
+
     exit 1
 }
 success "Documentation ontology created: $DOCS_VIZ_FILE"
+
+# Step 2.6: Clean the visualization ontology (remove external ontologies for WebVOWL)
+step "Step 2.6: Cleaning visualization ontology for WebVOWL"
+log "Running: uv run python scripts/generate_docs_ontology.py -o $CLEAN_VIZ_FILE $VIZ_FILE"
+
+uv run python scripts/generate_docs_ontology.py -o "$CLEAN_VIZ_FILE" "$VIZ_FILE" || {
+    error "Failed to clean viz ontology"
+    exit 1
+}
+success "Clean visualization ontology created: $CLEAN_VIZ_FILE"
+
+# Step 2.7: Strip external parent relationships for clean WebVOWL
+step "Step 2.7: Stripping external parent relationships (IDO) from visualization"
+MINIMAL_VIZ_FILE="${CLEAN_VIZ_FILE%.ttl}-minimal.ttl"
+log "Running: uv run python scripts/strip_for_webvowl.py $CLEAN_VIZ_FILE $MINIMAL_VIZ_FILE"
+
+uv run python scripts/strip_for_webvowl.py "$CLEAN_VIZ_FILE" "$MINIMAL_VIZ_FILE" || {
+    error "Failed to strip external relationships"
+    exit 1
+}
+success "Minimal visualization ontology created: $MINIMAL_VIZ_FILE"
+
+# Use minimal viz file for WebVOWL generation
+WEBVOWL_SOURCE="$MINIMAL_VIZ_FILE"
 
 # Step 3: Generate WIDOCO documentation
 if [ "$SKIP_WIDOCO" = false ]; then
@@ -186,27 +210,71 @@ if [ "$SKIP_WIDOCO" = false ]; then
     
     uv run python scripts/generate_widoco_docs.py -o "$WIDOCO_OUTPUT" "$DOCS_VIZ_FILE" || {
         error "Failed to generate WIDOCO documentation"
-        read -n 1 -r -s -p "Press any key to continue."
         exit 1
     }
     success "WIDOCO documentation created: $WIDOCO_OUTPUT"
+    
+    # Step 3.5: Enhance HTML with additional annotation properties (SKOS, dcterms:description)
+    step "Step 3.5: Enhancing documentation with SKOS and dcterms annotations"
+    log "Running: uv run python scripts/enhance_widoco_html.py $WIDOCO_OUTPUT/index-en.html $DOCS_VIZ_FILE"
+    
+    uv run python scripts/enhance_widoco_html.py "$WIDOCO_OUTPUT/index-en.html" "$DOCS_VIZ_FILE" || {
+        error "Failed to enhance HTML (continuing anyway)"
+    }
+    success "Enhanced documentation with additional annotations"
 else
     log "Skipping WIDOCO documentation"
 fi
 
-# Step 4: Setup WebVOWL visualization
+# Step 4: Generate WebVOWL visualization using WIDOCO
 if [ "$SKIP_WEBVOWL" = false ]; then
-    step "Step 4: Setting up WebVOWL visualization"
+    step "Step 4: Generating WebVOWL visualization with WIDOCO"
     
-    WEBVOWL_OUTPUT="$OUTPUT_ABS/visualization"
-    log "Running: uv run python scripts/setup_webvowl.py -o $WEBVOWL_OUTPUT $VIZ_FILE"
+    WEBVOWL_TEMP_OUTPUT="$OUTPUT_ABS/webvowl_temp"
+    # Use the MINIMAL viz file with virtual properties, no external ontologies, and no IDO parent relationships
+    log "Running: uv run python scripts/generate_widoco_docs.py -o $WEBVOWL_TEMP_OUTPUT $WEBVOWL_SOURCE"
     
-    uv run python scripts/setup_webvowl.py -o "$WEBVOWL_OUTPUT" "$VIZ_FILE" || {
-        error "Failed to setup WebVOWL"
-        read -n 1 -r -s -p "Press any key to continue."
+    uv run python scripts/generate_widoco_docs.py -o "$WEBVOWL_TEMP_OUTPUT" "$WEBVOWL_SOURCE" || {
+        error "Failed to generate WebVOWL"
         exit 1
     }
-    success "WebVOWL visualization setup: $WEBVOWL_OUTPUT"
+    
+    # Step 4.5: Replace WIDOCO's embedded WebVOWL with clean visualization
+    step "Step 4.5: Replacing WIDOCO embedded WebVOWL with clean visualization"
+    
+    if [ -d "$WEBVOWL_TEMP_OUTPUT/webvowl" ] && [ -d "$OUTPUT_ABS/documentation/webvowl" ]; then
+        # Replace the entire webvowl folder
+        rm -rf "$OUTPUT_ABS/documentation/webvowl"
+        cp -r "$WEBVOWL_TEMP_OUTPUT/webvowl" "$OUTPUT_ABS/documentation/webvowl" || {
+            error "Failed to copy WebVOWL folder"
+        }
+        
+        # Clean up temp output
+        rm -rf "$WEBVOWL_TEMP_OUTPUT"
+        
+        # WebVOWL replacement complete - datatype properties will show their specific XSD types
+        success "WebVOWL visualization replaced with clean version"
+    else
+        log "Skipping WIDOCO WebVOWL replacement (folders not found)"
+    fi
+    
+    # Step 4.6: Enhance WebVOWL JSON with SKOS/dcterms annotations
+    step "Step 4.6: Enhancing WebVOWL with annotations"
+    
+    WEBVOWL_JSON="$OUTPUT_ABS/documentation/webvowl/data/ontology.json"
+    
+    if [ -f "$WEBVOWL_SOURCE" ] && [ -f "$WEBVOWL_JSON" ]; then
+        log "Running: uv run python scripts/enhance_webvowl_json.py $WEBVOWL_SOURCE $WEBVOWL_JSON"
+        
+        uv run python scripts/enhance_webvowl_json.py "$WEBVOWL_SOURCE" "$WEBVOWL_JSON" || {
+            error "Failed to enhance WebVOWL JSON with annotations"
+            exit 1
+        }
+        
+        success "WebVOWL enhanced with SKOS and dcterms annotations"
+    else
+        log "Skipping WebVOWL enhancement (files not found)"
+    fi
 else
     log "Skipping WebVOWL setup"
 fi
@@ -394,16 +462,16 @@ echo ""
 echo "Website location: $OUTPUT_ABS"
 echo ""
 echo "To view the website:"
-echo "  1. Open: file://$OUTPUT_ABS/index.html"
+echo "  1. Start local server (RECOMMENDED):"
+echo "     cd \$(dirname \$0)/.. && ./serve_website.sh"
+echo "     Then open: http://localhost:8000"
 echo ""
-echo "  2. Or serve locally:"
+echo "  2. Or manually:"
 echo "     cd $OUTPUT_DIR && python -m http.server 8000"
 echo "     Then open: http://localhost:8000"
 echo ""
 echo "Contents:"
 echo "  • Landing page:     $OUTPUT_ABS/index.html"
 echo "  • Documentation:    $OUTPUT_ABS/documentation/index-en.html"
-echo "  • Visualization:    $OUTPUT_ABS/visualization/index.html"
+echo "  • WebVOWL:          $OUTPUT_ABS/documentation/webvowl/index.html"
 echo ""
-
-read -n 1 -r -s -p "Press any key to continue."
