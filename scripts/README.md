@@ -2,14 +2,30 @@
 
 This directory contains utility scripts for working with the TwinShip modular ontology.
 
-## TwinShip Ontology Structure
+## Overview
 
-The TwinShip ontology uses a **modular architecture**:
+The TwinShip ontology uses a **modular architecture** with a **two-pipeline build process**:
+
+### Modular Architecture
 - **twinship-base.ttl** - Foundation ontology (base classes, properties)
 - **twinship-core.ttl** - Complete aggregate (imports base + all modules)
 - **modules/** - Domain-specific modules (vessel.ttl, weatherconditions.ttl, etc.)
 
-The scripts help process this modular structure for documentation and visualization.
+### Two-Pipeline Build Process
+
+The website generation uses separate optimized ontologies for documentation and visualization:
+
+1. **Documentation Pipeline** (WIDOCO)
+   - Source: `complete-docs-viz.ttl` 
+   - Original properties with multiple domains (shown clearly in property tables)
+   - TwinShip classes only + used external properties
+   
+2. **Visualization Pipeline** (WebVOWL)
+   - Source: `complete-viz-clean-minimal.ttl`
+   - Virtual properties with single domains (eliminates blank union nodes)
+   - TwinShip + IDO classes only, no external parent relationships
+
+This separation ensures comprehensive documentation while maintaining a clean, navigable visualization.
 
 ## Setup
 
@@ -38,90 +54,121 @@ uv sync
 pip install -r requirements.txt
 ```
 
-```bash# Using uv (creates venv and installs deps automatically)
-uv sync
+## Quick Start: Website Generation
 
-# Or manually with traditional toolspython -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-## Quick Start: Documentation Generation
-
-The complete workflow for generating documentation from modular ontology sources:
+The complete workflow uses a **two-pipeline architecture** that generates documentation and visualization separately:
 
 ```bash
-# One-command documentation generation (uses twinship-core.ttl as source)
-./scripts/generate_docs.sh --verbose
-
-# Or step-by-step:
-# 1. Merge all imports into single file
-python scripts/merge_modules.py --auto --verbose model/twinship-core.ttl
-# Creates: model/twinship-core-complete.ttl
-
-# 2. Convert to visualization-friendly format
-python scripts/generate_viz_ontology.py --auto --verbose model/twinship-core-complete.ttl
-# Creates: model/twinship-core-complete-viz.ttl
-
-# 3. Generate HTML docs with LODE/Widoco
-# Use model/twinship-core-complete-viz.ttl as input
+# One command generates everything
+./scripts/generate_website.sh --verbose
 ```
 
-**Note**: `twinship-core.ttl` already aggregates everything via imports. The merge script resolves these imports into a single physical file for tools that don't support imports.
+### Two-Pipeline Architecture
 
-## Scripts
+The pipeline creates separate optimized ontologies for documentation and visualization:
+
+**Pipeline 1: Documentation (WIDOCO)**
+- Uses `complete-docs-viz.ttl` - TwinShip classes only, original properties with multiple domains
+- Shows comprehensive property tables without confusion from virtual properties
+
+**Pipeline 2: Visualization (WebVOWL)**  
+- Uses `complete-viz-clean-minimal.ttl` - TwinShip + IDO classes, virtual properties, no external parents
+- Clean graph without blank union nodes or external ontology clutter
+
+### Build Process
+
+The pipeline creates multiple intermediate files in `build/`:
+
+1. **complete.ttl** - All modules merged
+2. **complete-viz.ttl** - With virtual properties for clean visualization
+3. **complete-docs.ttl** - TwinShip classes only (no external ontologies)
+4. **complete-docs-viz.ttl** - Documentation-friendly (no virtual properties)
+5. **complete-viz-clean.ttl** - Visualization-friendly (virtual properties, TwinShip+IDO only)
+6. **complete-viz-clean-minimal.ttl** - Final WebVOWL source (no external parent relationships)
+
+**Note**: Virtual properties are created for properties with multiple domains to eliminate blank union nodes in WebVOWL (e.g., `partOf_viz1`, `partOf_viz2` instead of single `partOf` with union domain).
 
 ## Scripts Overview
 
 ### Production Scripts (Primary Workflow)
 
-These scripts form the main documentation generation pipeline:
+These scripts form the main website generation pipeline:
 
-- **`generate_website.sh`** - Complete website generation (WIDOCO + WebVOWL)
-- **`generate_docs.sh`** - Documentation generation (older, LODE/WIDOCO)
-- **`merge_modules.py`** - Merge modular ontology files
-- **`generate_viz_ontology.py`** - Convert restrictions to domain/range
-- **`generate_docs_ontology.py`** - Filter to TwinShip-only content
-- **`generate_widoco_docs.py`** - Generate WIDOCO documentation
-- **`setup_webvowl.py`** - Setup WebVOWL visualization
+- **`generate_website.sh`** - Master pipeline orchestrating the complete two-pipeline architecture
+- **`merge_modules.py`** - Merge modular ontology files into single complete file
+- **`generate_viz_ontology.py`** - Convert OWL restrictions to domain/range + create virtual properties
+- **`generate_docs_ontology.py`** - Filter to TwinShip-only content (remove external ontologies)
+- **`strip_for_webvowl.py`** - Remove external parent relationships for clean WebVOWL graph
+- **`generate_widoco_docs.py`** - Generate WIDOCO documentation with built-in OWL2VOWL
+- **`enhance_widoco_html.py`** - Post-process WIDOCO HTML to add SKOS and dcterms annotations
+- **`clean_webvowl_json.py`** - Post-process WebVOWL JSON to merge duplicate Literal nodes
+
+### Legacy Scripts
+
+- **`generate_docs.sh`** - Older documentation generation script (superseded by generate_website.sh)
+- **`setup_webvowl.py`** - Legacy WebVOWL setup (superseded by WIDOCO's built-in converter)
 
 ### Development/Debug Scripts
 
 These scripts were used during development and have been removed.
 
-### generate_docs.sh
+### generate_website.sh - Master Pipeline
 
-**Complete documentation generation pipeline** - orchestrates the entire process from modular sources to HTML documentation.
+**Complete two-pipeline website generation** - orchestrates documentation and visualization generation with optimized ontologies for each purpose.
 
 **What it does:**
-1. Merges all ontology modules into a single complete file
-2. Converts restrictions to domain/range for visualization
-3. Generates HTML documentation using LODE or Widoco
+
+**Stage 1: Build Artifacts**
+1. Merge all modules → `complete.ttl`
+2. Add domain/range + virtual properties → `complete-viz.ttl`
+3. Extract TwinShip entities → `complete-docs.ttl`
+4. Generate doc-friendly version → `complete-docs-viz.ttl` (no virtual properties)
+5. Clean viz ontology → `complete-viz-clean.ttl` (no external ontologies)
+6. Strip external parents → `complete-viz-clean-minimal.ttl` (final WebVOWL source)
+
+**Stage 2: Documentation Pipeline**
+7. Generate WIDOCO documentation from `complete-docs-viz.ttl`
+   - Shows original properties with multiple domains in property tables
+   - Includes only TwinShip classes and used external properties
+8. Enhance WIDOCO HTML with additional annotations
+   - Post-processes HTML to add `skos:notation`, `skos:altLabel`, and `dcterms:description`
+   - WIDOCO only displays a limited set of annotation properties by default
+   - **Note**: Enhancement only affects WIDOCO HTML documentation, not WebVOWL
+
+**Stage 3: Visualization Pipeline**
+9. Generate WebVOWL with WIDOCO from `complete-viz-clean-minimal.ttl`
+   - Uses virtual properties to eliminate blank union nodes
+   - Shows only TwinShip (33) + IDO (3) classes for clean graph
+10. Replace WIDOCO's embedded WebVOWL viewer with clean visualization
+
+**Stage 4: Landing Page**
+11. Create landing page linking to documentation and visualization
 
 **Requirements:**
-- Python 3.7+ with rdflib (for merge and viz scripts)
-- LODE (https://github.com/essepuntato/LODE) or Widoco (https://github.com/dgarijo/Widoco)
+- Python 3.9+ with rdflib (install: `uv sync`)
+- Java 11+ (for WIDOCO)
 
 **Usage:**
 
 ```bash
-# Basic usage (auto-detects tool)
-./scripts/generate_docs.sh
+# Full website generation
+./scripts/generate_website.sh --verbose
 
-# Specify tool explicitly
-./scripts/generate_docs.sh --tool widoco --verbose
+# Skip specific steps
+./scripts/generate_website.sh --skip-merge --skip-viz
 
 # Custom source and output
-./scripts/generate_docs.sh \
+./scripts/generate_website.sh \
     --source model/twinship-core.ttl \
-    --output docs/ontology \
+    --output docs/website \
     --verbose
 ```
 
 **Output:**
-- `model/twinship-core-complete.ttl` - Merged ontology
-- `model/twinship-core-complete-viz.ttl` - Visualization-friendly version
-- `docs/ontology/` - HTML documentation
+- `build/*.ttl` - All intermediate ontology files
+- `docs/website/index.html` - Landing page
+- `docs/website/documentation/` - WIDOCO-generated documentation
+- `docs/website/documentation/webvowl/` - Clean WebVOWL visualization
 
 
 ## Website Generation
@@ -150,93 +197,168 @@ The TwinShip ontology uses **industry-standard tools** for documentation and vis
 open docs/website/index.html
 
 # Or serve locally
-cd docs/website && python -m http.server 8000
+../serve_website.sh
 # Then open: http://localhost:8000
 ```
 
 ### Output Structure
 
 ```
+build/                                          # Intermediate ontology files
+├── twinship-core-complete.ttl                 # All modules merged
+├── twinship-core-complete-viz.ttl             # With virtual properties
+├── twinship-core-complete-docs.ttl            # TwinShip classes only
+├── twinship-core-complete-docs-viz.ttl        # For documentation (no virtual props)
+├── twinship-core-complete-viz-clean.ttl       # TwinShip+IDO only
+└── twinship-core-complete-viz-clean-minimal.ttl # Final WebVOWL source
+
 docs/website/
-├── index.html                    # Landing page
-├── documentation/                # WIDOCO-generated docs
-│   ├── index-en.html            # Main documentation
-│   ├── sections/                # Individual sections
-│   └── resources/               # CSS, diagrams, images
-└── visualization/                # WebVOWL setup
-    ├── index.html               # Instructions & viewer
-    └── ontology.json            # Graph data
+├── index.html                                  # Landing page
+└── documentation/                              # WIDOCO output
+    ├── index-en.html                          # Main documentation
+    ├── sections/                              # Documentation sections
+    ├── resources/                             # CSS, diagrams, images
+    └── webvowl/                               # Clean WebVOWL visualization
+        ├── index.html                         # WebVOWL viewer
+        └── data/ontology.json                 # Graph data (38 nodes)
 ```
 
-### Available Scripts
+## Individual Script Documentation
 
-#### generate_website.sh - Master Pipeline
+### generate_widoco_docs.py - WIDOCO Documentation Generator
 
-Orchestrates the complete website generation.
+Generates comprehensive HTML documentation using WIDOCO with built-in OWL2VOWL for WebVOWL visualization.
 
-**Options:**
-```bash
---source <file>      # Source ontology (default: model/twinship-core.ttl)
---output <dir>       # Output directory (default: docs/website)
---skip-merge         # Skip merge step
---skip-viz           # Skip viz conversion
---skip-widoco        # Skip WIDOCO documentation
---skip-webvowl       # Skip WebVOWL setup
---verbose            # Verbose output
-```
-
-**Example:**
-```bash
-./scripts/generate_website.sh --verbose
-```
-
-#### generate_widoco_docs.py - Documentation Generator
-
-Generates comprehensive HTML documentation using WIDOCO.
+**What it does:**
+- Generates complete HTML documentation with cross-references, diagrams, and metadata
+- Automatically generates WebVOWL visualization using WIDOCO's built-in OWL2VOWL converter
+- Creates embedded WebVOWL viewer in documentation
 
 **Requirements:**
 - Java 11+ (WIDOCO jar downloaded automatically on first run)
+- Python 3.9+ with rdflib
 
 **Usage:**
 ```bash
-# Basic usage
-python scripts/generate_widoco_docs.py model/twinship-core-complete-viz.ttl
+# Generate documentation (includes embedded WebVOWL)
+python scripts/generate_widoco_docs.py build/twinship-core-complete-docs-viz.ttl
 
-# Custom output
-python scripts/generate_widoco_docs.py -o docs/my-docs model/twinship-core-complete-viz.ttl
+# Custom output directory
+python scripts/generate_widoco_docs.py -o docs/custom-docs build/twinship-core-complete-viz-clean.ttl
 
-# Skip diagrams (faster)
-python scripts/generate_widoco_docs.py --no-diagram model/twinship-core-complete-viz.ttl
+# Skip diagrams for faster generation
+python scripts/generate_widoco_docs.py --no-diagram model.ttl
 ```
 
-#### setup_webvowl.py - Visualization Setup
+**Output:**
+- `documentation/index-en.html` - Main documentation
+- `documentation/webvowl/` - Embedded WebVOWL visualization
+- `documentation/sections/` - Individual documentation sections
 
-Prepares ontology for WebVOWL interactive visualization.
+### enhance_widoco_html.py - WIDOCO HTML Enhancer
+
+Post-processes WIDOCO-generated HTML to add additional annotation properties that WIDOCO doesn't display by default.
+
+**What it does:**
+- Adds `skos:notation` (e.g., IMO codes like "IMO0654") to property definitions
+- Adds `skos:altLabel` (alternative labels) to property definitions
+- Adds `dcterms:description` (detailed descriptions) to property definitions
+- WIDOCO only displays a limited set of annotations by default (rdfs:label, rdfs:comment, dcterms:source)
+- This enhancement makes metadata more visible in the HTML documentation
+
+**Important**: This only affects the WIDOCO HTML documentation, not the WebVOWL interactive visualization.
+
+**Requirements:**
+- Python 3.9+ with beautifulsoup4 and lxml
 
 **Usage:**
 ```bash
-# Prepare for online WebVOWL (easiest)
-python scripts/setup_webvowl.py model/twinship-core-complete-viz.ttl
+# Enhance WIDOCO HTML with additional annotations
+python scripts/enhance_widoco_html.py \
+    docs/website/documentation/index-en.html \
+    build/twinship-core-complete-docs-viz.ttl
 
-# Custom output
-python scripts/setup_webvowl.py -o docs/my-viz model/twinship-core-complete-viz.ttl
+# Specify output file (default: overwrites input)
+python scripts/enhance_widoco_html.py \
+    input.html \
+    ontology.ttl \
+    -o output.html
 ```
 
-**Viewing Options:**
-1. Upload `ontology.json` to http://vowl.visualdataweb.org/webvowl.html
-2. Serve locally: `cd docs/webvowl && python -m http.server 8000`
+**Output:**
+Enhanced HTML with additional annotation properties displayed in the "definedBy" section of each entity.
 
-### Complete Documentation
+### generate_viz_ontology.py - Visualization Ontology Generator
 
-See [docs/WEBSITE_GENERATION.md](../docs/WEBSITE_GENERATION.md) for:
-- Detailed tool comparison (WIDOCO vs LODE)
-- Customization options
-- Troubleshooting guide
-- Integration with CI/CD
+Converts OWL restrictions to explicit domain/range assertions and creates virtual properties to eliminate blank union nodes in WebVOWL.
 
-## Ontology Processing Scripts
+**What it does:**
+- Extracts domain/range from OWL restrictions (`owl:someValuesFrom`, `owl:allValuesFrom`)
+- Creates virtual properties with single domains for multi-domain properties
+- Optionally skips virtual property generation for documentation-friendly output
 
-### merge_modules.py
+**Usage:**
+```bash
+# Generate with virtual properties (for WebVOWL)
+python scripts/generate_viz_ontology.py --auto build/twinship-core-complete.ttl
+# Creates: build/twinship-core-complete-viz.ttl
+
+# Generate without virtual properties (for documentation)
+python scripts/generate_viz_ontology.py --no-virtual-properties --auto build/twinship-core-complete-docs.ttl
+# Creates: build/twinship-core-complete-docs-viz.ttl
+```
+
+### generate_docs_ontology.py - TwinShip Entity Extractor
+
+Filters ontology to include only TwinShip classes and used external properties, removing entire external ontologies.
+
+**What it does:**
+- Extracts only TwinShip namespace entities (`https://twin-ship.eu/twinship#`)
+- Includes used IDO classes (3 classes: InanimatePhysicalObject, Object, etc.)
+- Includes used external properties (directlyConnectedTo, connectedTo, partOf)
+- Removes owl:imports statements
+- Reduces from 600+ to 36 classes total
+
+**Usage:**
+```bash
+# Filter to TwinShip entities only
+python scripts/generate_docs_ontology.py -o build/clean.ttl build/complete.ttl
+```
+
+### strip_for_webvowl.py - External Parent Stripper
+
+Removes rdfs:subClassOf relationships pointing to external ontologies for cleaner WebVOWL visualization.
+
+**What it does:**
+- Removes parent class relationships to external ontologies (e.g., `rdfs:subClassOf ido:InanimatePhysicalObject`)
+- Keeps TwinShip internal class hierarchies intact
+- Results in a flatter, cleaner WebVOWL graph
+
+**Usage:**
+```bash
+# Strip external parent relationships
+python scripts/strip_for_webvowl.py input.ttl output.ttl
+```
+
+### clean_webvowl_json.py - WebVOWL JSON Post-processor
+
+Merges duplicate rdfs:Literal nodes in WebVOWL JSON generated by OWL2VOWL.
+
+**What it does:**
+- OWL2VOWL creates separate Literal nodes for each datatype property (causes 172 "classes")
+- Merges all duplicate Literal nodes into a single node
+- Updates property references to point to the merged node
+- Reduces node count from 172 to 38 (33 TwinShip + 3 IDO + 1 Literal + 1 owl:Thing)
+
+**Note:** Currently not integrated in the pipeline but available for manual post-processing if needed.
+
+**Usage:**
+```bash
+# Clean WebVOWL JSON
+python scripts/clean_webvowl_json.py input.json output.json
+```
+
+### merge_modules.py - Module Merger
 
 Merges a modular ontology (with owl:imports) into a single self-contained file by recursively resolving all imports.
 

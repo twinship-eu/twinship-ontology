@@ -39,7 +39,7 @@ java -version
 ### Generate Complete Website
 
 ```bash
-# Install dependencies
+# Install dependencies (or use ./setup.sh to install uv and dependencies)
 uv sync
 
 # Generate everything: documentation + visualization + landing page
@@ -49,7 +49,7 @@ uv sync
 open docs/website/index.html
 
 # Or serve locally
-cd docs/website && python -m http.server 8000
+./serve_website.sh
 # Then open: http://localhost:8000
 ```
 
