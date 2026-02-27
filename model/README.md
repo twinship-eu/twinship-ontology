@@ -60,7 +60,7 @@ build/                         # Auto-generated build artifacts (gitignored)
 1. **twinship-base.ttl** (166 lines) - **Foundation Layer**
    - Base classes: `TwinShipInanimatePhysicalObject`, `EnergySystem`
    - Base properties: `TwinShipDataProperties`, `twinshipObjectProperties`
-   - Object properties: `componentOf`, `hasComponent`, `ownedBy`, `associatedEntity`
+   - Object properties: `componentOf`, `hasComponent`, `ownedBy`
    - Organizational classes: `Organization`, `Fleet`, `Pms`
    - IDO extensions and annotations
    - **Import this + specific modules for modular development**

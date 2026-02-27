@@ -172,12 +172,6 @@ skos:altLabel a owl:AnnotationProperty ;
     rdfs:label "twinship object properties" ;
     rdfs:comment "Parent property for all TwinShip-specific object properties." .
 
-:associatedEntity a owl:ObjectProperty,
-        owl:SymmetricProperty ;
-    rdfs:label "associated entity" ;
-    rdfs:comment "Relates an entity to another associated entity." ;
-    rdfs:subPropertyOf :twinshipObjectProperties .
-
 :componentOf a owl:ObjectProperty ;
     rdfs:label "component of" ;
     rdfs:comment "Relates a component to the ship or system it is part of." ;
