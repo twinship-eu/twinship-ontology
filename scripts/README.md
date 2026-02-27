@@ -98,9 +98,10 @@ These scripts form the main website generation pipeline:
 - **`merge_modules.py`** - Merge modular ontology files into single complete file
 - **`generate_viz_ontology.py`** - Convert OWL restrictions to domain/range + create virtual properties
 - **`generate_docs_ontology.py`** - Filter to TwinShip-only content (remove external ontologies)
-- **`strip_for_webvowl.py`** - Remove external parent relationships for clean WebVOWL graph
+- **`strip_for_webvowl.py`** - Remove external parent relationships and preserve annotations for clean WebVOWL graph
 - **`generate_widoco_docs.py`** - Generate WIDOCO documentation with built-in OWL2VOWL
 - **`enhance_widoco_html.py`** - Post-process WIDOCO HTML to add SKOS and dcterms annotations
+- **`enhance_webvowl_json.py`** - Post-process WebVOWL JSON to add SKOS and dcterms annotations
 - **`clean_webvowl_json.py`** - Post-process WebVOWL JSON to merge duplicate Literal nodes
 
 ### Legacy Scripts
@@ -133,16 +134,20 @@ These scripts were used during development and have been removed.
 8. Enhance WIDOCO HTML with additional annotations
    - Post-processes HTML to add `skos:notation`, `skos:altLabel`, and `dcterms:description`
    - WIDOCO only displays a limited set of annotation properties by default
-   - **Note**: Enhancement only affects WIDOCO HTML documentation, not WebVOWL
 
 **Stage 3: Visualization Pipeline**
 9. Generate WebVOWL with WIDOCO from `complete-viz-clean-minimal.ttl`
    - Uses virtual properties to eliminate blank union nodes
    - Shows only TwinShip (33) + IDO (3) classes for clean graph
 10. Replace WIDOCO's embedded WebVOWL viewer with clean visualization
+11. Enhance WebVOWL JSON with annotations
+   - Post-processes WIDOCO-generated ontology.json to add custom annotations
+   - Preserves all WebVOWL structure (IDs, types, links)
+   - Adds `skos:notation`, `skos:altLabel`, `dcterms:description` to propertyAttribute objects
+   - Annotations appear in WebVOWL sidebar when clicking properties
 
 **Stage 4: Landing Page**
-11. Create landing page linking to documentation and visualization
+12. Create landing page linking to documentation and visualization
 
 **Requirements:**
 - Python 3.9+ with rdflib (install: `uv sync`)
@@ -287,6 +292,36 @@ python scripts/enhance_widoco_html.py \
 
 **Output:**
 Enhanced HTML with additional annotation properties displayed in the "definedBy" section of each entity.
+
+### enhance_webvowl_json.py - WebVOWL JSON Enhancer
+
+Post-processes WIDOCO-generated WebVOWL JSON to add SKOS and dcterms annotations without breaking the visualization structure.
+
+**What it does:**
+- Loads annotations from the ontology TTL file
+- Adds `annotations` field to propertyAttribute and classAttribute objects in WebVOWL JSON
+- Preserves all existing WebVOWL structure (IDs, types, domains, ranges, links)
+- Follows WebVOWL's annotation format: `{identifier, language, value, type}`
+- Minimal-change approach: only adds fields, never modifies existing data
+
+**Why this approach:**
+- WIDOCO's OWL2VOWL converter generates WebVOWL JSON but doesn't include custom annotations
+- Regenerating the entire JSON breaks subtle structural details WebVOWL expects
+- Post-processing preserves the working structure while adding missing data
+
+**Requirements:**
+- Python 3.9+ with rdflib
+
+**Usage:**
+```bash
+# Enhance WebVOWL JSON with annotations
+python scripts/enhance_webvowl_json.py \
+    build/twinship-core-complete-viz-clean-minimal.ttl \
+    docs/website/documentation/webvowl/data/ontology.json
+```
+
+**Output:**
+WebVOWL JSON with annotations that appear in the sidebar when users click on properties/classes in the interactive visualization.
 
 ### generate_viz_ontology.py - Visualization Ontology Generator
 

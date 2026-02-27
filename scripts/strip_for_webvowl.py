@@ -17,18 +17,27 @@ from pathlib import Path
 from rdflib import Graph, Namespace, RDF, RDFS, OWL, Literal, URIRef
 from rdflib.namespace import XSD
 
+# Define additional namespaces for annotations
+SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
+DCTERMS = Namespace("http://purl.org/dc/terms/")
+
 # Essential namespaces to keep
 ESSENTIAL_NAMESPACES = {
     'http://www.w3.org/2002/07/owl#',
     'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'http://www.w3.org/2000/01/rdf-schema#',
     'http://www.w3.org/2001/XMLSchema#',
+    'http://www.w3.org/2004/02/skos/core#',
+    'http://purl.org/dc/terms/',
 }
 
-# Annotation properties to keep (minimal set for WebVOWL)
+# Annotation properties to keep (for WebVOWL enhancement)
 KEEP_ANNOTATIONS = {
     RDFS.label,
     RDFS.comment,
+    SKOS.notation,
+    SKOS.altLabel,
+    DCTERMS.description,
 }
 
 

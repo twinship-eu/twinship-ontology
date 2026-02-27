@@ -257,6 +257,24 @@ if [ "$SKIP_WEBVOWL" = false ]; then
     else
         log "Skipping WIDOCO WebVOWL replacement (folders not found)"
     fi
+    
+    # Step 4.6: Enhance WebVOWL JSON with SKOS/dcterms annotations
+    step "Step 4.6: Enhancing WebVOWL with annotations"
+    
+    WEBVOWL_JSON="$OUTPUT_ABS/documentation/webvowl/data/ontology.json"
+    
+    if [ -f "$WEBVOWL_SOURCE" ] && [ -f "$WEBVOWL_JSON" ]; then
+        log "Running: uv run python scripts/enhance_webvowl_json.py $WEBVOWL_SOURCE $WEBVOWL_JSON"
+        
+        uv run python scripts/enhance_webvowl_json.py "$WEBVOWL_SOURCE" "$WEBVOWL_JSON" || {
+            error "Failed to enhance WebVOWL JSON with annotations"
+            exit 1
+        }
+        
+        success "WebVOWL enhanced with SKOS and dcterms annotations"
+    else
+        log "Skipping WebVOWL enhancement (files not found)"
+    fi
 else
     log "Skipping WebVOWL setup"
 fi
