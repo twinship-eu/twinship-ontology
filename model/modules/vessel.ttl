@@ -477,10 +477,10 @@
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
-            owl:onProperty :twAuxiliaryLoadShipServicesPowerInKW ;
+            owl:onProperty :twAUXLDShipServicesPowerInKW ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twAuxiliaryLoadHotelLoadPowerInKW ;
+            owl:onProperty :twAUXLDHotelLoadPowerInKW ;
             owl:someValuesFrom xsd:double ],
         :EnergySystem .
 
@@ -504,10 +504,10 @@
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
-            owl:onProperty :twShoreConnectionPowerMaxInKW ;
+            owl:onProperty :twOSPPowerInKWh ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twShoreConnectionTimeInHours ;
+            owl:onProperty :twOSPTimeInHours ;
             owl:someValuesFrom xsd:double ],
         :EnergySystem .
 
@@ -558,7 +558,7 @@
             owl:onProperty :twGeneratorVoltageInV ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twGeneratorFrequencyInHz ;
+            owl:onProperty :twGeneratorFrequency ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
             owl:onProperty :twElectricalEfficiencyPercentage ;
@@ -578,13 +578,13 @@
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
-            owl:onProperty :twFrequencyConverterPowerMaxInKW ;
+            owl:onProperty :twEMPowerInMWh ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twFrequencyConverterVoltageInV ;
+            owl:onProperty :twFCVoltageInVolts ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twFrequencyConverterFrequencyInHz ;
+            owl:onProperty :twFCFrequencyInHz ;
             owl:someValuesFrom xsd:double ],
         :EnergySystem .
 
@@ -601,10 +601,13 @@
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
-            owl:onProperty :twElectricMotorPowerMaxInKW ;
+            owl:onProperty :twEMPowerInMWh ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twElectricMotorSpeedInRevPerMin ;
+            owl:onProperty :twFCVoltageInVolts ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFCFrequencyInHz ;
             owl:someValuesFrom xsd:double ],
         :TwinShipInanimatePhysicalObject .
 
@@ -621,13 +624,10 @@
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
-            owl:onProperty :twShaftPowerMaxInKW ;
+            owl:onProperty :twEMSHSpeedInRevPerMin ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twShaftSpeedMaxInRevPerMin ;
-            owl:someValuesFrom xsd:double ],
-        [ a owl:Restriction ;
-            owl:onProperty :twShaftTorqueMaxInKnm ;
+            owl:onProperty :twEMSHTorqueInKN ;
             owl:someValuesFrom xsd:double ],
         :TwinShipInanimatePhysicalObject .
 
@@ -644,19 +644,16 @@
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
-            owl:onProperty :twBidirectionalConverterPowerMaxInKW ;
+            owl:onProperty :twDCBNominalVoltage ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twDCBNominalVoltageInV ;
+            owl:onProperty :twDCBMaxVoltage ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twDCBMaxVoltageInV ;
+            owl:onProperty :twDCBMinVoltage ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twDCBMinVoltageInV ;
-            owl:someValuesFrom xsd:double ],
-        [ a owl:Restriction ;
-            owl:onProperty :twDCBMaxCurrentInA ;
+            owl:onProperty :twDCBMaxCurrent ;
             owl:someValuesFrom xsd:double ],
         :EnergySystem .
 
@@ -682,9 +679,6 @@
             owl:onProperty :twESSCRate ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twESSPowerMaxInKW ;
-            owl:someValuesFrom xsd:double ],
-        [ a owl:Restriction ;
             owl:onProperty :twESSWeightInKg ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
@@ -706,7 +700,7 @@
             owl:onProperty :consume ;
             owl:someValuesFrom :Fuel ],
         [ a owl:Restriction ;
-            owl:onProperty :twFuelCellPowerMaxInKW ;
+            owl:onProperty :twAMMCELLPowerCapacityInKWh ;
             owl:someValuesFrom xsd:double ],
         :EnergySystem .
 
@@ -730,7 +724,7 @@
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
-            owl:onProperty :twSCRReductionEfficiencyPercentage ;
+            owl:onProperty :twSCRNOReductionEfficiency ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
             owl:onProperty :twSCRExhaustGasFlowrateInKgPerHr ;
@@ -739,7 +733,7 @@
             owl:onProperty :twSCRCatalystVolumeInM3 ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twSCROperatingTemperatureInDegC ;
+            owl:onProperty :twSCROpTempCentigrade ;
             owl:someValuesFrom xsd:double ],
         :EmissionReduction .
 
@@ -776,10 +770,10 @@
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
-            owl:onProperty :twGateRudderPowerMaxInKW ;
+            owl:onProperty :twGRSPowerInKW ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twGateRudderEfficiencyPercentage ;
+            owl:onProperty :twGRSPowerReductionEfficiencyPercentage ;
             owl:someValuesFrom xsd:double ],
         :Maneuvering .
 
@@ -801,10 +795,10 @@
     rdfs:label "Wind Assisted Propulsion System" ;
     rdfs:comment "Wind-assisted propulsion system (WASP) such as suction sails or rotor sails that harness wind energy to supplement vessel propulsion." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty :twWASPPowerMaxInKW ;
+            owl:onProperty :twWASPPowerInKW ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twWASPEfficiencyPercentage ;
+            owl:onProperty :twWASPPowerReductionEfficiencyPercentage ;
             owl:someValuesFrom xsd:double ],
         :EfficiencyEnhancementSystem .
 
@@ -812,10 +806,10 @@
     rdfs:label "Air Lubrication System" ;
     rdfs:comment "Reduces hull friction by creating a layer of air bubbles under the hull, improving fuel efficiency." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty :twALSPowerMaxInKW ;
+            owl:onProperty :twALSPowerInKW ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twALSEfficiencyPercentage ;
+            owl:onProperty :twALSPowerReductionEfficiencyPercentage ;
             owl:someValuesFrom xsd:double ],
         :EfficiencyEnhancementSystem .
 
@@ -823,10 +817,10 @@
     rdfs:label "Dynamic Wing" ;
     rdfs:comment "Active aerodynamic or hydrodynamic drag reduction device for improving vessel efficiency." ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty :twDynamicWingPowerMaxInKW ;
+            owl:onProperty :twDWPowerInKW ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
-            owl:onProperty :twDynamicWingEfficiencyPercentage ;
+            owl:onProperty :twDWPowerReductionEfficiencyPercentage ;
             owl:someValuesFrom xsd:double ],
         :EfficiencyEnhancementSystem .
 
@@ -1322,9 +1316,9 @@
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twGeneratorFrequencyInHz a owl:DatatypeProperty ;
-    rdfs:label "twinship generator frequency in Hz" ;
-    rdfs:comment "Generator output frequency in hertz. Value -1 indicates unknown." ;
+:twGeneratorFrequency a owl:DatatypeProperty ;
+    rdfs:label "twinship generator frequency" ;
+    rdfs:comment "Generator output frequency. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
@@ -1653,60 +1647,56 @@
 # #
 # #################################################################
 
-:twBidirectionalConverterPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship bidirectional converter power max in kW" ;
-    rdfs:comment "Maximum bidirectional converter power capacity in kilowatts. Value -1 indicates unknown." ;
+:twDCBNominalVoltage a owl:DatatypeProperty ;
+    rdfs:label "twinship DCB nominal voltage" ;
+    rdfs:comment "DC bus nominal voltage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDCBMaxVoltage a owl:DatatypeProperty ;
+    rdfs:label "twinship DCB max voltage" ;
+    rdfs:comment "DC bus maximum voltage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDCBMinVoltage a owl:DatatypeProperty ;
+    rdfs:label "twinship DCB min voltage" ;
+    rdfs:comment "DC bus minimum voltage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDCBMaxCurrent a owl:DatatypeProperty ;
+    rdfs:label "twinship DCB max current" ;
+    rdfs:comment "DC bus maximum current. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twEMPowerInMWh a owl:DatatypeProperty ;
+    rdfs:label "twinship EM power in MWh" ;
+    rdfs:comment "Electric motor power capacity in megawatt-hours. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twDCBNominalVoltageInV a owl:DatatypeProperty ;
-    rdfs:label "twinship DCB nominal voltage in V" ;
-    rdfs:comment "DC bus nominal voltage in volts. Value -1 indicates unknown." ;
-    rdfs:range xsd:double ;
-    rdfs:subPropertyOf :TwinShipDataProperties .
-
-:twDCBMaxVoltageInV a owl:DatatypeProperty ;
-    rdfs:label "twinship DCB max voltage in V" ;
-    rdfs:comment "DC bus maximum voltage in volts. Value -1 indicates unknown." ;
-    rdfs:range xsd:double ;
-    rdfs:subPropertyOf :TwinShipDataProperties .
-
-:twDCBMinVoltageInV a owl:DatatypeProperty ;
-    rdfs:label "twinship DCB min voltage in V" ;
-    rdfs:comment "DC bus minimum voltage in volts. Value -1 indicates unknown." ;
-    rdfs:range xsd:double ;
-    rdfs:subPropertyOf :TwinShipDataProperties .
-
-:twDCBMaxCurrentInA a owl:DatatypeProperty ;
-    rdfs:label "twinship DCB max current in A" ;
-    rdfs:comment "DC bus maximum current in amperes. Value -1 indicates unknown." ;
-    rdfs:range xsd:double ;
-    rdfs:subPropertyOf :TwinShipDataProperties .
-
-:twFrequencyConverterPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship frequency converter power max in kW" ;
-    rdfs:comment "Maximum frequency converter power output in kilowatts. Value -1 indicates unknown." ;
-    rdfs:subPropertyOf :twPowerMaxInKW .
-
-:twFrequencyConverterVoltageInV a owl:DatatypeProperty ;
-    rdfs:label "twinship frequency converter voltage in V" ;
+:twFCVoltageInVolts a owl:DatatypeProperty ;
+    rdfs:label "twinship FC voltage in volts" ;
     rdfs:comment "Frequency converter voltage in volts. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twFrequencyConverterFrequencyInHz a owl:DatatypeProperty ;
-    rdfs:label "twinship frequency converter frequency in Hz" ;
+:twFCFrequencyInHz a owl:DatatypeProperty ;
+    rdfs:label "twinship FC frequency in Hz" ;
     rdfs:comment "Frequency converter output frequency in hertz. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twElectricMotorPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship electric motor power max in kW" ;
-    rdfs:comment "Maximum electric motor power output in kilowatts. Value -1 indicates unknown." ;
-    rdfs:subPropertyOf :twPowerMaxInKW .
+:twEMSHSpeedInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship EMSH speed in rev per min" ;
+    rdfs:comment "Electric motor shaft rotational speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
 
-:twElectricMotorSpeedInRevPerMin a owl:DatatypeProperty ;
-    rdfs:label "twinship electric motor speed in rev per min" ;
-    rdfs:comment "Electric motor rotational speed in revolutions per minute. Value -1 indicates unknown." ;
+:twEMSHTorqueInKN a owl:DatatypeProperty ;
+    rdfs:label "twinship EMSH torque in kN" ;
+    rdfs:comment "Electric motor shaft torque in kilonewtons. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
@@ -1734,11 +1724,6 @@
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twESSPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship ESS power max in kW" ;
-    rdfs:comment "Maximum Energy Storage System power output in kilowatts. Value -1 indicates unknown." ;
-    rdfs:subPropertyOf :twPowerMaxInKW .
-
 :twESSWeightInKg a owl:DatatypeProperty ;
     rdfs:label "twinship ESS weight in kg" ;
     rdfs:comment "Energy Storage System total weight in kilograms. Value -1 indicates unknown." ;
@@ -1751,35 +1736,35 @@
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twShoreConnectionPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship shore connection power max in kW" ;
-    rdfs:comment "Maximum shore connection power capacity in kilowatts. Value -1 indicates unknown." ;
+:twOSPPowerInKWh a owl:DatatypeProperty ;
+    rdfs:label "twinship OSP power in KWh" ;
+    rdfs:comment "On Shore Power capacity in kilowatt-hours. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twShoreConnectionTimeInHours a owl:DatatypeProperty ;
-    rdfs:label "twinship shore connection time in hours" ;
-    rdfs:comment "Shore connection time in hours. Value -1 indicates unknown." ;
+:twOSPTimeInHours a owl:DatatypeProperty ;
+    rdfs:label "twinship OSP time in hours" ;
+    rdfs:comment "On Shore Power connection time in hours. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twFuelCellPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship fuel cell power max in kW" ;
-    rdfs:comment "Maximum fuel cell power output in kilowatts. Value -1 indicates unknown." ;
+:twAMMCELLPowerCapacityInKWh a owl:DatatypeProperty ;
+    rdfs:label "twinship AMMCELL power capacity in KWh" ;
+    rdfs:comment "Ammonia fuel cell power capacity in kilowatt-hours. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twAuxiliaryLoadShipServicesPowerInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship auxiliary load ship services power in kW" ;
+:twAUXLDShipServicesPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship AUXLD ship services power in kW" ;
     rdfs:comment "Auxiliary load ship services power demand in kilowatts. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twAuxiliaryLoadHotelLoadPowerInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship auxiliary load hotel load power in kW" ;
+:twAUXLDHotelLoadPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship AUXLD hotel load power in kW" ;
     rdfs:comment "Auxiliary load hotel load power demand in kilowatts. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twSCRReductionEfficiencyPercentage a owl:DatatypeProperty ;
-    rdfs:label "twinship SCR reduction efficiency percentage" ;
-    rdfs:comment "SCR NOx reduction efficiency as a percentage. Value -1 indicates unknown." ;
+:twSCRNOReductionEfficiency a owl:DatatypeProperty ;
+    rdfs:label "twinship SCR NO reduction efficiency" ;
+    rdfs:comment "SCR NOx reduction efficiency. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
@@ -1795,53 +1780,53 @@
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twSCROperatingTemperatureInDegC a owl:DatatypeProperty ;
-    rdfs:label "twinship SCR operating temperature in degrees C" ;
-    rdfs:comment "SCR operating temperature in degrees Celsius. Value -1 indicates unknown." ;
+:twSCROpTempCentigrade a owl:DatatypeProperty ;
+    rdfs:label "twinship SCR op temp centigrade" ;
+    rdfs:comment "SCR operating temperature in degrees centigrade. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twGateRudderPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship gate rudder power max in kW" ;
-    rdfs:comment "Maximum gate rudder power in kilowatts. Value -1 indicates unknown." ;
+:twGRSPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship GRS power in kW" ;
+    rdfs:comment "Gate Rudder System power in kilowatts. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twGateRudderEfficiencyPercentage a owl:DatatypeProperty ;
-    rdfs:label "twinship gate rudder efficiency percentage" ;
-    rdfs:comment "Gate rudder efficiency as a percentage. Value -1 indicates unknown." ;
+:twGRSPowerReductionEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship GRS power reduction efficiency percentage" ;
+    rdfs:comment "Gate Rudder System power reduction efficiency as a percentage. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twWASPPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship WASP power max in kW" ;
-    rdfs:comment "Maximum Wind Assisted Propulsion System power in kilowatts. Value -1 indicates unknown." ;
+:twWASPPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship WASP power in kW" ;
+    rdfs:comment "Wind Assisted Propulsion System power in kilowatts. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twWASPEfficiencyPercentage a owl:DatatypeProperty ;
-    rdfs:label "twinship WASP efficiency percentage" ;
-    rdfs:comment "Wind Assisted Propulsion System efficiency as a percentage. Value -1 indicates unknown." ;
+:twWASPPowerReductionEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship WASP power reduction efficiency percentage" ;
+    rdfs:comment "Wind Assisted Propulsion System power reduction efficiency as a percentage. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twALSPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship ALS power max in kW" ;
-    rdfs:comment "Maximum Air Lubrication System power in kilowatts. Value -1 indicates unknown." ;
+:twALSPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship ALS power in kW" ;
+    rdfs:comment "Air Lubrication System power in kilowatts. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twALSEfficiencyPercentage a owl:DatatypeProperty ;
-    rdfs:label "twinship ALS efficiency percentage" ;
-    rdfs:comment "Air Lubrication System efficiency as a percentage. Value -1 indicates unknown." ;
+:twALSPowerReductionEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship ALS power reduction efficiency percentage" ;
+    rdfs:comment "Air Lubrication System power reduction efficiency as a percentage. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twDynamicWingPowerMaxInKW a owl:DatatypeProperty ;
-    rdfs:label "twinship dynamic wing power max in kW" ;
-    rdfs:comment "Maximum Dynamic Wing power in kilowatts. Value -1 indicates unknown." ;
+:twDWPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship DW power in kW" ;
+    rdfs:comment "Dynamic Wing power in kilowatts. Value -1 indicates unknown." ;
     rdfs:subPropertyOf :twPowerMaxInKW .
 
-:twDynamicWingEfficiencyPercentage a owl:DatatypeProperty ;
-    rdfs:label "twinship dynamic wing efficiency percentage" ;
-    rdfs:comment "Dynamic Wing efficiency as a percentage. Value -1 indicates unknown." ;
+:twDWPowerReductionEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship DW power reduction efficiency percentage" ;
+    rdfs:comment "Dynamic Wing power reduction efficiency as a percentage. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
