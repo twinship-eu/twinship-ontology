@@ -92,13 +92,11 @@ def extract_domain_range_from_restrictions(graph):
     Also identifies external properties and classes that are used with TwinShip classes.
     
     Returns:
-        domains: set of (property, domain_class) tuples
-        ranges: set of (property, range_class) tuples
+        domain_range_pairs: set of (property, domain_class, range_class) tuples
         used_external_properties: set of external property URIs used in TwinShip
         used_external_classes: set of external class URIs used in TwinShip
     """
-    domains = set()
-    ranges = set()
+    domain_range_pairs = set()
     used_external_properties = set()
     used_external_classes = set()
     
@@ -127,23 +125,21 @@ def extract_domain_range_from_restrictions(graph):
                                 if prop_str.startswith(IDO_NAMESPACE):
                                     used_external_properties.add(prop)
                         
-                        domains.add((prop, cls))
-                        
-                        # Also extract range from someValuesFrom or allValuesFrom
+                        # Extract range from someValuesFrom or allValuesFrom
                         range_class = graph.value(parent, OWL.someValuesFrom)
                         if not range_class:
                             range_class = graph.value(parent, OWL.allValuesFrom)
                         
-                        # Track all ranges including XSD datatypes
+                        # Store domain-range pair together (preserve the pairing from restriction)
                         if range_class and isinstance(range_class, URIRef):
                             range_str = str(range_class)
-                            ranges.add((prop, range_class))
+                            domain_range_pairs.add((prop, cls, range_class))
                             # Track external classes (non-XSD)
                             if not range_str.startswith('http://www.w3.org/2001/XMLSchema#'):
                                 if range_str.startswith(IDO_NAMESPACE):
                                     used_external_classes.add(range_class)
     
-    return domains, ranges, used_external_properties, used_external_classes
+    return domain_range_pairs, used_external_properties, used_external_classes
 
 
 def extract_union_classes(graph, union_node):
@@ -190,11 +186,10 @@ def create_visualization_graph(source_graph, create_virtual_properties=True):
         viz_graph.bind(prefix, namespace)
     
     # First pass: extract domain/range from restrictions to identify used external entities
-    domains, ranges, used_external_properties, used_external_classes = extract_domain_range_from_restrictions(source_graph)
+    domain_range_pairs, used_external_properties, used_external_classes = extract_domain_range_from_restrictions(source_graph)
     
-    # Track which properties have which domains/ranges (don't add to graph yet)
-    property_domains = {}  # prop -> set of domain classes
-    property_ranges = {}   # prop -> set of range classes
+    # Track which properties have which domain-range pairs (don't add to graph yet)
+    property_pairs = {}  # prop -> set of (domain, range) tuples
     
     # 1. Copy property definitions (DataProperty and ObjectProperty) - with filtering
     # Collect domain/range info but don't add to graph yet (to handle duplicates later)
@@ -204,11 +199,13 @@ def create_visualization_graph(source_graph, create_virtual_properties=True):
             if not should_include_entity(prop, is_property=True, used_external_properties=used_external_properties):
                 continue
             
-            # Initialize sets for this property
-            if prop not in property_domains:
-                property_domains[prop] = set()
-            if prop not in property_ranges:
-                property_ranges[prop] = set()
+            # Initialize set for this property
+            if prop not in property_pairs:
+                property_pairs[prop] = set()
+            
+            # Collect separate domains and ranges from property definition
+            prop_domains = set()
+            prop_ranges = set()
             
             # Copy property type and metadata (but NOT domain/range yet)
             for pred, obj in source_graph.predicate_objects(prop):
@@ -218,55 +215,53 @@ def create_visualization_graph(source_graph, create_virtual_properties=True):
                         union_classes = extract_union_classes(source_graph, obj)
                         for cls in union_classes:
                             if should_include_entity(cls, used_external_classes=used_external_classes):
-                                property_domains[prop].add(cls)
+                                prop_domains.add(cls)
                     else:
                         if should_include_entity(obj, used_external_classes=used_external_classes):
-                            property_domains[prop].add(obj)
+                            prop_domains.add(obj)
                 elif pred == RDFS.range:
                     # Track range (don't add to viz_graph yet)
                     if isinstance(obj, BNode):
                         union_classes = extract_union_classes(source_graph, obj)
                         for cls in union_classes:
                             if should_include_entity(cls, used_external_classes=used_external_classes):
-                                property_ranges[prop].add(cls)
+                                prop_ranges.add(cls)
                     else:
                         if should_include_entity(obj, used_external_classes=used_external_classes):
-                            property_ranges[prop].add(obj)
+                            prop_ranges.add(obj)
                 else:
                     # Copy other properties (type, labels, comments, etc.)
                     viz_graph.add((prop, pred, obj))
+            
+            # If property has both domains and ranges defined, pair them
+            # Use index-based pairing (safest approach for ambiguous cases)
+            if prop_domains and prop_ranges:
+                domains_list = sorted(list(prop_domains), key=str)
+                ranges_list = sorted(list(prop_ranges), key=str)
+                # Pair by index, repeat last range if more domains than ranges
+                for i, domain in enumerate(domains_list):
+                    range_idx = min(i, len(ranges_list) - 1)
+                    property_pairs[prop].add((domain, ranges_list[range_idx]))
     
-    # Add domain/range from restrictions to the tracking sets
-    for prop, cls in domains:
+    # Add domain/range pairs from restrictions (these preserve the correct pairing)
+    for prop, domain, range_class in domain_range_pairs:
         if not should_include_entity(prop, is_property=True, used_external_properties=used_external_properties):
             continue
-        if not should_include_entity(cls, used_external_classes=used_external_classes):
+        if not should_include_entity(domain, used_external_classes=used_external_classes):
+            continue
+        if not should_include_entity(range_class, used_external_classes=used_external_classes):
             continue
         
-        if prop not in property_domains:
-            property_domains[prop] = set()
-        property_domains[prop].add(cls)
+        if prop not in property_pairs:
+            property_pairs[prop] = set()
+        property_pairs[prop].add((domain, range_class))
     
-    for prop, cls in ranges:
-        if not should_include_entity(prop, is_property=True, used_external_properties=used_external_properties):
-            continue
-        if not should_include_entity(cls, used_external_classes=used_external_classes):
-            continue
-        
-        if prop not in property_ranges:
-            property_ranges[prop] = set()
-        property_ranges[prop].add(cls)
-    
-    # 2. Handle properties with multiple domains
+    # 2. Handle properties with multiple domain-range pairs
     # If create_virtual_properties=True: create virtual duplicates to avoid blank union nodes in WebVOWL
-    # If create_virtual_properties=False: add all domains directly (for documentation)
+    # If create_virtual_properties=False: add all domains/ranges directly (for documentation)
     
-    # Get all properties from both domains and ranges
-    all_properties = set(property_domains.keys()) | set(property_ranges.keys())
-    
-    for prop in all_properties:
-        domains_list = list(property_domains.get(prop, set()))
-        ranges_list = list(property_ranges.get(prop, set()))
+    for prop, pairs in property_pairs.items():
+        pairs_list = sorted(list(pairs), key=lambda p: (str(p[0]), str(p[1])))
         
         # Get property metadata
         prop_label = viz_graph.value(prop, RDFS.label) or source_graph.value(prop, RDFS.label)
@@ -275,28 +270,29 @@ def create_visualization_graph(source_graph, create_virtual_properties=True):
         if prop_type not in [OWL.ObjectProperty, OWL.DatatypeProperty]:
             prop_type = OWL.ObjectProperty
         
-        if len(domains_list) <= 1:
-            # Single or no domain - add normally to the original property
+        if len(pairs_list) == 0:
+            # No pairs - add property with type only
+            if not (prop, RDF.type, prop_type) in viz_graph:
+                viz_graph.add((prop, RDF.type, prop_type))
+        elif len(pairs_list) == 1:
+            # Single pair - add normally to the original property
+            domain, range_class = pairs_list[0]
+            
             # Ensure property has type in viz_graph
             if not (prop, RDF.type, prop_type) in viz_graph:
                 viz_graph.add((prop, RDF.type, prop_type))
             
-            if domains_list:
-                viz_graph.add((prop, RDFS.domain, domains_list[0]))
-            if ranges_list:
-                viz_graph.add((prop, RDFS.range, ranges_list[0]))
+            viz_graph.add((prop, RDFS.domain, domain))
+            viz_graph.add((prop, RDFS.range, range_class))
         elif create_virtual_properties:
-            # Multiple domains - create ONLY virtual duplicates for each (for WebVOWL)
+            # Multiple pairs - create ONLY virtual duplicates for each (for WebVOWL)
             # Remove the base property from viz_graph (it's already there from step 1)
             viz_graph.remove((prop, RDF.type, prop_type))
             # Remove any other metadata of base property
             for pred, obj in list(viz_graph.predicate_objects(prop)):
                 viz_graph.remove((prop, pred, obj))
             
-            # Use single range (first one) for all virtual properties
-            prop_range = ranges_list[0] if ranges_list else None
-            
-            for idx, domain in enumerate(domains_list):
+            for idx, (domain, range_class) in enumerate(pairs_list):
                 # Create virtual property URI in TwinShip namespace
                 # Extract local name from property (works for both # and / URIs)
                 prop_str = str(prop)
@@ -317,27 +313,24 @@ def create_visualization_graph(source_graph, create_virtual_properties=True):
                 if prop_comment:
                     viz_graph.add((virtual_prop, RDFS.comment, prop_comment))
                 
-                # Add single domain and range
+                # Add paired domain and range
                 viz_graph.add((virtual_prop, RDFS.domain, domain))
-                if prop_range:
-                    viz_graph.add((virtual_prop, RDFS.range, prop_range))
+                viz_graph.add((virtual_prop, RDFS.range, range_class))
                 
                 # Copy other property assertions from original  
                 for pred in [RDFS.subPropertyOf, RDFS.seeAlso, RDFS.isDefinedBy]:
-                    if (prop, pred, URIRef) in source_graph:
-                        for obj in source_graph.objects(prop, pred):
+                    for obj in source_graph.objects(prop, pred):
+                        if isinstance(obj, URIRef):
                             viz_graph.add((virtual_prop, pred, obj))
         else:
-            # Multiple domains - add all directly to original property (for WIDOCO)
+            # Multiple pairs - add all directly to original property (for WIDOCO)
             # Ensure property has type in viz_graph
             if not (prop, RDF.type, prop_type) in viz_graph:
                 viz_graph.add((prop, RDF.type, prop_type))
             
-            for domain in domains_list:
+            for domain, range_class in pairs_list:
                 viz_graph.add((prop, RDFS.domain, domain))
-            # Add single range (or first one if multiple)
-            if ranges_list:
-                viz_graph.add((prop, RDFS.range, ranges_list[0]))
+                viz_graph.add((prop, RDFS.range, range_class))
     
     # 3. Copy class definitions (without blank node restrictions) - with filtering
     for cls in source_graph.subjects(RDF.type, OWL.Class):
