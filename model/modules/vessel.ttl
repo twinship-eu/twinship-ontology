@@ -438,6 +438,394 @@
 
 # #################################################################
 # #
+# #    Classes - Diesel-Electric Configuration & Current Types
+# #
+# #################################################################
+
+:DieselElectricConfiguration a owl:Class ;
+    rdfs:label "Diesel-Electric Configuration" ;
+    rdfs:comment "Classifies a diesel-electric propulsion configuration where engines drive generators to produce electricity, which then powers electric motors for propulsion. Counterpart to MechanicalConfiguration for conventional direct-drive or geared propulsion." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:AC a owl:Class ;
+    rdfs:label "Alternating Current" ;
+    rdfs:comment "Classifies an electrical system or component as using alternating current (AC)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:DC a owl:Class ;
+    rdfs:label "Direct Current" ;
+    rdfs:comment "Classifies an electrical system or component as using direct current (DC)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:ESD a owl:Class ;
+    rdfs:label "Energy Storage Device" ;
+    rdfs:comment "Classifies a component as an energy storage device, capable of storing and releasing electrical energy." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:EmissionReduction a owl:Class ;
+    rdfs:label "Emission Reduction" ;
+    rdfs:comment "Classifies a component as an emissions reduction system (e.g., SCR, scrubbers, carbon capture)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:AUXLOAD a owl:Class ;
+    rdfs:label "Auxiliary Load" ;
+    rdfs:comment "Auxiliary electrical loads including ship services and hotel load. Represents the non-propulsion electrical demand on the power management system." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twAUXLDShipServicesPowerInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twAUXLDHotelLoadPowerInKW ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+:ShipServices a owl:Class ;
+    rdfs:label "Ship Services" ;
+    rdfs:comment "Classifies a load as ship services (navigation, machinery support, safety systems, etc.)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:HotelLoad a owl:Class ;
+    rdfs:label "Hotel Load" ;
+    rdfs:comment "Classifies a load as hotel load (HVAC, lighting, galley, passenger comfort systems, etc.)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:OSP a owl:Class ;
+    rdfs:label "On Shore Power" ;
+    rdfs:comment "Shore power connection for zero-emission port operations. Allows a vessel to receive electrical power from the shore grid." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twOSPPowerInKWh ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twOSPTimeInHours ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+:Bow a owl:Class ;
+    rdfs:label "Bow" ;
+    rdfs:comment "Classifies a thruster or maneuvering device as bow-mounted." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:SuctionSail a owl:Class ;
+    rdfs:label "Suction Sail" ;
+    rdfs:comment "Classifies a wind-assisted propulsion system as a suction sail (Flettner rotor or similar technology)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+# #################################################################
+# #
+# #    Classes - Diesel-Electric Propulsion Systems
+# #
+# #################################################################
+
+:GenSetSystem a owl:Class ;
+    rdfs:label "Generator Set System" ;
+    rdfs:comment "An integrated engine and generator unit that produces electrical power. The diesel-electric equivalent of MainEngineSystem — its primary purpose is electrical energy production rather than mechanical propulsion. Subclass of EngineSystem because it is physically a diesel engine that consumes fuel and has combustion/shaft properties." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftTorqueMaxInKnm ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftSpeedMaxInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShaftPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDieselEnginePowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDieselEngineSpeedInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGeneratorPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGeneratorSpeedInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGeneratorVoltageInV ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGeneratorFrequency ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twElectricalEfficiencyPercentage ;
+            owl:someValuesFrom xsd:double ],
+        :EngineSystem .
+
+:FrequencyConverterSystem a owl:Class ;
+    rdfs:label "Frequency Converter System" ;
+    rdfs:comment "Converts DC/AC electrical power to the frequency needed by electric motors in a diesel-electric propulsion system." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :ElectricMotorSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twEMPowerInMWh ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFCVoltageInVolts ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFCFrequencyInHz ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+:ElectricMotorSystem a owl:Class ;
+    rdfs:label "Electric Motor System" ;
+    rdfs:comment "AC electric motor that drives a propeller via a shaft. The diesel-electric equivalent of MainEngineSystem in the propulsion chain." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :ElectricMotorShaft ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :FrequencyConverterSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twEMPowerInMWh ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFCVoltageInVolts ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFCFrequencyInHz ;
+            owl:someValuesFrom xsd:double ],
+        :TwinShipInanimatePhysicalObject .
+
+:ElectricMotorShaft a owl:Class ;
+    rdfs:label "Electric Motor Shaft" ;
+    rdfs:comment "The propulsion shaft connecting an electric motor to a propeller. Carries shaft speed and torque properties." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :ElectricMotorSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:directlyConnectedTo ;
+            owl:someValuesFrom :PropellerSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twEMSHSpeedInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twEMSHTorqueInKN ;
+            owl:someValuesFrom xsd:double ],
+        :TwinShipInanimatePhysicalObject .
+
+:BidirectionalConverterSystem a owl:Class ;
+    rdfs:label "Bidirectional Converter System" ;
+    rdfs:comment "DC bus bidirectional converter that converts between AC and DC power, enabling charging and discharging of energy storage systems through the main switchboard." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :EnergyStorageSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDCBNominalVoltage ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDCBMaxVoltage ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDCBMinVoltage ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDCBMaxCurrent ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+:EnergyStorageSystem a owl:Class ;
+    rdfs:label "Energy Storage System" ;
+    rdfs:comment "Battery or hybrid energy storage providing peak power, backup, and load balancing for diesel-electric vessels. Connected to the main switchboard via a bidirectional converter." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :BidirectionalConverterSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twESSCapacityInMWh ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twESSDepthOfDischargePercentage ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twESSCycleLife ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twESSCRate ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twESSWeightInKg ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twESSVolumeInM3 ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+
+:FuelCellSystem a owl:Class ;
+    rdfs:label "Fuel Cell System" ;
+    rdfs:comment "Fuel cell system for supplementary or backup power generation. Converts chemical energy from fuel (e.g., ammonia, hydrogen) directly into electrical energy." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :consume ;
+            owl:someValuesFrom :Fuel ],
+        [ a owl:Restriction ;
+            owl:onProperty :twAMMCELLPowerCapacityInKWh ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+
+# #################################################################
+# #
+# #    Classes - Emissions Control Systems
+# #
+# #################################################################
+
+:SCR a owl:Class ;
+    rdfs:label "Selective Catalytic Reduction" ;
+    rdfs:comment "Selective Catalytic Reduction (SCR) system for NOx emissions reduction using a catalytic process." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :GenSetSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twSCRNOReductionEfficiency ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twSCRExhaustGasFlowrateInKgPerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twSCRCatalystVolumeInM3 ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twSCROpTempCentigrade ;
+            owl:someValuesFrom xsd:double ],
+        :EmissionReduction .
+
+# #################################################################
+# #
+# #    Classes - Maneuvering Systems
+# #
+# #################################################################
+
+:BowThruster a owl:Class ;
+    rdfs:label "Bow Thruster" ;
+    rdfs:comment "A dedicated bow thruster for vessel maneuvering. Uses existing bow thruster datatype properties." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBowThrusterPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twBowThrusterSpeedMaxInRevPerMin ;
+            owl:someValuesFrom xsd:double ],
+        :Maneuvering .
+
+:GateRudder a owl:Class ;
+    rdfs:label "Gate Rudder" ;
+    rdfs:comment "A combined rudder and propulsion enhancement device. Unlike traditional rudders, gate rudders provide both steering and thrust augmentation." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGRSPowerInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twGRSPowerReductionEfficiencyPercentage ;
+            owl:someValuesFrom xsd:double ],
+        :Maneuvering .
+
+# #################################################################
+# #
+# #    Classes - Green Energy and Efficiency Systems
+# #
+# #################################################################
+
+:EfficiencyEnhancementSystem a owl:Class ;
+    rdfs:label "Efficiency Enhancement System" ;
+    rdfs:comment "Base class for systems that improve vessel efficiency without generating primary propulsion power. Includes wind-assisted propulsion, air lubrication, and aerodynamic/hydrodynamic devices." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        :TwinShipInanimatePhysicalObject .
+
+:WindAssistedPropulsionSystem a owl:Class ;
+    rdfs:label "Wind Assisted Propulsion System" ;
+    rdfs:comment "Wind-assisted propulsion system (WASP) such as suction sails or rotor sails that harness wind energy to supplement vessel propulsion." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twWASPPowerInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twWASPPowerReductionEfficiencyPercentage ;
+            owl:someValuesFrom xsd:double ],
+        :EfficiencyEnhancementSystem .
+
+:AirLubricationSystem a owl:Class ;
+    rdfs:label "Air Lubrication System" ;
+    rdfs:comment "Reduces hull friction by creating a layer of air bubbles under the hull, improving fuel efficiency." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twALSPowerInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twALSPowerReductionEfficiencyPercentage ;
+            owl:someValuesFrom xsd:double ],
+        :EfficiencyEnhancementSystem .
+
+:DynamicWing a owl:Class ;
+    rdfs:label "Dynamic Wing" ;
+    rdfs:comment "Active aerodynamic or hydrodynamic drag reduction device for improving vessel efficiency." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twDWPowerInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twDWPowerReductionEfficiencyPercentage ;
+            owl:someValuesFrom xsd:double ],
+        :EfficiencyEnhancementSystem .
+
+# #################################################################
+# #
 # #    Object Properties
 # #
 # #################################################################
@@ -922,6 +1310,24 @@
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
+:twGeneratorVoltageInV a owl:DatatypeProperty ;
+    rdfs:label "twinship generator voltage in V" ;
+    rdfs:comment "Generator output voltage in volts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twGeneratorFrequency a owl:DatatypeProperty ;
+    rdfs:label "twinship generator frequency" ;
+    rdfs:comment "Generator output frequency. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twElectricalEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship electrical efficiency percentage" ;
+    rdfs:comment "Electrical efficiency as a percentage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
 :twInletAirPressureMaxInHPa a owl:DatatypeProperty ;
     rdfs:label "twinship inlet air pressure max in hPa" ;
     rdfs:comment "Maximum inlet air pressure in hectopascals. Value -1 indicates unknown." ;
@@ -1234,3 +1640,208 @@
     rdfs:comment "Maximum torque in kilonewton-metres. Value -1 indicates unknown." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
+# #    Data Properties - Diesel-Electric and Green Energy Systems
+# #
+# #################################################################
+
+:twDCBNominalVoltage a owl:DatatypeProperty ;
+    rdfs:label "twinship DCB nominal voltage" ;
+    rdfs:comment "DC bus nominal voltage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDCBMaxVoltage a owl:DatatypeProperty ;
+    rdfs:label "twinship DCB max voltage" ;
+    rdfs:comment "DC bus maximum voltage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDCBMinVoltage a owl:DatatypeProperty ;
+    rdfs:label "twinship DCB min voltage" ;
+    rdfs:comment "DC bus minimum voltage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDCBMaxCurrent a owl:DatatypeProperty ;
+    rdfs:label "twinship DCB max current" ;
+    rdfs:comment "DC bus maximum current. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twEMPowerInMWh a owl:DatatypeProperty ;
+    rdfs:label "twinship EM power in MWh" ;
+    rdfs:comment "Electric motor power capacity in megawatt-hours. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twFCVoltageInVolts a owl:DatatypeProperty ;
+    rdfs:label "twinship FC voltage in volts" ;
+    rdfs:comment "Frequency converter voltage in volts. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFCFrequencyInHz a owl:DatatypeProperty ;
+    rdfs:label "twinship FC frequency in Hz" ;
+    rdfs:comment "Frequency converter output frequency in hertz. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twEMSHSpeedInRevPerMin a owl:DatatypeProperty ;
+    rdfs:label "twinship EMSH speed in rev per min" ;
+    rdfs:comment "Electric motor shaft rotational speed in revolutions per minute. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :twSpeedMaxInRevPerMin .
+
+:twEMSHTorqueInKN a owl:DatatypeProperty ;
+    rdfs:label "twinship EMSH torque in kN" ;
+    rdfs:comment "Electric motor shaft torque in kilonewtons. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twESSCapacityInMWh a owl:DatatypeProperty ;
+    rdfs:label "twinship ESS capacity in MWh" ;
+    rdfs:comment "Energy Storage System total capacity in megawatt-hours. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twESSDepthOfDischargePercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship ESS depth of discharge percentage" ;
+    rdfs:comment "Energy Storage System maximum depth of discharge as a percentage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twESSCycleLife a owl:DatatypeProperty ;
+    rdfs:label "twinship ESS cycle life" ;
+    rdfs:comment "Energy Storage System rated cycle life (number of charge/discharge cycles). Value -1 indicates unknown." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twESSCRate a owl:DatatypeProperty ;
+    rdfs:label "twinship ESS C-rate" ;
+    rdfs:comment "Energy Storage System C-rate (charge/discharge rate relative to capacity). Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twESSWeightInKg a owl:DatatypeProperty ;
+    rdfs:label "twinship ESS weight in kg" ;
+    rdfs:comment "Energy Storage System total weight in kilograms. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twESSVolumeInM3 a owl:DatatypeProperty ;
+    rdfs:label "twinship ESS volume in m3" ;
+    rdfs:comment "Energy Storage System total volume in cubic metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twOSPPowerInKWh a owl:DatatypeProperty ;
+    rdfs:label "twinship OSP power in KWh" ;
+    rdfs:comment "On Shore Power capacity in kilowatt-hours. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twOSPTimeInHours a owl:DatatypeProperty ;
+    rdfs:label "twinship OSP time in hours" ;
+    rdfs:comment "On Shore Power connection time in hours. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twAMMCELLPowerCapacityInKWh a owl:DatatypeProperty ;
+    rdfs:label "twinship AMMCELL power capacity in KWh" ;
+    rdfs:comment "Ammonia fuel cell power capacity in kilowatt-hours. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twAUXLDShipServicesPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship AUXLD ship services power in kW" ;
+    rdfs:comment "Auxiliary load ship services power demand in kilowatts. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twAUXLDHotelLoadPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship AUXLD hotel load power in kW" ;
+    rdfs:comment "Auxiliary load hotel load power demand in kilowatts. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twSCRNOReductionEfficiency a owl:DatatypeProperty ;
+    rdfs:label "twinship SCR NO reduction efficiency" ;
+    rdfs:comment "SCR NOx reduction efficiency. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twSCRExhaustGasFlowrateInKgPerHr a owl:DatatypeProperty ;
+    rdfs:label "twinship SCR exhaust gas flowrate in kg per hr" ;
+    rdfs:comment "SCR exhaust gas flowrate in kilograms per hour. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twSCRCatalystVolumeInM3 a owl:DatatypeProperty ;
+    rdfs:label "twinship SCR catalyst volume in m3" ;
+    rdfs:comment "SCR catalyst volume in cubic metres. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twSCROpTempCentigrade a owl:DatatypeProperty ;
+    rdfs:label "twinship SCR op temp centigrade" ;
+    rdfs:comment "SCR operating temperature in degrees centigrade. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twGRSPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship GRS power in kW" ;
+    rdfs:comment "Gate Rudder System power in kilowatts. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twGRSPowerReductionEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship GRS power reduction efficiency percentage" ;
+    rdfs:comment "Gate Rudder System power reduction efficiency as a percentage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twWASPPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship WASP power in kW" ;
+    rdfs:comment "Wind Assisted Propulsion System power in kilowatts. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twWASPPowerReductionEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship WASP power reduction efficiency percentage" ;
+    rdfs:comment "Wind Assisted Propulsion System power reduction efficiency as a percentage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twALSPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship ALS power in kW" ;
+    rdfs:comment "Air Lubrication System power in kilowatts. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twALSPowerReductionEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship ALS power reduction efficiency percentage" ;
+    rdfs:comment "Air Lubrication System power reduction efficiency as a percentage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twDWPowerInKW a owl:DatatypeProperty ;
+    rdfs:label "twinship DW power in kW" ;
+    rdfs:comment "Dynamic Wing power in kilowatts. Value -1 indicates unknown." ;
+    rdfs:subPropertyOf :twPowerMaxInKW .
+
+:twDWPowerReductionEfficiencyPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship DW power reduction efficiency percentage" ;
+    rdfs:comment "Dynamic Wing power reduction efficiency as a percentage. Value -1 indicates unknown." ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
+# #    Individuals - Fuel Types
+# #
+# #################################################################
+
+:AMM a owl:NamedIndividual, :Fuel ;
+    rdfs:label "Ammonia" ;
+    rdfs:comment "Ammonia fuel. A zero-carbon fuel option for maritime applications." ;
+    :twFuelLHVKJPerKg "18600"^^xsd:double .
+
+:BF a owl:NamedIndividual, :Fuel ;
+    rdfs:label "Bio-fuel" ;
+    rdfs:comment "Bio-diesel / Bio-fuel. A renewable fuel alternative for maritime applications." ;
+    :twFuelLHVKJPerKg "40000"^^xsd:double .
