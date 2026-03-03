@@ -9,7 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.0.4] - 2026-03-03
 
 ### Changed
-- Version 0.0.4 release with ontology enhancements (added diesel-electric propulsion and green energy systems, fixed boiler property hierarchy, removed unused associatedEntity), improved WebVOWL visualization filtering (TwinShipInanimatePhysicalObject and partOf exclusion), and added server deployment documentation
+- Updated all version numbers to 0.0.4 across ontology files, project metadata, and documentation
+- Fixed missing subPropertyOf for boiler DO return properties
+- Filtered TwinShipInanimatePhysicalObject and partOf from WebVOWL visualization
+- Added diesel-electric propulsion and green energy systems
+- Added server deployment guide with redirect configuration
+- Improved WebVOWL visualization and documentation pipelines
+- Removed associatedEntity as it was not used in any restrictions, instances, or scripts
 
 ## [0.0.3] - 2026-02-25
 
