@@ -40,6 +40,29 @@ KEEP_ANNOTATIONS = {
     DCTERMS.description,
 }
 
+# Entities to exclude from WebVOWL visualization
+# These are filtered out to improve readability for domain experts
+EXCLUDED_ENTITIES = {
+    URIRef("https://twin-ship.eu/twinship#TwinShipInanimatePhysicalObject"),  # Base class
+    URIRef("http://rds.posccaesar.org/ontology/lis14/rdl/partOf"),  # partOf property
+}
+
+
+def should_exclude_entity(uri):
+    """
+    Check if an entity should be excluded from WebVOWL visualization.
+    This includes entities in EXCLUDED_ENTITIES set and pattern-based exclusions.
+    """
+    if uri in EXCLUDED_ENTITIES:
+        return True
+    
+    # Exclude all partOf virtual properties (partOf_viz1, partOf_viz2, etc.)
+    uri_str = str(uri)
+    if uri_str.startswith("https://twin-ship.eu/twinship#partOf_viz"):
+        return True
+    
+    return False
+
 
 def strip_for_webvowl(input_file, output_file):
     """Strip ontology to minimal set for WebVOWL."""
@@ -89,6 +112,7 @@ def strip_for_webvowl(input_file, output_file):
     skipped_external_prop = 0
     skipped_external_labels = 0
     skipped_external_domain_range = 0
+    skipped_excluded = 0
     skipped_properties_with_external_domain = set()
     
     # First pass: identify properties with external domains/ranges
@@ -101,6 +125,13 @@ def strip_for_webvowl(input_file, output_file):
     
     # Second pass: copy only TwinShip triples
     for s, p, o in g:
+        # Skip triples about explicitly excluded entities (including pattern-based exclusions)
+        if (isinstance(s, URIRef) and should_exclude_entity(s)) or \
+           (isinstance(p, URIRef) and should_exclude_entity(p)) or \
+           (isinstance(o, URIRef) and should_exclude_entity(o)):
+            skipped_excluded += 1
+            continue
+        
         # Skip all triples about properties with external domains/ranges
         if s in skipped_properties_with_external_domain:
             continue
@@ -159,6 +190,7 @@ def strip_for_webvowl(input_file, output_file):
         # Add triple
         clean.add((s, p, o))
     
+    print(f"Skipped {skipped_excluded} triples related to excluded entities")
     print(f"Skipped {skipped_subclass} external subClassOf triples")
     print(f"Skipped {skipped_subprop} external subPropertyOf triples")
     print(f"Skipped {skipped_external_class} external class declarations")

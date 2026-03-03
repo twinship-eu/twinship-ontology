@@ -4,6 +4,50 @@
 
 This is an **OWL ontology** for the TwinShip EU project — a digital twin ontology for maritime vessels. The primary artifacts are **Turtle (.ttl) ontology files**, not application code. Python scripts are build tooling that transforms, filters, and documents the ontology.
 
+## Agent Workflow Requirements
+
+### Planning and Confirmation
+
+**ALWAYS follow this workflow for any non-trivial task:**
+
+1. **Analyze the request** — Understand what the user wants to accomplish
+2. **Create a detailed plan** — Break down the work into specific steps
+3. **Present the plan to the user** — Clearly explain what will be modified/created
+4. **Wait for confirmation** — Do NOT proceed until the user approves the plan
+5. **Execute the plan** — Implement the changes as approved
+6. **Report results** — Summarize what was done and which files were modified
+
+**IMPORTANT:** Plans must NEVER include git operations (add/commit/push) as steps. Plans should focus only on the technical implementation. Always end with reporting results, not committing changes.
+
+### Version Control Workflow
+
+**NEVER include git operations in plans or automatically suggest them** unless explicitly requested by the user.
+
+The user will decide when to:
+- Stage changes (`git add`)
+- Commit changes (`git commit`)
+- Push to GitHub (`git push`)
+
+**After completing implementation work:**
+1. Report what files were modified
+2. Summarize what was accomplished
+3. **STOP** - Let the user review and test the changes
+4. Wait for the user to explicitly request git operations
+
+**Only perform git operations when:**
+- The user explicitly asks to commit, push, or stage changes
+- Creating a new branch when explicitly requested by the user
+
+**Never say:** "Now let's commit these changes" or "Ready to commit" or include commit steps in plans.
+
+### When to Skip Planning
+
+You may skip the formal planning step for:
+- Simple information queries (e.g., "what files are in this directory?")
+- Reading/viewing files
+- Searching for information
+- Quick status checks
+
 ## Critical Design Decision: Restriction-Based Modeling
 
 **NEVER add `rdfs:domain` or `rdfs:range` to source model files** (`model/*.ttl`, `model/modules/*.ttl`).
