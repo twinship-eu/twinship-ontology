@@ -15,23 +15,30 @@ This is an **OWL ontology** for the TwinShip EU project — a digital twin ontol
 3. **Present the plan to the user** — Clearly explain what will be modified/created
 4. **Wait for confirmation** — Do NOT proceed until the user approves the plan
 5. **Execute the plan** — Implement the changes as approved
-6. **Report results** — Summarize what was done
+6. **Report results** — Summarize what was done and which files were modified
+
+**IMPORTANT:** Plans must NEVER include git operations (add/commit/push) as steps. Plans should focus only on the technical implementation. Always end with reporting results, not committing changes.
 
 ### Version Control Workflow
 
-**NEVER automatically suggest or perform git operations** unless explicitly requested by the user.
+**NEVER include git operations in plans or automatically suggest them** unless explicitly requested by the user.
 
 The user will decide when to:
 - Stage changes (`git add`)
 - Commit changes (`git commit`)
 - Push to GitHub (`git push`)
 
-**After making changes:**
-- Report what files were modified
-- Let the user review and test the changes
-- Wait for the user to initiate git operations
+**After completing implementation work:**
+1. Report what files were modified
+2. Summarize what was accomplished
+3. **STOP** - Let the user review and test the changes
+4. Wait for the user to explicitly request git operations
 
-**Exception:** Creating a new branch when explicitly requested is acceptable.
+**Only perform git operations when:**
+- The user explicitly asks to commit, push, or stage changes
+- Creating a new branch when explicitly requested by the user
+
+**Never say:** "Now let's commit these changes" or "Ready to commit" or include commit steps in plans.
 
 ### When to Skip Planning
 
