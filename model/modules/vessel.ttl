@@ -915,7 +915,7 @@
 :twBoilerDOTemperatureRetInDegC a owl:DatatypeProperty ;
     rdfs:label "twinship boiler DO temperature return in degrees C" ;
     rdfs:comment "Boiler DO temperature return in degrees Celsius. Value -1 indicates unknown." ;
-    rdfs:range xsd:double .
+    rdfs:subPropertyOf :twDOTemperatureInDegC .
 
 :twBoilerDOVolInLitrePerHr a owl:DatatypeProperty ;
     rdfs:label "twinship boiler DO vol in litre per hr" ;
@@ -925,7 +925,7 @@
 :twBoilerDOVolRetInLitrePerHr a owl:DatatypeProperty ;
     rdfs:label "twinship boiler DO vol return in litre per hr" ;
     rdfs:comment "Boiler DO volume return in litres per hour. Value -1 indicates unknown." ;
-    rdfs:range xsd:double .
+    rdfs:subPropertyOf :twDOVolInLitrePerHr .
 
 :twBoilerEmergencyDOMode a owl:DatatypeProperty ;
     rdfs:label "twinship boiler emergency DO mode" ;
