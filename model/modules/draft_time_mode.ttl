@@ -13,7 +13,7 @@
     rdfs:label "TwinShip Draft, Time, and Mode Module" ;
     rdfs:comment "Placeholder module for ship draft measurements, temporal aspects, and operational modes. To be developed." ;
     owl:imports <https://twin-ship.eu/twinship/base> ;
-    owl:versionIRI <https://twin-ship.eu/twinship/draft-time-mode/0.0.3> .
+    owl:versionIRI <https://twin-ship.eu/twinship/draft-time-mode/0.0.4> .
 
 # #################################################################
 # #

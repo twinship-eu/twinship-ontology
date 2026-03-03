@@ -194,9 +194,9 @@ When ready to modularize:
 
 ## Version Information
 
-- **Version**: 0.0.1
+- **Version**: 0.0.4
 - **Created**: 2025-01-21
-- **Last Updated**: 2026-02-04
+- **Last Updated**: 2026-03-03
 
 ## Usage Examples
 

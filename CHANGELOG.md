@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-03-03
+
+### Changed
+- Version 0.0.4 release with ontology enhancements (added diesel-electric propulsion and green energy systems, fixed boiler property hierarchy, removed unused associatedEntity), improved WebVOWL visualization filtering (TwinShipInanimatePhysicalObject and partOf exclusion), and added server deployment documentation
+
+## [0.0.3] - 2026-02-25
+
 ### Changed
 - Separated WIDOCO documentation and WebVOWL visualization into two distinct pipelines
 - Improved WebVOWL visualization by filtering external ontologies and using virtual properties to eliminate blank union nodes

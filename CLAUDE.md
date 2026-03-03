@@ -148,7 +148,7 @@ uv run python scripts/enhance_webvowl_json.py build/twinship-core-complete-viz-c
 5. **The landing page HTML** is generated inline inside `generate_website.sh` via heredoc — edit the shell script, not the HTML file
 6. **`build/` files have a specific dependency order** — later stages depend on earlier stages
 7. **`tests/` directory exists but has no tests yet** — pytest is configured but unused
-8. **Version mismatch**: ontology uses `pav:version` (currently "0.0.3"), `pyproject.toml` is at "0.0.1"
+9. **Version synchronization**: All version numbers are synchronized to "0.0.4" across ontology files and project metadata
 9. **Ontology files use UTF-8** — ensure encoding is preserved when editing `.ttl` files
 
 ## When Modifying Ontology Classes/Properties

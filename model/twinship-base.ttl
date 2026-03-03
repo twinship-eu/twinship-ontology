@@ -18,8 +18,8 @@
 <https://twin-ship.eu/twinship/base> a owl:Ontology ;
     rdfs:label "TwinShip Ontology" ;
     pav:createdOn "2025-01-21T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-02-25T00:00:00+00:00"^^xsd:dateTime ;
-    pav:version "0.0.3" ;
+    pav:lastUpdateOn "2026-03-03T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.0.4" ;
     rdfs:comment """Base/foundation ontology for TwinShip. Defines core classes, properties, and patterns that all TwinShip modules extend. This includes the base TwinShip physical object class, property hierarchies, and fundamental object properties. Domain-specific classes are defined in separate modules (vessel, weatherconditions).
 
 Modeling Approach - Restriction-Based Design:
@@ -50,7 +50,7 @@ The visualization version is regenerated whenever the source ontology changes, e
         <http://qudt.org/vocab/unit/>,
         <http://rds.posccaesar.org/ontology/lis14/ont/core/1.0>,
         <http://www.vesselAI-project.eu/vesselai> ;
-    owl:versionIRI <https://twin-ship.eu/twinship/base/0.0.1> .
+    owl:versionIRI <https://twin-ship.eu/twinship/base/0.0.4> .
 
 # #################################################################
 # #

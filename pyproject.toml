@@ -1,6 +1,6 @@
 [project]
 name = "twinship-ontology"
-version = "0.0.1"
+version = "0.0.4"
 description = "TwinShip Ontology - Digital Twin Ontology for Maritime Vessels"
 readme = "README.md"
 requires-python = ">=3.9"
