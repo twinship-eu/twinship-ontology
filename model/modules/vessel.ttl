@@ -438,6 +438,91 @@
 
 # #################################################################
 # #
+# #    Classes - Diesel-Electric Configuration & Current Types
+# #
+# #################################################################
+
+:DieselElectricConfiguration a owl:Class ;
+    rdfs:label "Diesel-Electric Configuration" ;
+    rdfs:comment "Classifies a diesel-electric propulsion configuration where engines drive generators to produce electricity, which then powers electric motors for propulsion. Counterpart to MechanicalConfiguration for conventional direct-drive or geared propulsion." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:AC a owl:Class ;
+    rdfs:label "Alternating Current" ;
+    rdfs:comment "Classifies an electrical system or component as using alternating current (AC)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:DC a owl:Class ;
+    rdfs:label "Direct Current" ;
+    rdfs:comment "Classifies an electrical system or component as using direct current (DC)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:ESD a owl:Class ;
+    rdfs:label "Energy Storage Device" ;
+    rdfs:comment "Classifies a component as an energy storage device, capable of storing and releasing electrical energy." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:EmissionReduction a owl:Class ;
+    rdfs:label "Emission Reduction" ;
+    rdfs:comment "Classifies a component as an emissions reduction system (e.g., SCR, scrubbers, carbon capture)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:AUXLOAD a owl:Class ;
+    rdfs:label "Auxiliary Load" ;
+    rdfs:comment "Auxiliary electrical loads including ship services and hotel load. Represents the non-propulsion electrical demand on the power management system." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twAuxiliaryLoadShipServicesPowerInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twAuxiliaryLoadHotelLoadPowerInKW ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+:ShipServices a owl:Class ;
+    rdfs:label "Ship Services" ;
+    rdfs:comment "Classifies a load as ship services (navigation, machinery support, safety systems, etc.)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:HotelLoad a owl:Class ;
+    rdfs:label "Hotel Load" ;
+    rdfs:comment "Classifies a load as hotel load (HVAC, lighting, galley, passenger comfort systems, etc.)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:OSP a owl:Class ;
+    rdfs:label "On Shore Power" ;
+    rdfs:comment "Shore power connection for zero-emission port operations. Allows a vessel to receive electrical power from the shore grid." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShoreConnectionPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twShoreConnectionTimeInHours ;
+            owl:someValuesFrom xsd:double ],
+        :EnergySystem .
+
+:Bow a owl:Class ;
+    rdfs:label "Bow" ;
+    rdfs:comment "Classifies a thruster or maneuvering device as bow-mounted." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+:SuctionSail a owl:Class ;
+    rdfs:label "Suction Sail" ;
+    rdfs:comment "Classifies a wind-assisted propulsion system as a suction sail (Flettner rotor or similar technology)." ;
+    rdfs:subClassOf :TwinShipInanimatePhysicalObject .
+
+# #################################################################
+# #
 # #    Classes - Diesel-Electric Propulsion Systems
 # #
 # #################################################################
@@ -607,22 +692,6 @@
             owl:someValuesFrom xsd:double ],
         :EnergySystem .
 
-:ShoreConnectionSystem a owl:Class ;
-    rdfs:label "Shore Connection System" ;
-    rdfs:comment "Shore power connection for zero-emission port operations. Allows a vessel to receive electrical power from the shore grid." ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:connectedTo ;
-            owl:someValuesFrom :Pms ],
-        [ a owl:Restriction ;
-            owl:onProperty ido:partOf ;
-            owl:someValuesFrom :VesselSystem ],
-        [ a owl:Restriction ;
-            owl:onProperty :twShoreConnectionPowerMaxInKW ;
-            owl:someValuesFrom xsd:double ],
-        [ a owl:Restriction ;
-            owl:onProperty :twShoreConnectionTimeInHours ;
-            owl:someValuesFrom xsd:double ],
-        :EnergySystem .
 
 :FuelCellSystem a owl:Class ;
     rdfs:label "Fuel Cell System" ;
@@ -641,22 +710,6 @@
             owl:someValuesFrom xsd:double ],
         :EnergySystem .
 
-:AuxiliaryLoadSystem a owl:Class ;
-    rdfs:label "Auxiliary Load System" ;
-    rdfs:comment "Auxiliary electrical loads including ship services and hotel load. Represents the non-propulsion electrical demand on the power management system." ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:connectedTo ;
-            owl:someValuesFrom :Pms ],
-        [ a owl:Restriction ;
-            owl:onProperty ido:partOf ;
-            owl:someValuesFrom :VesselSystem ],
-        [ a owl:Restriction ;
-            owl:onProperty :twAuxiliaryLoadShipServicesPowerInKW ;
-            owl:someValuesFrom xsd:double ],
-        [ a owl:Restriction ;
-            owl:onProperty :twAuxiliaryLoadHotelLoadPowerInKW ;
-            owl:someValuesFrom xsd:double ],
-        :EnergySystem .
 
 # #################################################################
 # #
@@ -664,20 +717,18 @@
 # #
 # #################################################################
 
-:EmissionsControlSystem a owl:Class ;
-    rdfs:label "Emissions Control System" ;
-    rdfs:comment "Base class for systems that reduce or control vessel emissions (e.g., SCR, scrubbers, carbon capture). All emissions control systems are part of a vessel." ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onProperty ido:partOf ;
-            owl:someValuesFrom :VesselSystem ],
-        :TwinShipInanimatePhysicalObject .
-
 :SCR a owl:Class ;
     rdfs:label "Selective Catalytic Reduction" ;
     rdfs:comment "Selective Catalytic Reduction (SCR) system for NOx emissions reduction using a catalytic process." ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onProperty ido:connectedTo ;
             owl:someValuesFrom :GenSetSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:connectedTo ;
+            owl:someValuesFrom :Pms ],
+        [ a owl:Restriction ;
+            owl:onProperty ido:partOf ;
+            owl:someValuesFrom :VesselSystem ],
         [ a owl:Restriction ;
             owl:onProperty :twSCRReductionEfficiencyPercentage ;
             owl:someValuesFrom xsd:double ],
@@ -690,7 +741,7 @@
         [ a owl:Restriction ;
             owl:onProperty :twSCROperatingTemperatureInDegC ;
             owl:someValuesFrom xsd:double ],
-        :EmissionsControlSystem .
+        :EmissionReduction .
 
 # #################################################################
 # #
