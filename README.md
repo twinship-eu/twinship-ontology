@@ -71,6 +71,34 @@ The landing page provides links to:
 - **[Scripts Documentation](scripts/README.md)** - All available processing scripts
 - **[Model Structure](model/README.md)** - Ontology architecture and design patterns
 
+### Workflow testing
+Currently, Deployment workflow only supports deployment to Hostinger.
+The **[deployment workflow](.github/workflows/deploy.yml)** can be tested locally using [act](https://github.com/nektos/act).
+The workflow will default to skipping the deployment step when running using act, or if the `DRY_RUN` environment variable is set to `true`.
+
+```bash
+# test workflow locally 
+act
+
+# test workflow locally, excluding deployment step explicitly  
+act --env DRY_RUN=true
+```
+
+Because Act runs inside an isolated Docker container, it cannot be used to test the deployment step, which attemps to ssh into a remote host and deploy the ontology using rsync. 
+
+To test the deployment step, use the test-hostinger-deployment.sh script.
+This is not a reliable way to test the deployment step, as hostinger will reject a lot of ssh origins, so you are not guaranteed to be able to connect. Using a mobile hotspot appears to be a working solution.
+```bash
+# The following variables need to be set in the environment for the script to work
+# SSH_KEY - Your SSH key
+# SSH_USER - Your Hostinger SSH username
+# SSH_HOST - Your Hostinger SSH host IP
+# SSH_PORT - Your Hostinger SSH port
+# DEPLOY_PATH - The path on the remote host where the ontology website should be deployed
+./scripts/test-hostinger-deployment.sh
+```
+
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute, report issues, or request features.

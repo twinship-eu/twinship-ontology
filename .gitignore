@@ -52,3 +52,6 @@ model/*-docs*.ttl
 docs/website/
 tools/
 !docs/website/README.md
+
+# Secrets used to test GitHub workflow locally
+.secrets

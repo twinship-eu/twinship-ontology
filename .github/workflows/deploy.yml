@@ -1,0 +1,123 @@
+name: Build and Deploy Website
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOCS_OUTPUT_DIR: docs/website/documentation
+  # Set this to "true" when running locally with act to skip the rsync step.
+  DRY_RUN: ${{ vars.DRY_RUN || 'false' }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure scripts are executable
+        run: |
+          chmod +x ./setup.sh
+          chmod -R +x ./scripts || true
+
+      # Install a JRE; fall back to apt-get without sudo if sudo is absent (e.g., act container)
+      - name: Set up JRE (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'       # pick the version your scripts require
+          java-package: jre        # JRE only; change to 'jdk' if you need javac
+
+      # Install uv if missing; add ~/.local/bin to PATH for subsequent steps
+      - name: Install uv if needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.local/bin:$PATH"
+          if ! command -v uv >/dev/null 2>&1; then
+            echo "uv not found; installing…"
+            # Official installer
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            # Some containers require re-export of PATH
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
+          else
+            echo "uv is already installed: $(uv --version)"
+          fi
+          which uv || true
+          uv --version || true
+
+      - name: Run setup script
+        shell: bash
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          ./setup.sh
+
+      - name: Generate website
+        shell: bash
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          ./scripts/generate_website.sh
+
+      # Optional sanity check to ensure the directory exists before deploying
+      - name: Verify output directory exists
+        shell: bash
+        run: |
+          test -d "${{ env.DOCS_OUTPUT_DIR }}" || {
+            echo "ERROR: Output dir '${{ env.DOCS_OUTPUT_DIR }}' was not produced."
+            ls -la
+            exit 1
+          }
+          echo "Contents of ${{ env.DOCS_OUTPUT_DIR }}:"
+          ls -la "${{ env.DOCS_OUTPUT_DIR }}"
+
+      # Deploy only the docs/website/documentation directory to Hostinger
+      # Skips when DRY_RUN=true or if essential secrets are missing (useful for `act`).
+
+      - name: Deploy to Hostinger
+        if: ${{ env.DRY_RUN != 'true' && env.ACT != 'true' }}
+        shell: bash
+        env:
+          SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY }}
+          SSH_USER: ${{ secrets.HOSTINGER_SSH_USER }}
+          SSH_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
+          SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT }}
+          DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+          DOCS_OUTPUT_DIR: ${{ env.DOCS_OUTPUT_DIR }}
+        run: |
+          if [ -z "$SSH_KEY" ] || [ -z "$SSH_USER" ] || [ -z "$SSH_HOST" ] || [ -z "$SSH_PORT" ] || [ -z "$DEPLOY_PATH" ]; then
+            echo "Skipping deploy (secrets missing)."
+            exit 0
+          fi
+
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          if ! command -v rsync >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y rsync
+          fi
+
+          rsync -azP --delete \
+            -e "ssh -p $SSH_PORT -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            "$DOCS_OUTPUT_DIR/" \
+            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH"
+
+      - name: Skip/No-op Deploy
+        if: ${{ env.DRY_RUN == 'true' }}
+        run: echo "Skipping  deployment step (DRY_RUN=true)"
+
+      - name: Skip/No-op Deploy
+        if: ${{ env.ACT == 'true' }}
+        run: echo "Skipping deployment step (running in act)"
+
