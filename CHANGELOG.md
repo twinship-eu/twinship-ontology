@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+- Added MIT license
+- Added ontology statistics
+
 ## [0.0.4] - 2026-03-03
 
 ### Changed
