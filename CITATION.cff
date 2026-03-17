@@ -7,5 +7,5 @@ authors:
     orcid: https://orcid.org/0000-0000-0000-0000
 date-released: 2026-01-29
 version: 0.0.4
-license: CC-BY-4.0
-repository-code: https://github.com/your-org/twinship-ontology
+license: MIT
+repository-code: https://github.com/twinship-eu/twinship-ontology

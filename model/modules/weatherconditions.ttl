@@ -16,7 +16,7 @@
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-01-30"^^xsd:date ;
     dcterms:modified "2026-03-03"^^xsd:date ;
-    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:license <https://opensource.org/licenses/MIT> ;
     owl:versionInfo "0.0.4" ;
     rdfs:comment "This module reuses weather-related concepts from VesselAI ontology (vesselai-v1) as an external dependency. VesselAI provides WeatherCondition class and related properties for wind components, temperature, precipitation, sea surface conditions, and wave characteristics."@en .
 

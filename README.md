@@ -64,6 +64,23 @@ The landing page provides links to:
 - `docs/website/visualization/` - WebVOWL interactive visualization
 - `docs/website/index.html` - Landing page
 
+### Ontology Statistics
+
+A summary of the current ontology metrics (classes, properties, and imported ontologies) is maintained in [STATISTICS.md](STATISTICS.md).
+
+Regenerate it at any time after modifying or extending the ontology:
+
+```bash
+uv run python scripts/generate_stats_table.py
+```
+
+This reads from `build/twinship-core-complete-docs-viz.ttl` (produced by the full build pipeline) and writes `STATISTICS.md` to the repository root. Run the full build first if the ontology has changed:
+
+```bash
+./scripts/generate_website.sh
+uv run python scripts/generate_stats_table.py
+```
+
 ### Documentation
 
 - **[Website Generation Guide](docs/WEBSITE_GENERATION.md)** - Generate professional documentation with WIDOCO
@@ -105,7 +122,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute, repo
 
 ## License
 
-This repository is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0). See [LICENSE](LICENSE) for details.
+This repository is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Citing
 
