@@ -1,7 +1,10 @@
-# Vessel-specific instance data (for local testing only)
-data/
+# Vessel-specific instance data (kept local, never committed)
+# Use data/* (not data/) so that !data/README.md negation works in git
+data/*
 !data/README.md
-!data/twinship-individuals-examples.ttl
+
+# Working prompts folder (may contain sensitive vessel data)
+prompts/
 
 
 # Python virtual environments and cache

@@ -9,7 +9,7 @@ The TwinShip ontology uses a **modular architecture** with a **two-pipeline buil
 ### Modular Architecture
 - **twinship-base.ttl** - Foundation ontology (base classes, properties)
 - **twinship-core.ttl** - Complete aggregate (imports base + all modules)
-- **modules/** - Domain-specific modules (vessel.ttl, weatherconditions.ttl, etc.)
+- **modules/** - Domain-specific modules (vessel.ttl, weather-conditions.ttl, etc.)
 
 ### Two-Pipeline Build Process
 

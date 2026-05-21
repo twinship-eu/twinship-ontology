@@ -1832,6 +1832,120 @@
 
 # #################################################################
 # #
+# #    Classes — Loading and Draft Conditions
+# #
+# #    NOTE: These classes extend TwinShipQuality (defined in base).
+# #    They represent observed/operational states rather than
+# #    design-specification limits. The existing tw-prefixed
+# #    properties (twVesselDraftAftMaxInM, twDisplacementMaxInMT,
+# #    etc.) represent vessel design limits and are NOT duplicated.
+# #
+# #################################################################
+
+:LoadingCondition a owl:Class ;
+    rdfs:label "Loading Condition" ;
+    rdfs:comment "A vessel loading condition, describing displacement and associated draft values at a point in time or voyage segment." ;
+    rdfs:subClassOf :TwinShipQuality .
+
+:LoadingPreset a owl:Class ;
+    rdfs:label "Loading Preset" ;
+    rdfs:comment "A discrete loading-condition preset used in operational data, typically defined by displacement and draft values (e.g., ballast, partial load, full load)." ;
+    rdfs:subClassOf :LoadingCondition .
+
+:DraftCondition a owl:Class ;
+    rdfs:label "Draft Condition" ;
+    rdfs:comment "A condition describing observed vessel draft values (bow, stern, aft, fore, or mean draft)." ;
+    rdfs:subClassOf :TwinShipQuality .
+
+:TrimCondition a owl:Class ;
+    rdfs:label "Trim Condition" ;
+    rdfs:comment "A condition describing the trim of the vessel, defined as the difference between aft/stern and fore/bow draft." ;
+    rdfs:subClassOf :TwinShipQuality .
+
+# #################################################################
+# #
+# #    Object Properties — Loading and Draft Conditions
+# #
+# #################################################################
+
+:hasLoadingCondition a owl:ObjectProperty ;
+    rdfs:label "has loading condition" ;
+    rdfs:comment "Relates a vessel or voyage segment to its loading condition." ;
+    rdfs:range :LoadingCondition ;
+    rdfs:subPropertyOf :hasQuality .
+
+:hasLoadingPreset a owl:ObjectProperty ;
+    rdfs:label "has loading preset" ;
+    rdfs:comment "Relates a vessel or voyage segment to a discrete loading preset." ;
+    rdfs:range :LoadingPreset ;
+    rdfs:subPropertyOf :hasLoadingCondition .
+
+:hasDraftCondition a owl:ObjectProperty ;
+    rdfs:label "has draft condition" ;
+    rdfs:comment "Relates a vessel or voyage segment to a draft condition describing observed draft values." ;
+    rdfs:range :DraftCondition ;
+    rdfs:subPropertyOf :hasQuality .
+
+:hasTrimCondition a owl:ObjectProperty ;
+    rdfs:label "has trim condition" ;
+    rdfs:comment "Relates a vessel or voyage segment to its trim condition." ;
+    rdfs:range :TrimCondition ;
+    rdfs:subPropertyOf :hasQuality .
+
+# #################################################################
+# #
+# #    Data Properties — Loading and Draft Conditions
+# #
+# #    NOTE: Properties with prefix tw (e.g. twVesselDraftAftMaxInM,
+# #    twDisplacementMaxInMT) represent vessel design limits.
+# #    The properties below represent observed/operational values.
+# #
+# #################################################################
+
+:displacementTonnes a owl:DatatypeProperty ;
+    rdfs:label "displacement tonnes" ;
+    rdfs:comment "Observed vessel displacement in metric tonnes at time of measurement or for a given loading condition." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:bowDraftValue a owl:DatatypeProperty ;
+    rdfs:label "bow draft value" ;
+    rdfs:comment "Observed vessel draft at the bow, in metres." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:sternDraftValue a owl:DatatypeProperty ;
+    rdfs:label "stern draft value" ;
+    rdfs:comment "Observed vessel draft at the stern, in metres." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:aftDraftValue a owl:DatatypeProperty ;
+    rdfs:label "aft draft value" ;
+    rdfs:comment "Observed vessel draft at the aft, in metres. Equivalent to sternDraftValue; use both for compatibility with different dataset conventions." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:foreDraftValue a owl:DatatypeProperty ;
+    rdfs:label "fore draft value" ;
+    rdfs:comment "Observed vessel draft at the fore, in metres. Equivalent to bowDraftValue; use both for compatibility with different dataset conventions." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:trimValue a owl:DatatypeProperty ;
+    rdfs:label "trim value" ;
+    rdfs:comment "Calculated trim of the vessel in metres (aft draft minus fore draft). Positive values indicate stern trim; negative values indicate bow trim." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:loadingConditionLogged a owl:DatatypeProperty ;
+    rdfs:label "loading condition logged" ;
+    rdfs:comment "Boolean flag indicating whether a loading condition was explicitly logged for this vessel state, voyage, or voyage leg." ;
+    rdfs:range xsd:boolean ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
 # #    Individuals - Fuel Types
 # #
 # #################################################################

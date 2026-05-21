@@ -10,20 +10,20 @@ This directory contains the TwinShip ontology organized in a **modular architect
 │     Aggregate of base + all modules     │
 └─────────────────┬───────────────────────┘
                   │ imports
-        ┌─────────┴─────────┬──────────────────┐
-        ▼                   ▼                  ▼
-┌───────────────┐  ┌─────────────────┐  ┌────────────────┐
-│ twinship-base │  │ modules/        │  │ modules/       │
-│  (Foundation) │  │ vessel.ttl      │  │ weathercondi-  │
-│               │◄─┤ Vessels, Engines│◄─┤ tions.ttl      │
-│ Base classes, │  │ Propulsion,     │  │ Weather, Env.  │
-│ properties    │  │ Fuel, Gearbox   │  │                │
-└───────────────┘  └─────────────────┘  └────────────────┘
+        ┌─────────┴─────────┬──────────────────┬──────────────────────┐
+        ▼                   ▼                  ▼                      ▼
+┌───────────────┐  ┌─────────────────┐  ┌────────────────┐  ┌─────────────────────┐
+│ twinship-base │  │ modules/        │  │ modules/       │  │ modules/            │
+│  (Foundation) │  │ vessel.ttl      │  │ weathercondi-  │  │ operational-modes   │
+│               │◄─┤ Vessels, Engines│◄─┤ tions.ttl      │  │ + operational-      │
+│ Base classes, │  │ Propulsion,     │  │ Weather, Env.  │  │   context           │
+│ properties    │  │ Fuel, Gearbox   │  │                │  │                     │
+└───────────────┘  └─────────────────┘  └────────────────┘  └─────────────────────┘
         │
         │ imports
         ▼
 ┌──────────────────────────────────────────────────────┐
-│  External Ontologies: IDO, PAV, QUDT, VesselAI      │
+│  External Ontologies (imported): IDO, PAV, QUDT       │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -34,14 +34,15 @@ model/                         # Source ontology files (version controlled)
 ├── twinship-base.ttl          # Foundation ontology (base classes, properties)
 ├── twinship-core.ttl          # Complete aggregate (imports base + all modules)
 ├── modules/                   # Domain-specific modules
-│   ├── vessel.ttl            # Vessels, engines, propulsion, fuel, gearbox
-│   ├── weatherconditions.ttl # Weather-related classes
-│   └── draft_time_mode.ttl   # (Placeholder for future development)
+│   ├── vessel.ttl             # Vessels, engines, propulsion, fuel, gearbox
+│   ├── weather-conditions.ttl # Weather and wind condition classes
+│   ├── operational-modes.ttl  # Categorical operating states, engine modes, draft/trim modes
+│   └── operational-context.ttl # Voyages, ports, profiles, observations, summaries
 ├── external/                  # External ontology dependencies
 │   ├── IDO_20240503.ttl      # ISO 15926-14 upper ontology
 │   ├── PAV-simplified.ttl    # Provenance, Authoring and Versioning
 │   ├── SCHEMA_QUDT-simplified.ttl
-│   └── vesselai/             # VesselAI v2 ontology
+│   └── vesselai/             # External reference only, not imported
 ├── vocabularies/              # QUDT vocabularies
 │   ├── VOCAB_QUDT-QUANTITY-KINDS-simplified.ttl
 │   └── VOCAB_QUDT_UNIT2-simplified.ttl
@@ -85,10 +86,31 @@ build/                         # Auto-generated build artifacts (gitignored)
    - 130+ engine and vessel properties
    - Imports: `twinship-base`
 
-4. **modules/weatherconditions.ttl** (56 lines)
-   - Reuses weather-related concepts from VesselAI ontology
-   - Weather conditions, environmental events, weather phenomena
-   - Imports: IDO, VesselAI
+4. **modules/weather-conditions.ttl** — TwinShip-native weather and wind condition module
+   - Classes: `WeatherCondition` (subClassOf `TwinShipQuality`), `WindCondition` (subClassOf `WeatherCondition`)
+   - Object properties: `hasWeatherCondition` (subPropertyOf `hasQuality`), `hasWindCondition` (subPropertyOf `hasWeatherCondition`)
+   - Data properties: `windSpeed`, `windDirection` (`xsd:decimal`)
+   - Does **not** import VesselAI, DUL, GeoSPARQL, or OWL-Time
+   - IRI: `https://twin-ship.eu/twinship/weather-conditions`
+   - Imports: `twinship-base`
+
+5. **modules/operational-modes.ttl** — Canonical module for categorical modes and states
+   - Operating states: `OperatingState` with individuals `CruiseState`, `PortState`, `MaintenanceLayupState`, `ManeuveringState`, `DriftState`, `UnknownOperatingState`
+   - Engine modes: `EngineMode`
+   - Draft modes: `DraftMode`, `TrimMode`, `DraftTrimMode` with individuals `EvenKeel`, `SternTrim`, `BowTrim`, `OptimalTrim`
+   - Object properties: `hasOperatingState`, `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`
+   - All mode/state classes extend `TwinShipQuality`
+   - IRI: `https://twin-ship.eu/twinship/operational-modes`
+   - Imports: `twinship-base`
+
+6. **modules/operational-context.ttl** — Canonical module for operational context and voyage data
+   - Process classes: `Voyage`, `VoyageLeg` (extend `TwinShipProcess`); `Route`, `Port` (extend `TwinShipInformationObject`)
+   - Statistical/profile classes: `OperationalProfile`, `SpeedBin`, `FrequencyDistribution`, `FuelConsumptionSummary`, `FuelConsumptionEstimate`, `FuelConsumptionGapAnalysis`, `PerformanceDeviation`
+   - Observation class: `FuelConsumptionObservation` (extends `TwinShipQuality`)
+   - Object properties: voyage structure, profile/statistics, fuel, context links
+   - Data properties: voyage times/IDs, state statistics, engine observations, speed bins, fuel consumption
+   - IRI: `https://twin-ship.eu/twinship/operational-context`
+   - Imports: `twinship-base`, `operational-modes`
 
 ## Import Patterns
 
@@ -99,7 +121,7 @@ build/                         # Auto-generated build artifacts (gitignored)
 @prefix tws: <https://twin-ship.eu/> .
 
 <http://example.org/myOntology> a owl:Ontology ;
-    owl:imports <https://twin-ship.eu/twinship-core> .  # Gets everything
+    owl:imports <https://twin-ship.eu/twinship/core> .  # Gets everything
 ```
 
 ### For Modular Development
@@ -122,17 +144,18 @@ build/                         # Auto-generated build artifacts (gitignored)
 ```
 
 ## Design Pattern
-Use `core/twinship-core.ttl` or import via `twinship-core.ttl`
 
-**Fortwinship-core.ttl` directly
-Use the scripts to generate simplified versions:
+TwinShip uses OWL restriction-based modelling: property usage on classes is declared with `owl:someValuesFrom` / `owl:allValuesFrom` restrictions rather than `rdfs:domain`. `rdfs:range` is required on all properties. Visualization-friendly `rdfs:domain` assertions are synthesized automatically by the build pipeline from the restriction patterns; they are never written manually into source files.
+
+To generate visualization and documentation from the source ontology:
 
 ```bash
-# Generate visualization-friendly version (converts restrictions to domain/range)
-python scripts/generate_viz_ontology.py --auto model/core/twinship-core.ttl
+# Full website generation (documentation + WebVOWL visualization)
+./scripts/generate_website.sh --verbose
 
-# Generate complete documentation
-./scripts/generate_docs.sh --source model/twinship-core.ttl
+# Individual steps
+uv run python scripts/merge_modules.py --auto model/twinship-core.ttl
+uv run python scripts/generate_viz_ontology.py --auto build/twinship-core-complete.ttl
 ```
 
 ## Upper Ontology (TOP)
@@ -146,12 +169,12 @@ All TwinShip physical entities inherit from `TwinShipInanimatePhysicalObject` wh
 
 ## External Dependencies
 
-### VesselAI
-- **Purpose**: Weather and environmental conditions
+### VesselAI (External Reference Only)
 - **Location**: `external/vesselai/vesselAI_ontology_v2.owl`
 - **URI**: `http://www.vesselAI-project.eu/vesselai`
 - **Upper Ontology**: DUL (DOLCE+DnS Ultralite)
-- **Note**: VesselAI uses a different upper ontology than TwinShip, but this is acceptable for vocabulary reuse
+- **Status**: **Not imported** by any TwinShip module. Retained for inspection and reference only.
+- **Rationale**: VesselAI is DUL-based; TwinShip uses IDO (ISO 15926-14). The upper ontologies are categorially incompatible — e.g., VesselAI `Vessel` is a `dul:Agent` while TwinShip `VesselSystem` is an `ido:InanimatePhysicalObject`. Selected TwinShip terms carry `rdfs:seeAlso` annotations pointing to related VesselAI terms for traceability. See `docs/ontology/vesselai-full-reuse-audit.txt` for the full design decision.
 
 ### QUDT
 - **Purpose**: Quantities, units, and dimensions
@@ -173,30 +196,30 @@ All TwinShip physical entities inherit from `TwinShipInanimatePhysicalObject` wh
 <uri name="https://twin-ship.eu/twinship/base" uri="twinship-base.ttl"/>
 <uri name="https://twin-ship.eu/twinship/core" uri="twinship-core.ttl"/>
 <uri name="https://twin-ship.eu/twinship/vessel" uri="modules/vessel.ttl"/>
-<uri name="https://twin-ship.eu/twinship/weatherconditions" uri="modules/weatherconditions.ttl"/>
+<uri name="https://twin-ship.eu/twinship/weather-conditions" uri="modules/weather-conditions.ttl"/>
 
 <!-- External Ontologies -->
+<!-- VesselAI: retained for reference only; not used by owl:imports -->
 <uri name="http://www.vesselAI-project.eu/vesselai" uri="external/vesselai/vesselAI_ontology_v2.owl"/>
 <uri name="http://rds.posccaesar.org/ontology/lis14/ont/core/1.0" uri="external/IDO_20240503.ttl"/>
 <uri name="http://qudt.org/schema/qudt/" uri="external/SCHEMA_QUDT-simplified.ttl"/>
 ```
 
 This enables Protégé and other tools to resolve `owl:imports` statements to local files instead of fetching from the web.
-## Future Modularization
+## Adding New Modules
 
-The `modules/` directory contains placeholders for future modularization efforts. The current approach keeps the complete ontology in `core/twinship-core.ttl` due to the complexity of splitting restriction-based definitions.
+The `modules/` directory contains four fully implemented modules. To add a new module:
 
-When ready to modularize:
-1. Extract domain-specific classes to modules
-2. Extract related properties
-3. Update imports in `twinship-core.ttl`
-4. Use `scripts/merge_modules.py` to generate complete version for distribution
+1. Create `model/modules/<name>.ttl` with `owl:imports <https://twin-ship.eu/twinship/base>`
+2. Add a URI mapping entry to `model/catalog-v001.xml`
+3. Add `owl:imports <https://twin-ship.eu/twinship/<name>>` to `model/twinship-core.ttl`
+4. Run `./scripts/generate_website.sh` to verify integration
 
 ## Version Information
 
 - **Version**: 0.0.4
 - **Created**: 2025-01-21
-- **Last Updated**: 2026-03-03
+- **Last Updated**: 2026-05-21
 
 ## Usage Examples
 
@@ -216,14 +239,15 @@ SELECT ?vessel ?name WHERE {
 
 ### Generate Documentation
 ```bash
-cd /Users/elvesater/GitHub/twinship-eu/twinship-ontology
-./scripts/generate_docs.sh --source model/twinship-core.ttl --verbose
+./scripts/generate_website.sh --verbose
 ```
 
 This creates:
-- `model/twinship-core-complete.ttl` - All imports merged
-- `model/twinship-core-complete-viz.ttl` - Visualization-friendly (domain/range)
-- `docs/ontology/index.html` - HTML documentation
+- `build/twinship-core-complete.ttl` — All modules merged
+- `build/twinship-core-complete-docs-viz.ttl` — Documentation-friendly build
+- `docs/website/documentation/index-en.html` — WIDOCO HTML documentation
+- `docs/website/documentation/webvowl/` — WebVOWL interactive visualization
+- `docs/website/index.html` — Landing page
 
 ## License
 

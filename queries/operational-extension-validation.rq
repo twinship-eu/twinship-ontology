@@ -1,0 +1,274 @@
+# TwinShip Operational Extension — Validation Queries
+#
+# These SPARQL queries validate that the operational-modes and
+# operational-context modules have been correctly loaded.
+# Run against the complete TwinShip ontology (twinship-core).
+#
+# Module IRIs:
+#   https://twin-ship.eu/twinship/operational-modes
+#   https://twin-ship.eu/twinship/operational-context
+#
+# Prefix conventions match twinship-base.ttl and all modules.
+
+PREFIX : <https://twin-ship.eu/twinship#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# ============================================================
+# Query 1 — List all Voyage instances
+# (operational-context module)
+# ============================================================
+# Expected: returns :Voyage class and any named voyage individuals
+# when instance data is loaded.
+
+SELECT ?voyage ?label
+WHERE {
+  ?voyage a :Voyage .
+  OPTIONAL { ?voyage rdfs:label ?label }
+}
+ORDER BY ?voyage
+
+# ============================================================
+# Query 2 — List all OperatingState individuals
+# (operational-modes module)
+# ============================================================
+# Expected: CruiseState, PortState, MaintenanceLayupState,
+# ManeuveringState, DriftState, UnknownOperatingState
+
+# SELECT ?state ?label
+# WHERE {
+#   ?state a :OperatingState .
+#   OPTIONAL { ?state rdfs:label ?label }
+# }
+# ORDER BY ?label
+
+# ============================================================
+# Query 3 — List all EngineMode individuals (if any)
+# (operational-modes module)
+# ============================================================
+# Expected: returns any named engine mode individuals.
+
+# SELECT ?mode ?label
+# WHERE {
+#   ?mode a :EngineMode .
+#   OPTIONAL { ?mode rdfs:label ?label }
+# }
+# ORDER BY ?mode
+
+# ============================================================
+# Query 4 — List all LoadingPreset instances
+# (vessel module)
+# ============================================================
+# Expected: returns any named loading preset individuals
+# when instance data is loaded.
+
+# SELECT ?preset ?label
+# WHERE {
+#   ?preset a :LoadingPreset .
+#   OPTIONAL { ?preset rdfs:label ?label }
+# }
+# ORDER BY ?preset
+
+# ============================================================
+# Query 5 — List all DraftTrimMode individuals
+# (operational-modes module)
+# ============================================================
+# Expected: EvenKeel, SternTrim, BowTrim, OptimalTrim
+
+# SELECT ?mode ?label ?comment
+# WHERE {
+#   ?mode a :DraftTrimMode .
+#   OPTIONAL { ?mode rdfs:label ?label }
+#   OPTIONAL { ?mode rdfs:comment ?comment }
+# }
+# ORDER BY ?label
+
+# ============================================================
+# Query 6 — List all OperationalProfile instances
+# (operational-context module)
+# ============================================================
+# Expected: returns any named operational profile individuals
+# when instance data is loaded.
+
+# SELECT ?profile ?label
+# WHERE {
+#   ?profile a :OperationalProfile .
+#   OPTIONAL { ?profile rdfs:label ?label }
+# }
+# ORDER BY ?profile
+
+# ============================================================
+# Query 7 — List all FuelConsumptionSummary instances
+# (operational-context module)
+# ============================================================
+# Expected: returns any named fuel consumption summary individuals
+# when instance data is loaded.
+
+# SELECT ?summary ?label
+# WHERE {
+#   ?summary a :FuelConsumptionSummary .
+#   OPTIONAL { ?summary rdfs:label ?label }
+# }
+# ORDER BY ?summary
+
+# ============================================================
+# Query 8 — List all WindCondition instances
+# (weather-conditions module)
+# ============================================================
+# Expected: returns any named wind condition individuals
+# when instance data is loaded.
+
+# SELECT ?wc ?label
+# WHERE {
+#   ?wc a :WindCondition .
+#   OPTIONAL { ?wc rdfs:label ?label }
+# }
+# ORDER BY ?wc
+
+# ============================================================
+# Query 9 — Validate class hierarchy for operational extension
+# ============================================================
+# Checks that all new module classes have the expected superclasses.
+
+# SELECT ?class ?superclass
+# WHERE {
+#   VALUES ?class {
+#     :Voyage :VoyageLeg :Route :Port
+#     :OperatingState :EngineMode
+#     :DraftMode :TrimMode :DraftTrimMode
+#     :FuelConsumptionObservation
+#     :OperationalProfile :SpeedBin :FrequencyDistribution
+#     :FuelConsumptionSummary :FuelConsumptionEstimate
+#     :FuelConsumptionGapAnalysis :PerformanceDeviation
+#     :LoadingCondition :LoadingPreset :DraftCondition :TrimCondition
+#     :WindCondition
+#   }
+#   ?class rdfs:subClassOf ?superclass .
+#   FILTER (!isBlank(?superclass))
+# }
+# ORDER BY ?class ?superclass
+
+# ============================================================
+# Query 10 — List all operating state individuals with labels
+# ============================================================
+
+# SELECT ?state ?label ?comment
+# WHERE {
+#   ?state a :OperatingState .
+#   OPTIONAL { ?state rdfs:label ?label }
+#   OPTIONAL { ?state rdfs:comment ?comment }
+# }
+# ORDER BY ?label
+
+# ============================================================
+# Query 1 — List all Voyage instances
+# ============================================================
+# Expected: returns :Voyage class and any named voyage individuals
+# when data is loaded.
+
+SELECT ?voyage ?label
+WHERE {
+  ?voyage a :Voyage .
+  OPTIONAL { ?voyage rdfs:label ?label }
+}
+ORDER BY ?voyage
+
+# ============================================================
+# Query 2 — List all OperatingState individuals
+# ============================================================
+# Expected: CruiseState, PortState, MaintenanceLayupState,
+# ManeuveringState, DriftState, UnknownOperatingState
+
+# SELECT ?state ?label
+# WHERE {
+#   ?state a :OperatingState .
+#   OPTIONAL { ?state rdfs:label ?label }
+# }
+# ORDER BY ?label
+
+# ============================================================
+# Query 3 — List all LoadingPreset instances
+# ============================================================
+# Expected: returns :LoadingPreset class and any named
+# loading preset individuals when data is loaded.
+
+# SELECT ?preset ?label
+# WHERE {
+#   ?preset a :LoadingPreset .
+#   OPTIONAL { ?preset rdfs:label ?label }
+# }
+# ORDER BY ?preset
+
+# ============================================================
+# Query 4 — List all DraftTrimMode individuals
+# ============================================================
+# Expected: EvenKeel, SternTrim, BowTrim, OptimalTrim
+
+# SELECT ?mode ?label ?comment
+# WHERE {
+#   ?mode a :DraftTrimMode .
+#   OPTIONAL { ?mode rdfs:label ?label }
+#   OPTIONAL { ?mode rdfs:comment ?comment }
+# }
+# ORDER BY ?label
+
+# ============================================================
+# Query 5 — List all OperationalProfile instances
+# ============================================================
+# Expected: returns any named operational profile individuals
+# when data is loaded.
+
+# SELECT ?profile ?label
+# WHERE {
+#   ?profile a :OperationalProfile .
+#   OPTIONAL { ?profile rdfs:label ?label }
+# }
+# ORDER BY ?profile
+
+# ============================================================
+# Query 6 — List all FuelConsumptionSummary instances
+# ============================================================
+# Expected: returns any named fuel consumption summary individuals
+# when data is loaded.
+
+# SELECT ?summary ?label
+# WHERE {
+#   ?summary a :FuelConsumptionSummary .
+#   OPTIONAL { ?summary rdfs:label ?label }
+# }
+# ORDER BY ?summary
+
+# ============================================================
+# Query 7 — Validate class hierarchy for operations extension
+# ============================================================
+# Checks that all new module classes have the expected superclasses.
+
+# SELECT ?class ?superclass
+# WHERE {
+#   VALUES ?class {
+#     :Voyage :VoyageLeg :Route :Port
+#     :OperatingState :EngineMode :FuelConsumptionObservation
+#     :OperationalProfile :SpeedBin :FrequencyDistribution
+#     :FuelConsumptionSummary :FuelConsumptionEstimate
+#     :FuelConsumptionGapAnalysis :PerformanceDeviation
+#     :LoadingCondition :LoadingPreset :DraftCondition :TrimCondition
+#     :DraftMode :TrimMode :DraftTrimMode
+#     :WindCondition
+#   }
+#   ?class rdfs:subClassOf ?superclass .
+#   FILTER (!isBlank(?superclass))
+# }
+# ORDER BY ?class ?superclass
+
+# ============================================================
+# Query 8 — List all operating state individuals with labels
+# ============================================================
+
+# SELECT ?state ?label ?comment
+# WHERE {
+#   ?state a :OperatingState .
+#   OPTIONAL { ?state rdfs:label ?label }
+#   OPTIONAL { ?state rdfs:comment ?comment }
+# }
+# ORDER BY ?label

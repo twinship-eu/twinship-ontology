@@ -1,0 +1,420 @@
+@prefix : <https://twin-ship.eu/twinship#> .
+@prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# #################################################################
+# #
+# #    Ontology
+# #
+# #################################################################
+
+<https://twin-ship.eu/twinship/operational-context> a owl:Ontology ;
+    rdfs:label "TwinShip Operational Context Module" ;
+    dcterms:title "TwinShip Operational Context Module"@en ;
+    dcterms:description "Ontology module for vessel operational context: voyages, voyage legs, routes, ports, fuel-consumption observations and summaries, operational profiles, speed bins, and frequency distributions. Extends twinship-base and imports operational-modes for cross-module range constraints."@en ;
+    dcterms:creator "TwinShip Project" ;
+    dcterms:created "2026-05-21"^^xsd:date ;
+    dcterms:modified "2026-05-21"^^xsd:date ;
+    pav:createdOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
+    pav:lastUpdateOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.0.4" ;
+    rdfs:comment "Operational context module for TwinShip ontology. Imports twinship-base and twinship-operational-modes. The import of operational-modes enables range constraints on properties that reference OperatingState (e.g. summarisesOperatingState). No circular imports are introduced: operational-modes imports only base, and operational-context imports base + operational-modes." ;
+    owl:imports <https://twin-ship.eu/twinship/base>,
+        <https://twin-ship.eu/twinship/operational-modes> ;
+    owl:versionIRI <https://twin-ship.eu/twinship/operational-context/0.0.4> .
+
+# #################################################################
+# #
+# #    Classes — Process / Context Classes
+# #
+# #################################################################
+
+:Voyage a owl:Class ;
+    rdfs:label "Voyage" ;
+    rdfs:comment "A vessel operational process representing a voyage or passage, typically between departure and arrival locations." ;
+    rdfs:subClassOf :TwinShipProcess .
+
+:VoyageLeg a owl:Class ;
+    rdfs:label "Voyage Leg" ;
+    rdfs:comment "A subdivision of a voyage used for segment-wise operational analysis." ;
+    rdfs:subClassOf :TwinShipProcess .
+
+:Route a owl:Class ;
+    rdfs:label "Route" ;
+    rdfs:comment "A planned or observed route between departure and arrival locations. Modelled as an information object because it represents defined route data rather than an executed movement process." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+:Port a owl:Class ;
+    rdfs:label "Port" ;
+    rdfs:comment "A port or port identifier used as departure or arrival location for voyages. Modelled as an information object for the first iteration, representing port codes and identifiers." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+# #################################################################
+# #
+# #    Classes — Observation / Quality Classes
+# #
+# #################################################################
+
+:FuelConsumptionObservation a owl:Class ;
+    rdfs:label "Fuel Consumption Observation" ;
+    rdfs:comment "A measured or logged fuel-consumption value associated with a vessel, voyage, voyage leg, operating state, or time interval." ;
+    rdfs:subClassOf :TwinShipQuality .
+
+# #################################################################
+# #
+# #    Classes — Information / Statistical Object Classes
+# #
+# #################################################################
+
+:OperationalProfile a owl:Class ;
+    rdfs:label "Operational Profile" ;
+    rdfs:comment "A derived or statistical representation of vessel operation, typically described by frequencies or durations over operating states, modes, and speed bins." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+:SpeedBin a owl:Class ;
+    rdfs:label "Speed Bin" ;
+    rdfs:comment "A speed interval used to group vessel observations for statistical analysis." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+:FrequencyDistribution a owl:Class ;
+    rdfs:label "Frequency Distribution" ;
+    rdfs:comment "A statistical distribution describing frequency, duration, or share of observations in states, modes, or bins." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+:FuelConsumptionSummary a owl:Class ;
+    rdfs:label "Fuel Consumption Summary" ;
+    rdfs:comment "A derived or aggregated summary of fuel consumption, such as mean, median, total, or rate over a voyage, state, mode, bin, or profile." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+:FuelConsumptionEstimate a owl:Class ;
+    rdfs:label "Fuel Consumption Estimate" ;
+    rdfs:comment "Estimated or model-derived fuel consumption, used for gap analysis and performance benchmarking." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+:FuelConsumptionGapAnalysis a owl:Class ;
+    rdfs:label "Fuel Consumption Gap Analysis" ;
+    rdfs:comment "Comparison of estimated fuel consumption and observed fuel consumption, used for performance monitoring." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+:PerformanceDeviation a owl:Class ;
+    rdfs:label "Performance Deviation" ;
+    rdfs:comment "A derived deviation between expected and observed performance, used in gap analysis and operational benchmarking." ;
+    rdfs:subClassOf :TwinShipInformationObject .
+
+# #################################################################
+# #
+# #    Object Properties — Voyage Structure
+# #
+# #################################################################
+
+:hasVoyage a owl:ObjectProperty ;
+    rdfs:label "has voyage" ;
+    rdfs:comment "Relates a vessel or operational entity to a voyage it performed." ;
+    rdfs:range :Voyage ;
+    rdfs:subPropertyOf :hasProcess .
+
+:hasVoyageLeg a owl:ObjectProperty ;
+    rdfs:label "has voyage leg" ;
+    rdfs:comment "Relates a voyage to one of its constituent voyage legs." ;
+    rdfs:range :VoyageLeg ;
+    rdfs:subPropertyOf :hasProcess .
+
+:hasDeparturePort a owl:ObjectProperty ;
+    rdfs:label "has departure port" ;
+    rdfs:comment "Relates a voyage or voyage leg to its departure port." ;
+    rdfs:range :Port ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+:hasArrivalPort a owl:ObjectProperty ;
+    rdfs:label "has arrival port" ;
+    rdfs:comment "Relates a voyage or voyage leg to its arrival port." ;
+    rdfs:range :Port ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+:followsRoute a owl:ObjectProperty ;
+    rdfs:label "follows route" ;
+    rdfs:comment "Relates a voyage or voyage leg to the route it follows." ;
+    rdfs:range :Route ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+# #################################################################
+# #
+# #    Object Properties — Profiles and Statistical Objects
+# #
+# #################################################################
+
+:hasOperationalProfile a owl:ObjectProperty ;
+    rdfs:label "has operational profile" ;
+    rdfs:comment "Relates a vessel or voyage to a derived operational profile." ;
+    rdfs:range :OperationalProfile ;
+    rdfs:subPropertyOf :hasInformationObject .
+
+:hasSpeedBin a owl:ObjectProperty ;
+    rdfs:label "has speed bin" ;
+    rdfs:comment "Relates an operational profile or observation to a speed bin." ;
+    rdfs:range :SpeedBin ;
+    rdfs:subPropertyOf :hasInformationObject .
+
+:hasFrequencyDistribution a owl:ObjectProperty ;
+    rdfs:label "has frequency distribution" ;
+    rdfs:comment "Relates an operational profile or statistical summary to a frequency distribution." ;
+    rdfs:range :FrequencyDistribution ;
+    rdfs:subPropertyOf :hasInformationObject .
+
+# #################################################################
+# #
+# #    Object Properties — Fuel
+# #
+# #################################################################
+
+:hasFuelConsumptionObservation a owl:ObjectProperty ;
+    rdfs:label "has fuel consumption observation" ;
+    rdfs:comment "Relates a vessel, voyage, or voyage leg to a fuel consumption observation." ;
+    rdfs:range :FuelConsumptionObservation ;
+    rdfs:subPropertyOf :hasQuality .
+
+:hasFuelConsumptionSummary a owl:ObjectProperty ;
+    rdfs:label "has fuel consumption summary" ;
+    rdfs:comment "Relates a voyage, operating state, profile, or speed bin to a fuel consumption summary." ;
+    rdfs:range :FuelConsumptionSummary ;
+    rdfs:subPropertyOf :hasInformationObject .
+
+# #################################################################
+# #
+# #    Object Properties — Context Links
+# #
+# #    NOTE: summarisesOperatingState references :OperatingState,
+# #    which is defined in operational-modes. This is safe because
+# #    operational-context imports operational-modes.
+# #
+# #################################################################
+
+:observedDuringVoyage a owl:ObjectProperty ;
+    rdfs:label "observed during voyage" ;
+    rdfs:comment "Relates an observation or quality to the voyage during which it was recorded." ;
+    rdfs:range :Voyage ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+:observedDuringVoyageLeg a owl:ObjectProperty ;
+    rdfs:label "observed during voyage leg" ;
+    rdfs:comment "Relates an observation or quality to the voyage leg during which it was recorded." ;
+    rdfs:range :VoyageLeg ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+:summarisesVoyage a owl:ObjectProperty ;
+    rdfs:label "summarises voyage" ;
+    rdfs:comment "Relates a summary or profile to the voyage it summarises." ;
+    rdfs:range :Voyage ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+:summarisesOperatingState a owl:ObjectProperty ;
+    rdfs:label "summarises operating state" ;
+    rdfs:comment "Relates a summary or frequency distribution to the operating state it summarises. Range :OperatingState is defined in operational-modes (imported by this module)." ;
+    rdfs:range :OperatingState ;
+    rdfs:subPropertyOf :twinshipObjectProperties .
+
+# #################################################################
+# #
+# #    Data Properties — Voyage
+# #
+# #################################################################
+
+:voyageIdentifier a owl:DatatypeProperty ;
+    rdfs:label "voyage identifier" ;
+    rdfs:comment "A string identifier for a voyage (e.g., sequential number or code from operational dataset)." ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:voyageDurationHours a owl:DatatypeProperty ;
+    rdfs:label "voyage duration hours" ;
+    rdfs:comment "Total duration of a voyage in decimal hours." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:voyageStartTime a owl:DatatypeProperty ;
+    rdfs:label "voyage start time" ;
+    rdfs:comment "UTC date-time at which a voyage started." ;
+    rdfs:range xsd:dateTime ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:voyageEndTime a owl:DatatypeProperty ;
+    rdfs:label "voyage end time" ;
+    rdfs:comment "UTC date-time at which a voyage ended." ;
+    rdfs:range xsd:dateTime ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:departurePortCode a owl:DatatypeProperty ;
+    rdfs:label "departure port code" ;
+    rdfs:comment "UN/LOCODE or other identifier for the port of departure." ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:arrivalPortCode a owl:DatatypeProperty ;
+    rdfs:label "arrival port code" ;
+    rdfs:comment "UN/LOCODE or other identifier for the port of arrival." ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
+# #    Data Properties — Operating State Statistics
+# #
+# #    These describe statistical/summary data about states;
+# #    the mode/state classes themselves live in operational-modes.
+# #
+# #################################################################
+
+:stateDurationHours a owl:DatatypeProperty ;
+    rdfs:label "state duration hours" ;
+    rdfs:comment "Total duration spent in an operating state, in decimal hours." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:timeSharePercentage a owl:DatatypeProperty ;
+    rdfs:label "time share percentage" ;
+    rdfs:comment "Percentage of total time spent in a given operating state, speed bin, or mode (0\u2013100)." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:stateLabel a owl:DatatypeProperty ;
+    rdfs:label "state label" ;
+    rdfs:comment "A human-readable label for an operating state, as recorded in the source dataset." ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
+# #    Data Properties — Engine Observations
+# #
+# #################################################################
+
+:engineRPM a owl:DatatypeProperty ;
+    rdfs:label "engine RPM" ;
+    rdfs:comment "Engine rotational speed in revolutions per minute at time of observation." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:engineLoad a owl:DatatypeProperty ;
+    rdfs:label "engine load" ;
+    rdfs:comment "Engine load as a decimal fraction or percentage of maximum continuous rating (MCR)." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
+# #    Data Properties — Speed Bins
+# #
+# #################################################################
+
+:speedValue a owl:DatatypeProperty ;
+    rdfs:label "speed value" ;
+    rdfs:comment "Speed value in knots associated with an observation or speed bin." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:speedBinLowerBound a owl:DatatypeProperty ;
+    rdfs:label "speed bin lower bound" ;
+    rdfs:comment "Lower bound of a speed bin interval, in knots (inclusive)." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:speedBinUpperBound a owl:DatatypeProperty ;
+    rdfs:label "speed bin upper bound" ;
+    rdfs:comment "Upper bound of a speed bin interval, in knots (exclusive)." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
+# #    Data Properties — Frequency and Statistics
+# #
+# #################################################################
+
+:stateFrequency a owl:DatatypeProperty ;
+    rdfs:label "state frequency" ;
+    rdfs:comment "Relative frequency of observations in a given state or bin (0.0\u20131.0)." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:recordCount a owl:DatatypeProperty ;
+    rdfs:label "record count" ;
+    rdfs:comment "Number of data records (observations) in a given state, bin, or voyage." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:samplingIntervalMinutes a owl:DatatypeProperty ;
+    rdfs:label "sampling interval minutes" ;
+    rdfs:comment "Time interval between successive sensor readings or data records, in minutes." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
+# #    Data Properties — Fuel Consumption
+# #
+# #################################################################
+
+:fuelConsumedMass a owl:DatatypeProperty ;
+    rdfs:label "fuel consumed mass" ;
+    rdfs:comment "Total mass of fuel consumed during a voyage, leg, or interval, in metric tonnes." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:annualFuelConsumedMass a owl:DatatypeProperty ;
+    rdfs:label "annual fuel consumed mass" ;
+    rdfs:comment "Annualised total fuel consumed mass, in metric tonnes per year." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:meanFuelConsumption a owl:DatatypeProperty ;
+    rdfs:label "mean fuel consumption" ;
+    rdfs:comment "Mean fuel consumption rate or total over a statistical sample, in metric tonnes per hour or metric tonnes per voyage." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:averageFuelConsumption a owl:DatatypeProperty ;
+    rdfs:label "average fuel consumption" ;
+    rdfs:comment "Average fuel consumption over a period or across voyages. Use meanFuelConsumption for statistical means; this property accommodates simpler average computations." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:fuelConsumptionRate a owl:DatatypeProperty ;
+    rdfs:label "fuel consumption rate" ;
+    rdfs:comment "Instantaneous or interval fuel consumption rate in metric tonnes per hour." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+# #################################################################
+# #
+# #    Data Properties — Gap Analysis (Optional)
+# #
+# #################################################################
+
+:estimatedMeanFuelConsumption a owl:DatatypeProperty ;
+    rdfs:label "estimated mean fuel consumption" ;
+    rdfs:comment "Model-estimated mean fuel consumption for comparison with observed values, in metric tonnes per hour." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:actualFuelConsumption a owl:DatatypeProperty ;
+    rdfs:label "actual fuel consumption" ;
+    rdfs:comment "Observed actual fuel consumption for gap analysis comparison, in metric tonnes per hour." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:fuelConsumptionDeviation a owl:DatatypeProperty ;
+    rdfs:label "fuel consumption deviation" ;
+    rdfs:comment "Absolute deviation between estimated and actual fuel consumption, in metric tonnes per hour." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:fuelConsumptionDeviationPercentage a owl:DatatypeProperty ;
+    rdfs:label "fuel consumption deviation percentage" ;
+    rdfs:comment "Relative deviation between estimated and actual fuel consumption, expressed as a percentage." ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .

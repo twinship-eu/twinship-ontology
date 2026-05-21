@@ -47,7 +47,8 @@ Since most documentation and visualization tools (WIDOCO, WebVOWL) provide limit
 Both versions are kept synchronized through automated scripts. See twinship-base for detailed explanation of this modeling practice.""" ;
     owl:imports 
         <https://twin-ship.eu/twinship/vessel>,
-        <https://twin-ship.eu/twinship/weatherconditions> ,
-        <https://twin-ship.eu/twinship/draft-time-mode> ;
+        <https://twin-ship.eu/twinship/weather-conditions> ,
+        <https://twin-ship.eu/twinship/operational-modes> ,
+        <https://twin-ship.eu/twinship/operational-context> ;
     owl:versionIRI <https://twin-ship.eu/twinship/core/0.0.4> .
 

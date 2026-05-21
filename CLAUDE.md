@@ -50,9 +50,20 @@ You may skip the formal planning step for:
 
 ## Critical Design Decision: Restriction-Based Modeling
 
-**NEVER add `rdfs:domain` or `rdfs:range` to source model files** (`model/*.ttl`, `model/modules/*.ttl`).
+**NEVER add `rdfs:domain` to source model files** (`model/*.ttl`, `model/modules/*.ttl`).
 
-The ontology uses **OWL restrictions** (`owl:someValuesFrom`, `owl:allValuesFrom`) instead of `rdfs:domain`/`rdfs:range` to avoid unwanted inferences. Domain/range assertions exist **only** in auto-generated visualization files (`build/*-viz*.ttl`). The build scripts convert restrictions to domain/range automatically.
+`rdfs:domain P C` causes a reasoner to infer that every subject of property `P` is a member of class `C`. In an open-world ontology this creates incorrect inferences — for example, `rdfs:domain :hasQuality :VesselSystem` would misclassify any `VoyageLeg` or `Port` that uses `:hasQuality` as a `:VesselSystem`. Use OWL class restrictions (`owl:someValuesFrom`, `owl:allValuesFrom`) on classes to express which classes are expected to use a property.
+
+There is also a **build pipeline dependency**: `generate_viz_ontology.py` synthesizes `rdfs:domain` by reading OWL restrictions. If source files already contained `rdfs:domain`, the script would produce duplicate or incorrectly paired domain-range assertions in the visualization output.
+
+`rdfs:domain` assertions exist **only** in auto-generated files (`build/*-viz*.ttl`), where they are synthesized from OWL restrictions by `generate_viz_ontology.py` for WIDOCO/WebVOWL tooling compatibility.
+
+**`rdfs:range` IS used in source files and is required:**
+- **Datatype properties**: always declare `rdfs:range` with an XSD type (`xsd:decimal`, `xsd:dateTime`, `xsd:string`, etc.) — this is standard OWL/RDFS with no alternative.
+- **Object properties**: `rdfs:range` constrains what the property value must be. Unlike `rdfs:domain`, this infers the *value's* type (not the subject's), which is the intended constraint.
+- **Build pipeline dependency**: `generate_viz_ontology.py` reads `rdfs:range` from source property definitions and combines it with restriction-derived `rdfs:domain` to produce the paired assertions in viz output. `rdfs:range` must be present in source files.
+
+**In summary:** the restriction-based principle applies to *domain* constraints only. OWL restrictions define which classes use a property; `rdfs:range` on properties defines what the value must be. The build scripts rely on this exact split.
 
 ## Repository Structure
 
@@ -60,11 +71,22 @@ The ontology uses **OWL restrictions** (`owl:someValuesFrom`, `owl:allValuesFrom
 
 - `model/twinship-base.ttl` — Foundation layer (base classes, properties)
 - `model/twinship-core.ttl` — Aggregate (~15 lines, imports base + all modules)
-- `model/modules/*.ttl` — Domain-specific modules (vessel, weatherconditions)
-- `model/external/` — Local copies of external ontologies (IDO, PAV, QUDT, VesselAI)
+- `model/modules/*.ttl` — Domain-specific modules (vessel, weather-conditions, operational-modes, operational-context)
+  - **`model/modules/weather-conditions.ttl`** — Canonical module for TwinShip-native weather and wind conditions: `WeatherCondition` (subClassOf `TwinShipQuality`), `WindCondition` (subClassOf `WeatherCondition`), `hasWeatherCondition`, `hasWindCondition`, `windSpeed`, `windDirection`. Does **not** import VesselAI, DUL, GeoSPARQL, or OWL-Time. IRI: `https://twin-ship.eu/twinship/weather-conditions`.
+  - **`model/modules/operational-modes.ttl`** — Canonical module for all categorical operational states and modes: `OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`, and related individuals (CruiseState, EvenKeel, SternTrim, etc.). Use this file for all new mode/state concepts. IRI: `https://twin-ship.eu/twinship/operational-modes`.
+  - **`model/modules/operational-context.ttl`** — Canonical module for operational context: `Voyage`, `VoyageLeg`, `Route`, `Port`, `OperationalProfile`, `SpeedBin`, `FrequencyDistribution`, `FuelConsumptionObservation`, `FuelConsumptionSummary`, and related voyage/context/statistical-summary properties and data properties. IRI: `https://twin-ship.eu/twinship/operational-context`.
+  - **Do NOT** add new mode/state classes to `operational-context.ttl`. Mode and state concepts belong in `operational-modes.ttl`.
+  - **Do NOT** add voyage or context concepts to `operational-modes.ttl`.
+  - **Do NOT** import VesselAI into any TwinShip module. **VesselAI is not currently imported by TwinShip.** The `owl:imports <http://www.vesselAI-project.eu/vesselai>` statement has been removed from `twinship-base.ttl`. VesselAI uses DUL/DOLCE as its upper ontology, which is incompatible with IDO; importing it would pull DUL, GeoSPARQL, and OWL-Time into the import closure. The files under `model/external/vesselai/` are retained for inspection and reference only. The full design decision is documented in `docs/ontology/vesselai-full-reuse-audit.txt`.
+  - **Do NOT** reference VesselAI terms using `owl:equivalentClass` or `skos:closeMatch`. VesselAI's `WeatherCondition` is a `dul:Event`; TwinShip's `WeatherCondition` is a `TwinShipQuality` — these are genuinely different semantic categories. Use `rdfs:seeAlso` only for source traceability. `skos:relatedMatch` is acceptable for `:VesselSystem` / `VAI:Vessel` and `:FuelConsumptionSummary` / `VAI:CO2_emissionReport` where the domain concepts are closely related, but never `skos:closeMatch` or OWL equivalence.
+  - A future `operational-requirements.ttl` module is reserved for requirements/constraints (ETARequirement, SpeedRequirement, RouteRequirement, FuelRequirement, EmissionRequirement, WeatherConstraint, PortConstraint). Do not add `Voyage`, `VoyageLeg`, `Route`, or `Port` to that module when it is created.
+  - Do not create or reference `draft-trim-mode.ttl`, `draft_time_mode.ttl`, `draft_trim_mode.ttl`, `operations.ttl`, or `weatherconditions.ttl` — those were replaced by the canonical modules listed above.
+- `model/external/` — Local copies of external ontologies (IDO, PAV, QUDT). The `vesselai/` subdirectory contains VesselAI ontology files retained for inspection and reference **only** — they are **not imported** by any TwinShip module. See `docs/ontology/vesselai-full-reuse-audit.txt`.
 - `model/vocabularies/` — QUDT vocabulary files
 - `model/catalog-v001.xml` — OASIS XML catalog mapping ontology URIs to local file paths
 - `scripts/*.py`, `scripts/*.sh` — Build and processing scripts
+- `docs/ontology/` — Ontology design decision reports (e.g., `vesselai-full-reuse-audit.txt`)
+- `queries/` — SPARQL validation queries
 
 ### Generated artifacts (gitignored, never manually edit)
 
@@ -141,14 +163,14 @@ uv run python scripts/enhance_webvowl_json.py build/twinship-core-complete-viz-c
 
 ## Common Pitfalls
 
-1. **Don't add `rdfs:domain`/`rdfs:range` to source `.ttl` files** — use OWL restrictions instead
+1. **Don't add `rdfs:domain` to source `.ttl` files** — use OWL restrictions instead. (`rdfs:range` IS required in source files — see "Restriction-Based Modeling" above)
 2. **Update `model/catalog-v001.xml`** when adding new ontology modules — `merge_modules.py` depends on it for URI resolution
 3. **The `--auto` flag** on merge/viz scripts auto-derives output filenames — don't also specify an output path
 4. **`strip_for_webvowl.py`** uses `sys.argv` (not argparse), unlike most other scripts
 5. **The landing page HTML** is generated inline inside `generate_website.sh` via heredoc — edit the shell script, not the HTML file
 6. **`build/` files have a specific dependency order** — later stages depend on earlier stages
 7. **`tests/` directory exists but has no tests yet** — pytest is configured but unused
-9. **Version synchronization**: All version numbers are synchronized to "0.0.4" across ontology files and project metadata
+8. **Version synchronization**: All version numbers are synchronized to "0.0.4" across ontology files and project metadata
 9. **Ontology files use UTF-8** — ensure encoding is preserved when editing `.ttl` files
 
 ## When Modifying Ontology Classes/Properties

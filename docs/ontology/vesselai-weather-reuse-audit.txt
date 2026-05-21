@@ -1,0 +1,476 @@
+================================================================================
+WEATHER MODULE ARCHITECTURE AUDIT — TWINSHIP ONTOLOGY
+================================================================================
+
+Date:    21 May 2026
+Branch:  feature/ontology-extension
+Author:  GitHub Copilot (Claude Sonnet 4.6) — automated audit
+
+Files inspected:
+  model/modules/weatherconditions.ttl
+  model/external/vesselai/vesselAI_ontology_v2.owl
+  model/external/vesselai/modules/events.ttl
+  model/external/vesselai/modules/main.ttl
+  model/external/vesselai/modules/contextualInformation.ttl
+  model/catalog-v001.xml
+  model/twinship-core.ttl
+  scripts/generate_docs_ontology.py
+  model/external/SCHEMA_QUDT-simplified.ttl
+  model/external/PAV-simplified.ttl
+  README.md
+  model/README.md
+  CLAUDE.md
+  .github/workflows/deploy.yml
+
+================================================================================
+SECTION 1 — CURRENT IMPORT SITUATION
+================================================================================
+
+KEY FINDING: weatherconditions.ttl does NOT import VesselAI
+-----------------------------------------------------------
+
+Despite the module's dcterms:description stating "Reuses weather-related classes
+and properties from the VesselAI ontology", inspection of the actual OWL header
+shows only a single import:
+
+  <https://twin-ship.eu/twinship/weatherconditions> a owl:Ontology ;
+      owl:imports <https://twin-ship.eu/twinship/base> ;
+
+There is no owl:imports for VesselAI anywhere in the file.
+
+The vesselai: prefix is declared but never used in axioms
+---------------------------------------------------------
+
+The file declares:
+  @prefix vesselai: <http://www.vesselAI-project.eu/vesselai#> .
+
+This prefix appears ONLY in annotation text — in rdfs:comment and
+dcterms:description strings — not in any OWL axiom, triple, class definition,
+or property assertion. It is entirely inert from an OWL semantics perspective.
+
+Additional namespace problem
+----------------------------
+
+The vesselai: prefix points to http://www.vesselAI-project.eu/vesselai# (the
+ontology document IRI). VesselAI's ACTUAL classes and properties are in a
+different namespace: http://www.vesselAI-project.eu/ontology#
+
+So even if an axiom had used vesselai:WeatherCondition, it would resolve to
+a non-existent URI, not the VesselAI class.
+
+twinship-core.ttl imports
+-------------------------
+
+  owl:imports
+      <https://twin-ship.eu/twinship/vessel> ,
+      <https://twin-ship.eu/twinship/weatherconditions> ,
+      <https://twin-ship.eu/twinship/operational-modes> ,
+      <https://twin-ship.eu/twinship/operational-context> ;
+
+Does not import VesselAI directly.
+
+catalog-v001.xml
+----------------
+
+The catalog contains a VesselAI entry:
+
+  <uri id="VesselAI"
+       name="http://www.vesselAI-project.eu/vesselai"
+       uri="external/vesselai/vesselAI_ontology_v2.owl"/>
+
+This entry is NOT triggered by any current TwinShip module, because no TwinShip
+module imports that IRI. It is a leftover from an earlier design intent and does
+not affect the import closure at runtime.
+
+Is DUL in the import closure?
+-----------------------------
+
+No, not currently. Since no TwinShip module imports VesselAI, DUL is not in the
+closure. If a TwinShip module ever imported
+<http://www.vesselAI-project.eu/vesselai>, the catalog would resolve it to
+vesselAI_ontology_v2.owl, which itself declares owl:imports on:
+  - DUL/DOLCE (http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#)
+  - GeoSPARQL (http://www.opengis.net/ont/geosparql#)
+  - OWL-Time  (http://www.w3.org/2006/time#)
+All three would then enter the import closure. That path does not currently exist.
+
+
+================================================================================
+SECTION 2 — VESSELAI DEPENDENCY ANALYSIS
+================================================================================
+
+Main file and namespaces
+------------------------
+
+  Main file:           model/external/vesselai/vesselAI_ontology_v2.owl
+  Ontology IRI:        http://www.vesselAI-project.eu/vesselai
+  Class/prop namespace: http://www.vesselAI-project.eu/ontology#
+                        (DISTINCT from the ontology IRI — a source of confusion)
+  Modules:             events.ttl, contextualInformation.ttl,
+                       trajectories_module.ttl, vesselCharacteristics.ttl
+                       (loaded via relative file:// paths inside main.ttl)
+
+Upper ontology dependencies
+---------------------------
+
+VesselAI imports three heavy external ontologies:
+
+  owl:imports <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#>
+  owl:imports <http://www.opengis.net/ont/geosparql#>
+  owl:imports <http://www.w3.org/2006/time#>
+
+DUL/DOLCE+DnS Ultralite is the top-level upper ontology. VesselAI classes
+inherit directly from it: dul:Event, dul:PhysicalPlace, dul:Entity, dul:Region,
+dul:InformationEntity.
+
+VesselAI WeatherCondition class hierarchy
+-----------------------------------------
+
+  dul:Event
+    └── :Event           (subClassOf dul:Event)
+          └── :Environmental   (subClassOf :Event)
+                └── :WeatherCondition   (subClassOf :Environmental AND :Dynamic)
+
+CRITICAL ARCHITECTURAL POINT: In VesselAI, WeatherCondition is a sub-type of
+Event — a temporal occurrence. In TwinShip (IDO-based), weather conditions are
+modelled as TwinShipQuality — a quality/attribute of the physical situation.
+These two interpretations are genuinely different ontological commitments.
+WeatherCondition is NOT directly mappable to TwinShipQuality without losing
+semantics.
+
+VesselAI weather data properties
+---------------------------------
+
+All weather measurement properties use rdfs:range xsd:string (not typed numerics):
+
+  Property                                      | Range
+  ----------------------------------------------|------------
+  :10_metre_U_wind_component_surface            | xsd:string
+  :10_metre_V_wind_component_surface            | xsd:string
+  :Mean_sea_level_pressure_surface              | xsd:string
+  :2_metre_temperature_surface                  | xsd:string
+  :2_metre_dewpoint_temperature_surface         | xsd:string
+  :Sea_surface_temperature_surface              | xsd:string
+  :Mean_wave_direction_msl                      | xsd:string
+  :Mean_wave_period_msl                         | xsd:string
+  :Total_precipitation_surface_1_Hour_Accum.   | xsd:string
+  :hasWeatherCondition                          | :WeatherCondition
+  :hasWeatherPhenomena                          | :WeatherPhenomena
+
+Note: TwinShip's windSpeed and windDirection already use xsd:decimal — better
+typing than VesselAI.
+
+VesselAI terms referenced by TwinShip weather module
+-----------------------------------------------------
+
+None are referenced in OWL axioms. The weatherconditions.ttl comments list the
+following VesselAI terms as context, but do not use them in any OWL axiom:
+  - vesselai:WeatherCondition, vesselai:Environmental, vesselai:WeatherPhenomena
+  - vesselai:hasWeatherCondition, vesselai:hasWeatherPhenomena
+  - Various measurement properties (pressure, U/V wind, temperature, waves)
+
+
+================================================================================
+SECTION 3 — MINIMAL TWINSHIP FIRST-ITERATION NEED
+================================================================================
+
+Based on the current module state and the competency questions for voyage-level
+fuel efficiency and operational analysis:
+
+  Term                   | Status           | Verdict
+  -----------------------|------------------|---------------------------
+  :WeatherCondition      | MISSING          | Needed as grouping class
+  :WindCondition         | Defined          | Keep (subClassOf :TwinShipQuality)
+  :hasWeatherCondition   | MISSING          | Needed to link vessel/voyage
+  :hasWindCondition      | Defined          | Keep (subPropertyOf :hasQuality)
+  :windSpeed             | Defined (decimal)| Keep
+  :windDirection         | Defined (decimal)| Keep
+
+The list is confirmed sufficient for the first iteration. No additional VesselAI
+terms are needed. Wave height, sea surface temperature, and precipitation are
+candidates for a future iteration only.
+
+One gap identified: :WeatherCondition as a superclass of :WindCondition is
+missing. The natural pattern:
+
+  :WeatherCondition   subClassOf :TwinShipQuality
+  :WindCondition      subClassOf :WeatherCondition
+  :hasWeatherCondition subPropertyOf :hasQuality , range :WeatherCondition
+  :hasWindCondition   subPropertyOf :hasWeatherCondition , range :WindCondition
+
+
+================================================================================
+SECTION 4 — FEASIBILITY OF VesselAI-simplified.ttl
+================================================================================
+
+A VesselAI-simplified.ttl is technically feasible but would provide minimal
+benefit for the current release.
+
+What could be extracted:
+  - :WeatherCondition class (stripped of DUL superclasses)
+  - :hasWeatherCondition property
+  - U/V wind vector properties
+
+Why it would NOT add real value:
+  1. VesselAI's WeatherCondition is a dul:Event — semantically incompatible
+     with TwinShip's quality-based modelling. Stripping the DUL superclass
+     effectively redefines the concept; at that point you are defining a
+     TwinShip-native concept, not reusing VesselAI's.
+
+  2. The only VesselAI terms with any residual interest are the U/V wind vector
+     properties. These are already noted in windSpeed/windDirection comments as
+     distinct quantities. They do not need to be OWL axioms.
+
+  3. The simplified file pattern (QUDT-simplified, PAV-simplified) makes sense
+     when TwinShip ACTIVELY uses the external ontology's properties in OWL
+     axioms — e.g., pav:version is used in ontology metadata. No VesselAI
+     property is used in any TwinShip OWL axiom.
+
+  4. A simplified file would add a file to maintain with no current consumer.
+
+VERDICT: Do not create VesselAI-simplified.ttl for this release.
+rdfs:seeAlso annotations inline provide sufficient traceability without
+introducing a new file or import.
+
+
+================================================================================
+SECTION 5 — WEATHER MODULE NAMING
+================================================================================
+
+Current:    weatherconditions.ttl   /  https://twin-ship.eu/twinship/weatherconditions
+Recommended: weather-conditions.ttl  /  https://twin-ship.eu/twinship/weather-conditions
+
+Rationale: All other multi-word modules use hyphenated names:
+  - operational-modes.ttl
+  - operational-context.ttl
+The current name is the only exception.
+
+Files that would change if renamed:
+
+  File                                  | Change
+  --------------------------------------|----------------------------------------
+  model/modules/weatherconditions.ttl   | Rename file
+  model/modules/weather-conditions.ttl  | Update owl:Ontology IRI + versionIRI
+  model/catalog-v001.xml                | 2 entries (base IRI + versioned IRI)
+  model/twinship-core.ttl               | owl:imports IRI
+  scripts/generate_docs_ontology.py     | 1 entry in TWINSHIP_NAMESPACES list
+  model/README.md                       | 3 references (tree, item 4, catalog example)
+  README.md                             | 1 reference
+  CLAUDE.md                             | 1 reference (module list)
+  scripts/README.md                     | 1 reference
+
+Shim needed? NO. The module has not been committed/pushed under its current IRI
+on the default branch. Simple rename is sufficient.
+
+
+================================================================================
+SECTION 6 — RECOMMENDED MODELLING PATTERN
+================================================================================
+
+Target Turtle pattern for the refactored module:
+
+  ##################################################################
+  #  Classes
+  ##################################################################
+
+  :WeatherCondition a owl:Class ;
+      rdfs:label "Weather Condition"@en ;
+      rdfs:comment "An environmental quality describing weather conditions
+                    affecting vessel operations. Extends TwinShipQuality."@en ;
+      rdfs:subClassOf :TwinShipQuality ;
+      rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#WeatherCondition> .
+
+  :WindCondition a owl:Class ;
+      rdfs:label "Wind Condition"@en ;
+      rdfs:comment "A weather quality describing scalar wind speed and direction
+                    relevant to vessel operation. Distinct from VesselAI U/V
+                    wind vector components."@en ;
+      rdfs:subClassOf :WeatherCondition ;
+      rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#10_metre_U_wind_component_surface> .
+
+  ##################################################################
+  #  Object Properties
+  ##################################################################
+
+  :hasWeatherCondition a owl:ObjectProperty ;
+      rdfs:label "has weather condition"@en ;
+      rdfs:comment "Relates a vessel, voyage, or segment to a weather condition."@en ;
+      rdfs:range :WeatherCondition ;
+      rdfs:subPropertyOf :hasQuality .
+
+  :hasWindCondition a owl:ObjectProperty ;
+      rdfs:label "has wind condition"@en ;
+      rdfs:comment "Relates a vessel, voyage segment, or observation to a
+                    wind condition."@en ;
+      rdfs:range :WindCondition ;
+      rdfs:subPropertyOf :hasWeatherCondition .
+
+  ##################################################################
+  #  Data Properties
+  ##################################################################
+
+  :windSpeed a owl:DatatypeProperty ;
+      rdfs:label "wind speed"@en ;
+      rdfs:comment "Scalar wind speed in m/s or knots. Distinct from VesselAI
+                    U/V wind vector components."@en ;
+      rdfs:range xsd:decimal ;
+      rdfs:subPropertyOf :TwinShipDataProperties .
+
+  :windDirection a owl:DatatypeProperty ;
+      rdfs:label "wind direction"@en ;
+      rdfs:comment "Meteorological wind direction in degrees (0-360)."@en ;
+      rdfs:range xsd:decimal ;
+      rdfs:subPropertyOf :TwinShipDataProperties .
+
+On mapping annotations:
+  Use rdfs:seeAlso — NOT skos:closeMatch, NOT owl:equivalentClass.
+  The semantic mismatch (VesselAI: Event; TwinShip: Quality) rules out
+  skos:closeMatch. rdfs:seeAlso links for informational purposes without
+  asserting semantic equivalence.
+
+
+================================================================================
+SECTION 7 — SIMPLE DATA PROPERTIES vs QUDT QUANTITY VALUES
+================================================================================
+
+RECOMMENDATION: Keep simple xsd:decimal data properties for release 0.0.4.
+Defer QUDT weather modelling.
+
+  Factor                 | Assessment
+  -----------------------|-----------------------------------------------------
+  SPARQL usability       | Direct FILTER (?windSpeed > 10) with no graph
+                         | traversal — simpler than QUDT pattern
+  Current ontology style | All other data properties in vessel.ttl and
+                         | operational-context.ttl use xsd:decimal/xsd:string
+  VesselAI comparison    | VesselAI uses xsd:string for all weather properties;
+                         | TwinShip xsd:decimal is already superior
+  QUDT complexity cost   | Requires qudt:Quantity + qudt:QuantityValue + qudt:unit
+                         | = 3 extra blank nodes per observation
+  Over-modularisation    | Adding a QUDT weather sub-module now is premature
+
+If QUDT weather modelling is added in a future iteration, it should be an
+optional extension module (e.g., model/modules/weather-qudt.ttl) that imports
+weather-conditions.ttl and adds QUDT-typed quantity values alongside — not
+replacing — the simple data properties. This preserves backwards compatibility
+with existing simple queries.
+
+
+================================================================================
+SECTION 8 — RISK ASSESSMENT
+================================================================================
+
+Option A: TwinShip-native only, no VesselAI dependency
+Option B: TwinShip-native + DUL-free VesselAI-simplified.ttl for mappings
+Option C: Keep full VesselAI import
+
+  Factor                   | Option A   | Option B   | Option C
+  -------------------------|------------|------------|-------------------
+  Complexity               | Low        | Medium     | High
+  Ontological consistency  | High       | High       | LOW (DUL + IDO)
+  DUL import risk          | None       | None       | CERTAIN
+  Reasoning correctness    | High       | High       | Low (Event vs Quality)
+  Ease of use              | High       | Medium     | Low (import failures)
+  Query simplicity         | High       | High       | Medium
+  Maintainability          | High       | Medium     | Low
+  IDO-only architecture    | Aligned    | Aligned    | VIOLATES
+
+Option C is not viable:
+  - No local DUL file in the catalog; import would fail or produce incomplete
+    closure in most OWL tools
+  - WeatherCondition as dul:Event is semantically incompatible with IDO-based
+    quality modelling
+  - GeoSPARQL and OWL-Time would also enter the import closure
+
+Option B is feasible but adds no practical value over Option A:
+  - The only use of a simplified file would be rdfs:seeAlso annotations
+  - These can be written inline without a separate file or import
+  - An extra file to maintain with no consumer is a liability
+
+OPTION A IS RECOMMENDED. The module already does not import VesselAI, so the
+refactoring work is small. The result is clean, maintainable, and fully aligned
+with the IDO-only upper-ontology architecture.
+
+
+================================================================================
+SECTION 9 — RECOMMENDED REFACTORING PLAN
+================================================================================
+
+For approval before any implementation begins.
+
+Step 1 — Rename the module file
+  - Rename model/modules/weatherconditions.ttl
+        → model/modules/weather-conditions.ttl
+  - Update owl:Ontology IRI:
+      FROM  https://twin-ship.eu/twinship/weatherconditions
+      TO    https://twin-ship.eu/twinship/weather-conditions
+  - Update owl:versionIRI accordingly
+
+Step 2 — Clean up the module header and description
+  - Remove @prefix vesselai: declaration (unused in axioms; misleading)
+  - Fix dcterms:description — remove claim about reusing VesselAI classes;
+    replace with accurate TwinShip-native IDO-based description
+  - Update dcterms:modified date
+
+Step 3 — Add the missing WeatherCondition class and property
+  - Define :WeatherCondition as subClassOf :TwinShipQuality
+    with rdfs:seeAlso pointing to VesselAI's WeatherCondition IRI
+  - Change :WindCondition to subClassOf :WeatherCondition
+    (currently subClassOf :TwinShipQuality directly)
+  - Define :hasWeatherCondition (subPropertyOf :hasQuality,
+    rdfs:range :WeatherCondition)
+  - Change :hasWindCondition to subPropertyOf :hasWeatherCondition
+    (currently subPropertyOf :hasQuality directly)
+  - Keep windSpeed and windDirection as xsd:decimal data properties unchanged
+
+Step 4 — Update twinship-core.ttl
+  - Replace:
+      owl:imports <https://twin-ship.eu/twinship/weatherconditions>
+    With:
+      owl:imports <https://twin-ship.eu/twinship/weather-conditions>
+
+Step 5 — Update catalog-v001.xml
+  - Update the two WeatherConditions entries (base IRI + versioned IRI)
+    to the new IRI and filename path
+  - The VesselAI catalog entry may be left as-is (not harmful, useful for
+    tooling that inspects the external file)
+
+Step 6 — Update scripts/generate_docs_ontology.py
+  - In TWINSHIP_NAMESPACES list, replace:
+      "https://twin-ship.eu/twinship/weatherconditions"
+    With:
+      "https://twin-ship.eu/twinship/weather-conditions"
+
+Step 7 — Update documentation
+  - model/README.md: 3 references (directory tree, item 4, catalog snippet)
+  - README.md: 1 reference (modules list)
+  - CLAUDE.md: module list line 74; add note confirming no VesselAI dependency
+  - scripts/README.md: 1 reference
+
+Step 8 — Verify Turtle syntax
+  - Run rdflib parse on weather-conditions.ttl and twinship-core.ttl
+    after all changes complete
+
+
+================================================================================
+SUMMARY TABLE
+================================================================================
+
+  Question                                      | Finding
+  ----------------------------------------------|----------------------------------
+  Does weatherconditions.ttl import VesselAI?   | NO — imports only twinship-base
+  Is DUL in the current import closure?          | NO
+  Is vesselai: prefix used in OWL axioms?        | NO — annotation strings only,
+                                                 |   wrong namespace anyway
+  VesselAI upper ontology                        | DUL + GeoSPARQL + OWL-Time
+  VesselAI WeatherCondition semantics            | dul:Event — INCOMPATIBLE with
+                                                 |   TwinShipQuality pattern
+  VesselAI-simplified.ttl needed?                | NO
+  Rename to weather-conditions.ttl?              | YES — naming consistency
+  Missing TwinShip terms?                        | :WeatherCondition class and
+                                                 |   :hasWeatherCondition property
+  QUDT modelling now or deferred?                | DEFERRED — keep xsd:decimal
+  Recommended option                             | OPTION A — TwinShip-native only
+
+================================================================================
+END OF AUDIT REPORT
+================================================================================

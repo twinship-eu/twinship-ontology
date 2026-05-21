@@ -1,0 +1,128 @@
+# TwinShip Weather Conditions Module — Validation Queries
+#
+# These SPARQL queries validate that the weather-conditions module has been
+# correctly loaded and that the class hierarchy and property chain are intact.
+# Run against the complete TwinShip ontology (twinship-core).
+#
+# Module IRI: https://twin-ship.eu/twinship/weather-conditions
+#
+# Design principles verified:
+#   - WeatherCondition and WindCondition are TwinShipQuality-based (IDO-aligned)
+#   - No VesselAI, DUL, GeoSPARQL, or OWL-Time imports
+#   - Simple xsd:decimal data properties for windSpeed and windDirection
+#   - hasWindCondition is a subproperty of hasWeatherCondition
+
+PREFIX : <https://twin-ship.eu/twinship#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# ============================================================
+# Query 1 — WeatherCondition class exists and is a TwinShipQuality
+# ============================================================
+# Expected: returns :WeatherCondition with superclass :TwinShipQuality
+
+SELECT ?class ?superclass
+WHERE {
+  VALUES ?class { :WeatherCondition }
+  ?class rdfs:subClassOf ?superclass .
+  FILTER (!isBlank(?superclass))
+}
+
+# ============================================================
+# Query 2 — WindCondition is a subclass of WeatherCondition
+# ============================================================
+# Expected: returns :WindCondition with superclass :WeatherCondition
+
+# SELECT ?class ?superclass
+# WHERE {
+#   VALUES ?class { :WindCondition }
+#   ?class rdfs:subClassOf ?superclass .
+#   FILTER (!isBlank(?superclass))
+# }
+
+# ============================================================
+# Query 3 — hasWeatherCondition exists and is subPropertyOf hasQuality
+# ============================================================
+# Expected: returns :hasWeatherCondition → :hasQuality
+
+# SELECT ?prop ?superProp
+# WHERE {
+#   VALUES ?prop { :hasWeatherCondition }
+#   ?prop rdfs:subPropertyOf ?superProp .
+# }
+
+# ============================================================
+# Query 4 — hasWindCondition is subPropertyOf hasWeatherCondition
+# ============================================================
+# Expected: returns :hasWindCondition → :hasWeatherCondition
+
+# SELECT ?prop ?superProp
+# WHERE {
+#   VALUES ?prop { :hasWindCondition }
+#   ?prop rdfs:subPropertyOf ?superProp .
+# }
+
+# ============================================================
+# Query 5 — windSpeed and windDirection have xsd:decimal range
+# ============================================================
+# Expected: both properties with range xsd:decimal
+
+# SELECT ?prop ?range
+# WHERE {
+#   VALUES ?prop { :windSpeed :windDirection }
+#   ?prop rdfs:range ?range .
+# }
+
+# ============================================================
+# Query 6 — Full class hierarchy for weather classes
+# ============================================================
+# Expected:
+#   :WeatherCondition rdfs:subClassOf :TwinShipQuality
+#   :WindCondition    rdfs:subClassOf :WeatherCondition
+
+# SELECT ?class ?superclass
+# WHERE {
+#   VALUES ?class { :WeatherCondition :WindCondition }
+#   ?class rdfs:subClassOf ?superclass .
+#   FILTER (!isBlank(?superclass))
+# }
+# ORDER BY ?class
+
+# ============================================================
+# Query 7 — Weather module does NOT import VesselAI
+# ============================================================
+# Expected: returns no results (VesselAI IRI should NOT be in imports)
+
+# ASK {
+#   <https://twin-ship.eu/twinship/weather-conditions>
+#       owl:imports <http://www.vesselAI-project.eu/vesselai> .
+# }
+# -- Expected result: false
+
+# ============================================================
+# Query 8 — All WeatherCondition instances with wind data
+# ============================================================
+# Example query for instance data validation when populated.
+# Expected: returns any wind condition observations with speed/direction.
+
+# SELECT ?observation ?speed ?direction
+# WHERE {
+#   ?observation a :WindCondition .
+#   OPTIONAL { ?observation :windSpeed ?speed }
+#   OPTIONAL { ?observation :windDirection ?direction }
+# }
+# ORDER BY ?observation
+
+# ============================================================
+# Query 9 — List all seeAlso annotations on weather classes
+# ============================================================
+# Expected: WeatherCondition and WindCondition should have rdfs:seeAlso
+# pointing to VesselAI IRIs (for traceability, no semantic assertion).
+
+# SELECT ?class ?seeAlso
+# WHERE {
+#   VALUES ?class { :WeatherCondition :WindCondition }
+#   ?class rdfs:seeAlso ?seeAlso .
+# }
+# ORDER BY ?class

@@ -1,0 +1,76 @@
+@prefix : <https://twin-ship.eu/twinship#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
+
+<https://twin-ship.eu/twinship/weather-conditions> a owl:Ontology ;
+    owl:versionIRI <https://twin-ship.eu/twinship/weather-conditions/0.0.4> ;
+    owl:imports <https://twin-ship.eu/twinship/base> ;
+    dcterms:title "TwinShip Weather Conditions Module"@en ;
+    dcterms:description "This module defines TwinShip-native weather and wind condition concepts for vessel operational analysis. The module does not import VesselAI or DUL; selected external VesselAI terms may be referenced only using non-semantic rdfs:seeAlso annotations for traceability. WeatherCondition and WindCondition are modelled as TwinShipQuality-based classes aligned with the IDO upper ontology."@en ;
+    dcterms:creator "TwinShip Project" ;
+    dcterms:created "2026-01-30"^^xsd:date ;
+    dcterms:modified "2026-05-21"^^xsd:date ;
+    dcterms:license <https://opensource.org/licenses/MIT> ;
+    owl:versionInfo "0.0.4" ;
+    rdfs:comment "TwinShip-native weather and wind condition module. WeatherCondition and WindCondition are subclasses of TwinShipQuality (IDO-aligned). This module does not import VesselAI, DUL, GeoSPARQL, or OWL-Time. Note: VesselAI models WeatherCondition as a subclass of dul:Event; TwinShip models it as a quality/attribute, which is the correct IDO alignment."@en .
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+:WeatherCondition a owl:Class ;
+    rdfs:label "Weather Condition"@en ;
+    rdfs:comment "An environmental quality describing weather conditions affecting vessel operations. Extends TwinShipQuality in the IDO-aligned TwinShip ontology. Note: VesselAI models WeatherCondition as a subclass of dul:Event (a temporal occurrence); TwinShip models it as a quality, which is the appropriate IDO-based pattern. No semantic equivalence is asserted."@en ;
+    rdfs:subClassOf :TwinShipQuality ;
+    rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#WeatherCondition> .
+
+:WindCondition a owl:Class ;
+    rdfs:label "Wind Condition"@en ;
+    rdfs:comment "A weather quality describing scalar wind speed and wind direction relevant to vessel operation. Subclass of WeatherCondition. Distinct from VesselAI U/V wind vector components (10_metre_U_wind_component_surface, 10_metre_V_wind_component_surface), which represent directional vector quantities; TwinShip windSpeed and windDirection represent scalar speed and meteorological bearing."@en ;
+    rdfs:subClassOf :WeatherCondition ;
+    rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#10_metre_U_wind_component_surface> ,
+                 <http://www.vesselAI-project.eu/ontology#10_metre_V_wind_component_surface> .
+
+#################################################################
+#
+#    Object Properties
+#
+#################################################################
+
+:hasWeatherCondition a owl:ObjectProperty ;
+    rdfs:label "has weather condition"@en ;
+    rdfs:comment "Relates a vessel, voyage, voyage segment, or observation to a weather condition."@en ;
+    rdfs:range :WeatherCondition ;
+    rdfs:subPropertyOf :hasQuality .
+
+:hasWindCondition a owl:ObjectProperty ;
+    rdfs:label "has wind condition"@en ;
+    rdfs:comment "Relates a vessel, voyage segment, or observation to a wind condition."@en ;
+    rdfs:range :WindCondition ;
+    rdfs:subPropertyOf :hasWeatherCondition .
+
+#################################################################
+#
+#    Data Properties
+#
+#################################################################
+
+:windSpeed a owl:DatatypeProperty ;
+    rdfs:label "wind speed"@en ;
+    rdfs:comment "Scalar wind speed in m/s, knots, or another stated unit. Distinct from VesselAI U/V wind vector components."@en ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:windDirection a owl:DatatypeProperty ;
+    rdfs:label "wind direction"@en ;
+    rdfs:comment "Meteorological wind direction in degrees from 0 to 360, where 0/360 is north and values indicate the direction from which the wind blows."@en ;
+    rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+

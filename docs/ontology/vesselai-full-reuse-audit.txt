@@ -1,0 +1,1881 @@
+================================================================================
+FULL VESSELAI REUSE AUDIT -- TWINSHIP ONTOLOGY
+================================================================================
+
+Date:    2026-05-21
+Branch:  feature/ontology-extension
+Author:  GitHub Copilot (Claude Sonnet 4.6) — automated audit based on full
+         inspection of repository files
+
+Files inspected:
+
+  TwinShip source ontology
+  ------------------------
+  model/twinship-base.ttl
+  model/twinship-core.ttl
+  model/modules/vessel.ttl
+  model/modules/weather-conditions.ttl
+  model/modules/operational-modes.ttl
+  model/modules/operational-context.ttl
+  model/catalog-v001.xml
+
+  VesselAI files
+  --------------
+  model/external/vesselai/vesselAI_ontology_v2.owl
+  model/external/vesselai/modules/main.ttl
+  model/external/vesselai/modules/events.ttl
+  model/external/vesselai/modules/contextualInformation.ttl
+  model/external/vesselai/modules/vesselCharacteristics.ttl
+  model/external/vesselai/modules/trajectories_module.ttl
+  model/external/vesselai/catalog-v001.xml
+
+  Supporting files
+  ----------------
+  CLAUDE.md
+  README.md
+  queries/weather-conditions-validation.rq
+  queries/operational-extension-validation.rq
+  docs/WEATHER_MODULE_AUDIT.txt
+
+  NOTE: model/external/IDO_20240503.ttl, model/external/PAV-simplified.ttl,
+  model/external/SCHEMA_QUDT-simplified.ttl, and model/vocabularies/ files
+  were identified by directory listing but were not read in full. Their
+  presence is confirmed. IDO is the confirmed TwinShip upper ontology.
+  No missing files were found among the declared module set.
+
+
+================================================================================
+SECTION 1 -- CURRENT TWINSHIP IMPORT CLOSURE
+================================================================================
+
+1. What does twinship-core.ttl currently import?
+
+   twinship-core.ttl contains exactly these owl:imports statements:
+
+     owl:imports <https://twin-ship.eu/twinship/vessel>
+     owl:imports <https://twin-ship.eu/twinship/weather-conditions>
+     owl:imports <https://twin-ship.eu/twinship/operational-modes>
+     owl:imports <https://twin-ship.eu/twinship/operational-context>
+
+   It does NOT directly import twinship-base. The base is pulled in
+   transitively: each of the four modules listed above imports
+   <https://twin-ship.eu/twinship/base>.
+
+2. Do any current TwinShip modules import VesselAI directly?
+
+   YES -- CRITICAL FINDING.
+
+   twinship-base.ttl contains the following owl:imports statement:
+
+     owl:imports <http://www.vesselAI-project.eu/vesselai> ;
+
+   This is an actual owl:imports triple, not a comment. Because every
+   TwinShip module imports twinship-base, this means VesselAI is
+   transitively in the import closure of ALL current TwinShip modules
+   including vessel.ttl, weather-conditions.ttl, operational-modes.ttl,
+   and operational-context.ttl.
+
+   The IRI <http://www.vesselAI-project.eu/vesselai> is mapped in
+   model/catalog-v001.xml to external/vesselai/vesselAI_ontology_v2.owl.
+
+3. Do any current TwinShip modules import DUL directly?
+
+   No TwinShip TTL source file contains a direct owl:imports for DUL.
+   However, vesselAI_ontology_v2.owl imports DUL:
+
+     owl:imports <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#>
+
+   Because twinship-base.ttl imports VesselAI (see point 2 above), DUL
+   is in the TRANSITIVE import closure of TwinShip if a reasoner or
+   tool follows owl:imports chains. Whether DUL is actually loaded
+   depends on whether the reasoner resolves that external URI. There is
+   no local catalog entry for DUL.
+
+4. Do any current TwinShip modules import GeoSPARQL directly?
+
+   No. Same reasoning as DUL -- GeoSPARQL is imported by VesselAI:
+
+     owl:imports <http://www.opengis.net/ont/geosparql#>
+
+   No local catalog entry exists for GeoSPARQL.
+
+5. Do any current TwinShip modules import OWL-Time directly?
+
+   No. Same reasoning -- OWL-Time is imported by VesselAI:
+
+     owl:imports <http://www.w3.org/2006/time#>
+
+   No local catalog entry exists for OWL-Time.
+
+6. Does catalog-v001.xml contain VesselAI mappings?
+
+   Yes. model/catalog-v001.xml contains:
+
+     <uri id="VesselAI"
+          name="http://www.vesselAI-project.eu/vesselai"
+          uri="external/vesselai/vesselAI_ontology_v2.owl"/>
+
+   There is also a duplicate entry inside a <group> block:
+
+     <uri id="Automatically generated entry, Timestamp=1770135896276"
+          name="http://www.vesselAI-project.eu/vesselai"
+          uri="external/vesselai/vesselAI_ontology_v2.owl"/>
+
+   model/external/vesselai/catalog-v001.xml contains a separate mapping:
+
+     name="http://www.vesselAI-project.eu/ontology"
+     uri="vesselAI_ontology_v2.owl"
+
+   Note: this sub-catalog maps the TERM namespace IRI, not the ontology
+   IRI -- these two differ (see Section 2 point 12 below).
+
+7. Are those VesselAI mappings actually used by owl:imports?
+
+   Yes. The owl:imports statement in twinship-base.ttl references the
+   exact IRI <http://www.vesselAI-project.eu/vesselai> which is mapped
+   in catalog-v001.xml. Whether a given tool follows this chain depends
+   on whether the tool honours the OASIS XML Catalog file.
+
+8. Is VesselAI currently in the TwinShip import closure?
+
+   YES, by virtue of the owl:imports statement in twinship-base.ttl.
+   This is an active import, not a comment or documentation mention.
+
+   This contradicts the CLAUDE.md documentation, which states:
+   "Do NOT import VesselAI into any TwinShip module" and describes
+   VesselAI files as being in external/ for inspection/reference only.
+   The owl:imports in twinship-base.ttl is an active divergence from
+   the stated architectural intent.
+
+9. Is DUL currently in the TwinShip import closure?
+
+   YES, transitively via twinship-base.ttl -> VesselAI -> DUL.
+   Tools that follow owl:imports chains (e.g., Protege, OWL reasoners)
+   will attempt to load DUL, and will also attempt to load GeoSPARQL
+   and OWL-Time if DUL or VesselAI external URIs are followed.
+   There are no local catalog entries for DUL, GeoSPARQL, or OWL-Time,
+   so attempts to resolve them will either fail or fetch them from the
+   network.
+
+10. Are there stale references to older module names?
+
+    No stale references were found in any source TTL file to:
+    - weatherconditions (old module name)
+    - operations.ttl
+    - draft-trim-mode.ttl
+    - draft_time_mode.ttl
+    - draft_trim_mode.ttl
+
+    All current module imports in twinship-core.ttl reference only the
+    canonical IRIs:
+      <https://twin-ship.eu/twinship/vessel>
+      <https://twin-ship.eu/twinship/weather-conditions>
+      <https://twin-ship.eu/twinship/operational-modes>
+      <https://twin-ship.eu/twinship/operational-context>
+
+    The CLAUDE.md documentation mentions the old filenames as
+    "do not create or reference" warnings, which is correct and current.
+
+SUMMARY OF SECTION 1:
+
+  The single most important finding in this section is that
+  twinship-base.ttl currently contains an active owl:imports for
+  VesselAI. This means DUL, GeoSPARQL, and OWL-Time are in the
+  transitive import closure. This contradicts the stated IDO-only
+  architecture. Whether this causes problems in practice depends on
+  which tools are used and whether they follow external URI chains.
+  This import should be removed as part of any cleanup action.
+
+
+================================================================================
+SECTION 2 -- FULL VESSELAI ONTOLOGY OVERVIEW
+================================================================================
+
+1. Main ontology IRI:
+
+   http://www.vesselAI-project.eu/vesselai
+
+   Declared in: vesselAI_ontology_v2.owl as owl:Ontology rdf:about=
+
+2. Namespace used for classes and properties:
+
+   http://www.vesselAI-project.eu/ontology#
+
+   This is DIFFERENT from the ontology IRI. The ontology IRI uses the
+   path segment "vesselai", while the term namespace uses "ontology#".
+   This is an inconsistency in the VesselAI design. All class and
+   property IRIs use the ontology# namespace, not the vesselai namespace.
+   Example: :Vessel = http://www.vesselAI-project.eu/ontology#Vessel
+
+3. Imported ontologies:
+
+   a. DUL (DOLCE Ultralight):
+      http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#
+   b. GeoSPARQL:
+      http://www.opengis.net/ont/geosparql#
+   c. OWL-Time:
+      http://www.w3.org/2006/time#
+
+   All three are imported in vesselAI_ontology_v2.owl and in main.ttl.
+   They are NOT locally available in the TwinShip repository (no catalog
+   entries for them in model/catalog-v001.xml). Resolving them requires
+   network access or additional catalog configuration.
+
+4. Top ontology used:
+
+   DUL (DOLCE Ultralight). All major VesselAI classes root in DUL:
+   - dul:Agent  (MovingObject -> Vessel)
+   - dul:Region (Trajectory, TrajectoryPart, Route, RouteSegment)
+   - dul:Event  (Event -> Environmental -> WeatherCondition)
+   - dul:PhysicalPlace (Place -> Port)
+   - dul:InformationEntity (CO2_emissionReport, MooringReport,
+                            RouteAvailability)
+   - dul:Object (Cargo)
+
+   This is fundamentally different from TwinShip's use of IDO / ISO
+   15926-14 as the upper ontology.
+
+5. Main files / modules:
+
+   File                              Role
+   --------------------------------- -----------------------------------
+   vesselAI_ontology_v2.owl          Main aggregate OWL file; declares
+                                     the ontology IRI; imports DUL,
+                                     GeoSPARQL, OWL-Time; contains
+                                     all class and property declarations
+                                     compiled from the modules
+   modules/main.ttl                  Entry point; imports trajectories,
+                                     vesselCharacteristics,
+                                     contextualInformation, events
+   modules/trajectories_module.ttl   Trajectory class hierarchy,
+                                     CO2_emissionReport,
+                                     MooringReport, trajectory
+                                     properties
+   modules/vesselCharacteristics.ttl Vessel type taxonomy (100+ types),
+                                     cargo types, vessel properties
+   modules/contextualInformation.ttl Place taxonomy, Port taxonomy,
+                                     Route, SurveillanceStation
+   modules/events.ttl                Event hierarchy, WeatherCondition,
+                                     WeatherPhenomena vocabulary (WMO)
+
+6. Main class hierarchy (abbreviated):
+
+   dul:Agent
+     MovingObject
+       Vessel
+         Cargo_Vessel (Barge, BulkCarrier, Container_Ship, etc.)
+         Tanker (Chemical, Crude_Oil, LNG, LPG, etc.)
+         Passenger_Vessel (Ferry, Ro-Ro_Passenger_Ship, etc.)
+         Fishing_Vessel
+         Special_Craft
+         Tug_Vessel
+         Military_Ops
+         ... ~100 further vessel-type subclasses
+
+   dul:Region
+     Trajectory
+       ActualTrajectory (OpenTrajectory, ClosedTrajectory)
+       IntendedTrajectory
+       RegulatedTrajectory
+       SyntheticTrajectory
+       DangerousTrajectory
+         DangerousGoodsTransport
+         DangerousActivityTrajectory
+     TrajectoryPart
+       Node, RawPosition, Segment
+     TrajectoryCluster
+     Route
+       MarineRoute (NationalFerryLine, InternationalFerryLine)
+       RouteSegment
+
+   dul:Event
+     Event
+       Environmental
+         WeatherCondition (also subClassOf Dynamic)
+       LowLevel
+         MaritimeLowLevelEvent
+
+   dul:PhysicalPlace
+     Place
+       Port (CoastalBreakwaterPort, LargeSizePort, etc. -- many subtypes)
+       SurveillanceStation (Antenna, Beacon, Buoy)
+       Country, City, EEZ_Zone, Marine_region, etc.
+       ProtectedArea (Natura2000_zone, Wetland, etc. -- many subtypes)
+
+   dul:InformationEntity
+     CO2_emissionReport
+     MooringReport
+     RouteAvailability
+
+   dul:Object
+     Cargo
+       DangerousGoods (UN Class 1-9 subclasses)
+
+   Set (subClassOf dul:Set)
+     VesselType
+
+7. Main object properties (VesselAI namespace):
+
+   Property                 Domain             Range
+   ------------------------ ------------------ ----------------------
+   hasTrajectory            Vessel             Trajectory
+   hasStart                 Trajectory         TrajectoryPart
+   hasEnd                   Trajectory         TrajectoryPart
+   hasPart (subOf dul:)     -                  -
+   comprises                -                  -
+   hasGeometry              dul:Entity/Region  ogc:Geometry
+   hasTemporalFeature       TrajectoryPart     time:TemporalEntity
+   hasSpeedOverGround       TrajectoryPart     xsd:string
+   hasCourseOverGround      TrajectoryPart     xsd:string
+   hasHeading               TrajectoryPart     xsd:string
+   hasNavigationalStatus    TrajectoryPart     xsd:string
+   hasWeatherCondition      TrajectoryPart     WeatherCondition
+   hasWeatherPhenomena      WeatherCondition   WeatherPhenomena
+   hasReferencePosition     Event              ogc:Geometry
+   hasReferenceTime         Event              time:TemporalEntity
+   occurs / occursAt        Event              TrajectoryPart
+   triggers                 Event/TrajPart     Event
+   affectedBy               dul:Entity         Event
+   affects                  Event              dul:Entity
+   transports               TrajectoryPart     Cargo
+   hasReportingPeriod       dul:InfoEntity     time:TemporalEntity
+   refersTo                 dul:InfoEntity     dul:Entity
+   MMSIinstalledOnVessel    Transcoder         Vessel
+   ofMovingObject           -                  MovingObject
+   hasIMO, hasCallsign,
+   hasGrossTn, hasDeadWeight,
+   hasActualHeight,
+   hasCountryFlag,
+   hasBuiltDate             Vessel / Moving    xsd:string / Country
+   hasDangerousLoad         Trajectory         xsd:string
+   hasUNLOCODE              TradeAndTransReg   xsd:string
+   hasPortFeatures          Port               xsd:string
+   hasName, hasDescription  dul:Entity         xsd:string
+
+8. Main data properties (VesselAI namespace):
+
+   All VesselAI numeric/measurement properties are declared with
+   rdfs:range xsd:string (not xsd:decimal or other numeric types).
+   This is a significant data modelling weakness.
+
+   Weather-specific "data properties" are declared as object properties
+   with range xsd:string (also wrong -- these should be data properties).
+
+   Emission-report properties on CO2_emissionReport all use xsd:string.
+
+   Examples of weather object properties (all declared with
+   rdfs:range xsd:string, which is incorrect for measurements):
+   - 10_metre_U_wind_component_surface
+   - 10_metre_V_wind_component_surface
+   - 2_metre_temperature_surface
+   - 2_metre_dewpoint_temperature_surface
+   - Mean_sea_level_pressure_surface
+   - Mean_wave_direction_msl
+   - Mean_wave_period_msl
+   - Sea_surface_temperature_surface
+   - Total_precipitation_surface_1_Hour_Accumulation
+
+   hasTimeStart, hasTimeEnd on time:TemporalEntity: rdfs:range xsd:string
+
+9. Main individuals:
+
+   VesselAI defines a large WMO weather phenomena vocabulary as
+   named individuals (several hundred individuals) of class WeatherPhenomena,
+   using codes from http://codes.wmo.int/306/4678/ as IRIs:
+   - FZRA, FG, SN, RA, HZ, DS, SS, FZFG, etc.
+   These are the only named individuals in VesselAI (aside from vessel
+   type sets/enumerations). No individuals for vessel instances.
+
+10. External dependencies:
+
+    DUL (DOLCE Ultralight)    -- top ontology, pervasive
+    GeoSPARQL                 -- for geometry (ogc:Geometry)
+    OWL-Time                  -- for temporal features (time:TemporalEntity)
+
+    All three are mandatory for VesselAI semantics to be complete.
+    None of them are stored locally in the TwinShip repository.
+    None of them have catalog entries in model/catalog-v001.xml.
+
+11. DUL dependency analysis -- which VesselAI terms directly use DUL:
+
+    Class / Property         DUL parent/constraint
+    ------------------------ ----------------------------------------
+    MovingObject             subClassOf dul:Agent
+    Trajectory               subClassOf dul:Region
+    TrajectoryPart           subClassOf dul:Region
+    TrajectoryCluster        subClassOf dul:Region
+    Route                    subClassOf dul:Region
+    RouteSegment             subClassOf dul:Region
+    CO2_emissionReport       subClassOf dul:InformationEntity
+    MooringReport            subClassOf dul:InformationEntity
+    RouteAvailability        subClassOf dul:InformationEntity
+    Place                    subClassOf dul:PhysicalPlace
+    Cargo                    subClassOf dul:Object
+    Event (VesselAI)         subClassOf dul:Event
+    WeatherCondition         subClassOf VesselAI:Event -> dul:Event
+    hasGeometry              subPropertyOf dul:hasConstituent
+    hasTemporalFeature       subPropertyOf dul:hasConstituent
+    hasPart                  subPropertyOf dul:hasPart
+    refersTo                 domain dul:InformationEntity
+    hasReportingPeriod       domain dul:InformationEntity
+    hasName, hasDescription  domain dul:Entity
+
+    Summary: ALL major VesselAI classes are DUL-dependent either
+    directly or through the class hierarchy. There is no VesselAI class
+    that can be extracted without either retaining a DUL reference or
+    effectively redefining it from scratch.
+
+12. Namespace inconsistency:
+
+    Ontology IRI:   http://www.vesselAI-project.eu/vesselai
+    Term namespace: http://www.vesselAI-project.eu/ontology#
+
+    These are different. A tool importing the ontology by the ontology
+    IRI obtains term definitions that use a different base IRI.
+    TwinShip's catalog and base.ttl correctly use the ontology IRI.
+    The VesselAI sub-catalog (external/vesselai/catalog-v001.xml)
+    maps the term namespace IRI to the same OWL file. Both entries
+    are needed if both IRIs are used as identifiers.
+
+
+================================================================================
+SECTION 3 -- VESSELAI DOMAIN COVERAGE BY AREA
+================================================================================
+
+A. VESSEL AND VESSEL CHARACTERISTICS
+-------------------------------------
+
+Classes:
+  Vessel, MovingObject (~100+ vessel-type subclasses including
+  Tanker, Ferry, BulkCarrier, Cargo_Vessel, Passenger_Vessel,
+  Fishing_Vessel, Tug_Vessel, Special_Craft, Dredger_Vessel,
+  Military_Ops, Ro-Ro_Passenger_Ship, etc.)
+
+Object properties (on Vessel / MovingObject):
+  hasIMO, hasCallsign, hasGrossTn, hasDeadWeight, hasActualHeight,
+  hasCountryFlag, hasBuiltDate, hasLength, hasWidth, hasHeight,
+  hasTrajectory, MMSIinstalledOnVessel (via Transcoder)
+
+Data properties: None (all declared as object properties with range
+  xsd:string -- a design weakness)
+
+External dependencies: DUL (MovingObject subClassOf dul:Agent)
+
+Useful for TwinShip? Partly.
+  - The top-level vessel type taxonomy (Tanker, RoPax/Ro-Ro_Passenger_Ship,
+    BulkCarrier, etc.) is useful as a reference for extending TwinShip's
+    VesselSystem subclasses.
+  - The AIS-derived vessel identification properties (hasIMO, hasCallsign,
+    hasGrossTn, etc.) are potentially relevant.
+  - TwinShip already has VesselSystem, RoRo, RoPax, Tanker in vessel.ttl.
+
+TwinShip already covers? Partially.
+  - VesselSystem (TwinShip) vs Vessel (VesselAI): similar concept,
+    different upper class (TwinShipInanimatePhysicalObject vs dul:Agent).
+  - RoRo, RoPax, Tanker exist in TwinShip.
+
+Semantics compatible? NO for direct reuse.
+  VesselAI Vessel is a subClassOf MovingObject subClassOf dul:Agent.
+  TwinShip VesselSystem is a subClassOf TwinShipInanimatePhysicalObject
+  subClassOf ido:InanimatePhysicalObject.
+  dul:Agent and ido:InanimatePhysicalObject are not equivalent.
+  A vessel is a physical object in IDO, not an "agent" in the cognitive
+  sense. The VesselAI modeling choice to root Vessel in dul:Agent is
+  designed for trajectory/movement analysis, not the physical twin
+  perspective of TwinShip.
+
+Recommendation:
+  - Use rdfs:seeAlso annotations on TwinShip Vessel/type classes to
+    reference VesselAI vessel types for traceability.
+  - Do not use skos:closeMatch or owl:equivalentClass.
+  - The vessel type taxonomy (Tanker, Ferry, etc.) labels are useful
+    for extending TwinShip VesselSystem subclasses natively.
+  - VesselAI vessel property labels (hasIMO, hasGrossTn, etc.) are
+    useful as naming inspiration for TwinShip vessel data properties.
+
+
+B. ENGINE, MACHINERY, PROPULSION, POWER, FUEL, EQUIPMENT
+----------------------------------------------------------
+
+Classes: None.
+  VesselAI has NO engine, propulsion, fuel, or machinery classes at all.
+  The vessel is treated as a black box for movement and reporting.
+  There is a Cargo class hierarchy (UN class 1-9 dangerous goods) and
+  a Bunker class (fuel storage, but modelled as a vessel type not a
+  system), but nothing about engine systems.
+
+Object properties: None specific to propulsion.
+
+Data properties: Fuel consumption is modelled only at the report level
+  on CO2_emissionReport (reportedFuelConsumption etc.) -- not at the
+  system level.
+
+External dependencies: None specific to this area.
+
+Useful for TwinShip? NO.
+  TwinShip has detailed engine/propulsion coverage in vessel.ttl
+  (MainEngineSystem, AuxiliaryEngineSystem, PropellerSystem,
+  GearboxSystem, ShaftGeneratorSystem, Boiler, Fuel, DieselEngine,
+  FourStroke, CPP, FPP, etc.). VesselAI contributes nothing here.
+
+Recommendation: Ignore. VesselAI has no content in this area.
+
+
+C. VOYAGE, TRIP, ROUTE, TRAJECTORY, MOVEMENT, NAVIGATION
+----------------------------------------------------------
+
+Classes:
+  Trajectory (and subclasses: ActualTrajectory, IntendedTrajectory,
+  RegulatedTrajectory, SyntheticTrajectory, DangerousTrajectory,
+  OpenTrajectory, ClosedTrajectory)
+  TrajectoryPart (Node, RawPosition, Segment)
+  TrajectoryCluster
+  Route (subClassOf dul:Region; MarineRoute, NationalFerryLine,
+  InternationalFerryLine)
+  RouteSegment (subClassOf dul:Region)
+  RouteAvailability (subClassOf dul:InformationEntity)
+
+Object properties:
+  hasTrajectory, hasStart, hasEnd, comprises, hasPart,
+  hasCourseOverGround, hasHeading, hasNavigationalStatus,
+  hasSpeedOverGround, hasGeometry (-> ogc:Geometry),
+  hasTemporalFeature (-> time:TemporalEntity),
+  hasTimeStart, hasTimeEnd, ofMovingObject
+
+Data properties: None (all xsd:string object properties).
+
+External dependencies:
+  DUL (Trajectory, TrajectoryPart, Route all subClassOf dul:Region)
+  GeoSPARQL (hasGeometry range ogc:Geometry)
+  OWL-Time (hasTemporalFeature range time:TemporalEntity)
+
+Useful for TwinShip? Partially for labels/concepts, not for reuse.
+  VesselAI's Trajectory concept is different from TwinShip's Voyage/
+  VoyageLeg. Trajectory is a spatial-temporal track of AIS positions
+  (a dul:Region). Voyage in TwinShip is a process (ido:Activity-based).
+  Route in VesselAI is a dul:Region (geographic path). Route in TwinShip
+  is a TwinShipInformationObject (planned route data). These are
+  semantically related but not equivalent.
+
+TwinShip already covers?
+  - Voyage, VoyageLeg in operational-context.ttl (TwinShipProcess)
+  - Route in operational-context.ttl (TwinShipInformationObject)
+  - hasDeparturePort, hasArrivalPort, followsRoute, hasVoyage,
+    hasVoyageLeg defined natively
+
+Semantics compatible? NO for direct reuse.
+  VesselAI Trajectory/Route are dul:Region (spatial regions).
+  TwinShip Voyage/VoyageLeg are TwinShipProcess (ido:Activity).
+  These represent fundamentally different ontological categories.
+
+Recommendation:
+  - rdfs:seeAlso annotations on Voyage/VoyageLeg to VesselAI Trajectory
+    for traceability.
+  - Do not reuse or import VesselAI trajectory classes.
+  - A future TwinShip trajectory module (for AIS-style position data)
+    could independently define a Trajectory class rooted in IDO without
+    needing VesselAI.
+
+
+D. EVENTS, ACTIVITIES, STATES, AND SITUATIONS
+-----------------------------------------------
+
+Classes:
+  Event (subClassOf dul:Event)
+  Environmental (subClassOf Event)
+  WeatherCondition (subClassOf Environmental, Dynamic)
+  LowLevel (subClassOf Event)
+  MaritimeLowLevelEvent (subClassOf LowLevel)
+  Dynamic (implied by WeatherCondition rdfs:subClassOf :Dynamic --
+  but :Dynamic is not explicitly defined in inspected files)
+
+Object properties:
+  occurs, occursAt, triggers, affectedBy, affects, hasReferencePosition,
+  hasReferenceTime
+
+External dependencies:
+  DUL (Event subClassOf dul:Event)
+  GeoSPARQL (hasReferencePosition range ogc:Geometry)
+  OWL-Time (hasReferenceTime range time:TemporalEntity)
+
+Useful for TwinShip? No for direct reuse.
+  WeatherCondition as a dul:Event is semantically incompatible with
+  TwinShip WeatherCondition as a TwinShipQuality.
+  TwinShip has TwinShipEvent (subClassOf ido:Event) for discrete events.
+
+TwinShip already covers?
+  - WeatherCondition, WindCondition in weather-conditions.ttl
+  - TwinShipEvent in twinship-base.ttl (for future event modelling)
+  - OperatingState, EngineMode, etc. in operational-modes.ttl
+
+Recommendation:
+  - rdfs:seeAlso only, already implemented in weather-conditions.ttl.
+  - Do not import or reuse VesselAI event classes.
+
+
+E. WEATHER, ENVIRONMENTAL CONDITIONS, CONTEXTUAL INFORMATION
+-------------------------------------------------------------
+
+Classes:
+  WeatherCondition (subClassOf Environmental -> Event -> dul:Event)
+  WeatherPhenomena (large WMO code vocabulary as individuals)
+
+Object properties (all with range xsd:string -- incorrect for numerics):
+  10_metre_U_wind_component_surface
+  10_metre_V_wind_component_surface
+  2_metre_temperature_surface
+  2_metre_dewpoint_temperature_surface
+  Mean_sea_level_pressure_surface
+  Mean_wave_direction_msl
+  Mean_wave_period_msl
+  Sea_surface_temperature_surface
+  Total_precipitation_surface_1_Hour_Accumulation
+  hasWeatherCondition (domain TrajectoryPart)
+  hasWeatherPhenomena (range WeatherPhenomena)
+
+External dependencies:
+  DUL (WeatherCondition -> dul:Event)
+  OWL-Time (hasReferenceTime on Event)
+  GeoSPARQL (hasReferencePosition on Event)
+
+Useful for TwinShip? Partially (the ERA5/GFS weather variable names).
+  The specific weather parameter names (U/V wind components, wave
+  direction, wave period, sea surface temperature, precipitation) are
+  relevant as the same ERA5/GFS variables are commonly used in vessel
+  performance analysis. These labels can inform TwinShip weather data
+  property naming.
+
+TwinShip already covers?
+  - WeatherCondition, WindCondition in weather-conditions.ttl
+  - windSpeed, windDirection data properties
+
+TwinShip missing but potentially relevant:
+  - Sea surface temperature
+  - Wave height and period
+  - Significant wave height
+  - Air pressure
+  - Precipitation
+  These can be added to weather-conditions.ttl as native TwinShip
+  data properties without any VesselAI dependency.
+
+Semantics compatible? NO.
+  VesselAI WeatherCondition is a dul:Event.
+  TwinShip WeatherCondition is a TwinShipQuality.
+  These are incompatible upper classes.
+
+WMO WeatherPhenomena vocabulary:
+  VesselAI events.ttl includes several hundred named individuals
+  representing WMO code table 4678 weather phenomena. These use
+  http://codes.wmo.int/ IRIs directly, which means the actual terms
+  are WMO-registered vocabulary, not VesselAI-specific. TwinShip can
+  reference WMO codes directly without VesselAI.
+
+Recommendation:
+  - rdfs:seeAlso only (already done for WeatherCondition,
+    10_metre_U/V_wind_component in weather-conditions.ttl).
+  - Extend TwinShip weather-conditions.ttl with additional native
+    data properties for sea state, wave, and pressure variables.
+  - Reference WMO code table 4678 directly if a weather phenomena
+    vocabulary is needed.
+
+
+F. GEOSPATIAL, GEOMETRY, AND LOCATION
+---------------------------------------
+
+Classes: None (VesselAI uses GeoSPARQL ogc:Geometry directly).
+Object properties:
+  hasGeometry (subPropertyOf dul:hasConstituent; range ogc:Geometry)
+  hasReferencePosition (range ogc:Geometry)
+
+External dependencies:
+  GeoSPARQL is mandatory for these properties.
+
+Useful for TwinShip? Low for current phase.
+  Port geolocation or trajectory geospatial indexing would need
+  GeoSPARQL. TwinShip does not currently use GeoSPARQL.
+
+TwinShip already covers? No geospatial properties currently in TwinShip.
+
+Recommendation:
+  - Defer GeoSPARQL adoption unless concrete use cases require it.
+  - If geospatial is needed in future, adopt GeoSPARQL directly
+    without VesselAI as an intermediary.
+
+
+G. TIME AND TEMPORAL CONCEPTS
+-------------------------------
+
+Classes:
+  TimeInterval (subClassOf time:TemporalEntity)
+  (VesselAI uses OWL-Time time:TemporalEntity directly for ranges)
+
+Object properties:
+  hasTemporalFeature (domain TrajectoryPart; range time:TemporalEntity)
+  hasReferenceTime (domain Event; range time:TemporalEntity)
+  hasReportingPeriod (domain dul:InformationEntity; range time:TemporalEntity)
+  hasTimeStart, hasTimeEnd (domain time:TemporalEntity; range xsd:string)
+
+External dependencies:
+  OWL-Time is mandatory.
+
+Useful for TwinShip? Low for current phase.
+  TwinShip currently uses xsd:dateTime data properties (voyageStartTime,
+  voyageEndTime) which are simpler and sufficient for first release.
+
+Recommendation:
+  - Defer OWL-Time adoption.
+  - Continue with xsd:dateTime data properties.
+
+
+H. OBSERVATIONS, MEASUREMENTS, SENSOR DATA, TELEMETRY
+-------------------------------------------------------
+
+Classes: None specifically for observations.
+  VesselAI has TrajectoryPart as the bearer of AIS/sensor readings
+  (speed over ground, course, heading, navigational status, weather).
+  There is no SOSA/SSN-style observation pattern.
+
+Object properties:
+  hasSpeedOverGround, hasCourseOverGround, hasHeading,
+  hasNavigationalStatus, hasWeatherCondition (all on TrajectoryPart)
+
+Data properties: None (all xsd:string object properties).
+
+External dependencies: DUL, GeoSPARQL, OWL-Time (via TrajectoryPart).
+
+Useful for TwinShip? Limited.
+  The concept of attaching speed/course/heading to a position record
+  is relevant, but VesselAI's approach is tightly coupled to the
+  Trajectory/TrajectoryPart pattern and DUL. TwinShip already has
+  engineRPM, speedOverGround, and related data properties in
+  operational-context.ttl.
+
+TwinShip already covers?
+  - engineRPM, speedOverGround, fuelConsumptionRateKgPerH, etc.
+    in operational-context.ttl
+
+Recommendation: Ignore for reuse purposes. Develop natively.
+
+
+I. PERFORMANCE, FUEL CONSUMPTION, EMISSIONS, OPERATIONAL EFFICIENCY
+--------------------------------------------------------------------
+
+Classes:
+  CO2_emissionReport (subClassOf dul:InformationEntity)
+    -- covers MRV/EU-MRV reporting variables
+  MooringReport (subClassOf dul:InformationEntity)
+
+Data properties on CO2_emissionReport (all xsd:string -- significant
+weakness; should be numeric types):
+
+  Fuel consumption:
+    reportedFuelConsumption
+    reportedFuelConsumptionOnLaden
+    reportedFuelConsumptionPerDistance
+    reportedFuelConsumptionPerWork{Mass, Volume, DWT, PAX, Freight}
+    reportedAnnualAvgFuelConsumption
+    reportedAnnualAvgFuelConsumptionPerWork{Mass, Volume, DWT, PAX, Freight}
+
+  CO2 emissions:
+    reportedCO2emissions
+    reportedCO2emissionsBetweenPorts
+    reportedCO2emissionsDepartedFromPorts
+    reportedCO2emissionsToPorts
+    reportedCO2emissionsInPorts
+    reportedCO2emissionsDuringPassengerTransport
+    reportedCO2emissionsDuringFreightTransport
+    reportedCO2emissionsOnLaden
+    reportedCO2emission{PerDistance, PerWork{Mass, Volume, DWT, PAX, Freight}}
+    reportedAnnualCO2emission{PerDistance, PerWork{...}}
+    reportedCO2emissionOnLaden
+
+  Other:
+    reportedAnnualTimeAtSea
+    reportedAvgDensityOfCargo
+    reportedDistanceThroughIce
+    reportedTimeThroughIce
+
+External dependencies:
+  DUL (CO2_emissionReport subClassOf dul:InformationEntity)
+  OWL-Time (hasReportingPeriod range time:TemporalEntity)
+
+Useful for TwinShip? Partially.
+  The EU-MRV-aligned fuel/CO2 reporting property set is relevant to
+  TwinShip's focus on fuel consumption and emissions monitoring. The
+  property NAMES and reporting concepts are domain-appropriate.
+  However, VesselAI uses xsd:string for all values (incorrect) and
+  binds the class to DUL. TwinShip's FuelConsumptionSummary and
+  FuelConsumptionObservation cover similar ground natively.
+
+TwinShip already covers?
+  - FuelConsumptionObservation, FuelConsumptionSummary,
+    FuelConsumptionEstimate, FuelConsumptionGapAnalysis,
+    PerformanceDeviation in operational-context.ttl.
+  - fuelConsumptionRateKgPerH, fuelConsumptionTotalMT, and related
+    data properties in operational-context.ttl.
+
+Recommendation:
+  - Use VesselAI EU-MRV property names as inspiration for extending
+    TwinShip's fuel/emissions reporting properties.
+  - rdfs:seeAlso annotations from TwinShip FuelConsumptionSummary to
+    VesselAI CO2_emissionReport for traceability.
+  - Do not import VesselAI CO2_emissionReport.
+
+
+J. DATA, INFORMATION, IDENTIFIERS, REPORTS, METADATA
+------------------------------------------------------
+
+Classes:
+  CO2_emissionReport (dul:InformationEntity)
+  MooringReport (dul:InformationEntity)
+  RouteAvailability (dul:InformationEntity)
+  Transcoder (plain rdfs:Class, not DUL-based)
+    -- represents an AIS transponder/receiver
+
+Object properties:
+  hasCode (on Transcoder; MMSI code)
+  refersTo, hasReportingPeriod, hasName, hasDescription
+
+Useful for TwinShip? Limited.
+  Transcoder/MMSI concept could be useful if TwinShip models AIS
+  receivers, but this is out of scope for current development.
+
+TwinShip already covers?
+  - TwinShipInformationObject for information artefacts
+  - OperationalProfile, SpeedBin, FrequencyDistribution,
+    FuelConsumptionSummary natively in operational-context.ttl
+
+Recommendation: Ignore for direct reuse. Reference with rdfs:seeAlso
+  if EU-MRV-aligned reporting is added to TwinShip natively.
+
+
+K. OTHER RELEVANT CONCEPTS
+---------------------------
+
+Port taxonomy in VesselAI:
+  Port (subClassOf TradeAndTransportRegion -> Place -> dul:PhysicalPlace)
+  With hasUNLOCODE property, and many port-type subclasses.
+
+TwinShip Port:
+  Port (subClassOf TwinShipInformationObject) -- identifier-centric.
+
+These represent different modelling choices. VesselAI Port is a physical
+place (dul:PhysicalPlace). TwinShip Port is an information object
+(identifier/code). For first release, TwinShip's choice is pragmatic
+and sufficient. VesselAI Port is not directly reusable.
+
+Cargo and DangerousGoods taxonomy:
+  Not currently in TwinShip scope. Could be relevant for future
+  modules (cargo.ttl, dangerous-goods.ttl) if TwinShip expands into
+  cargo management. VesselAI has well-structured UN class 1-9 taxonomy.
+  rdfs:seeAlso annotations would be appropriate if TwinShip adds cargo.
+
+Protected area and ecological zone taxonomy (Natura2000, EEZ, etc.):
+  Not relevant to TwinShip's current scope.
+
+WMO WeatherPhenomena vocabulary (events.ttl):
+  Several hundred named individuals using http://codes.wmo.int/306/4678/
+  IRIs. These are standard WMO-registered codes, not VesselAI-specific.
+  If TwinShip needs a weather phenomena vocabulary it should reference
+  WMO codes directly.
+
+
+================================================================================
+SECTION 4 -- OVERLAP WITH CURRENT TWINSHIP MODULES
+================================================================================
+
+Format:
+  TwinShip term | VesselAI candidate | Overlap type | TW superclass |
+  VAI superclass | Recommendation
+
+---
+
+twinship-base.ttl overlaps:
+----------------------------
+
+TwinShip term          VesselAI candidate       Overlap type
+---------------------- ------------------------ ---------------------
+TwinShipProcess        (none)                   None -- VesselAI has
+                                                no process class
+TwinShipQuality        (none)                   None -- VesselAI has
+                                                no quality class
+TwinShipEvent          VesselAI:Event           Same label, different
+                                                superclass
+                                                TW: ido:Event
+                                                VAI: dul:Event
+                                                Avoid equivalence
+TwinShipInformation-   CO2_emissionReport,      Same category but
+Object                 MooringReport            different superclass
+                                                TW: ido:InformationObject
+                                                VAI: dul:InformationEntity
+                                                rdfs:seeAlso only
+TwinShipOrganization   (none)                   None in VesselAI
+TwinShipSystem         (none)                   None in VesselAI
+
+---
+
+vessel.ttl overlaps:
+--------------------
+
+TwinShip term          VesselAI candidate       Overlap type
+---------------------- ------------------------ ---------------------
+VesselSystem           VesselAI:Vessel          Similar concept, label
+                                                TW: ido:InanimatePO
+                                                VAI: dul:Agent
+                                                Semantically different
+                                                rdfs:seeAlso only
+RoPax                  Ro-Ro_Passenger_Ship     Similar concept
+                                                TW: VesselSystem
+                                                VAI: Passenger_Vessel
+                                                rdfs:seeAlso safe
+RoRo                   Ro-Ro_Cargo              Similar concept
+                                                rdfs:seeAlso safe
+Tanker                 VesselAI:Tanker          Same label, broader
+                                                TW subClassOf VesselSys
+                                                VAI subClassOf Vessel
+                                                rdfs:seeAlso safe
+EngineSystem           (none)                   Not in VesselAI
+MainEngineSystem       (none)                   Not in VesselAI
+AuxiliaryEngineSystem  (none)                   Not in VesselAI
+PropellerSystem        (none)                   Not in VesselAI
+GearboxSystem          (none)                   Not in VesselAI
+ShaftGeneratorSystem   (none)                   Not in VesselAI
+Boiler                 (none)                   Not in VesselAI
+Fuel                   VesselAI:Cargo/DG        Different concept;
+                                                VAI Cargo is not Fuel
+                                                Incompatible, ignore
+
+---
+
+weather-conditions.ttl overlaps:
+---------------------------------
+
+TwinShip term          VesselAI candidate       Overlap type
+---------------------- ------------------------ ---------------------
+WeatherCondition       VesselAI:WeatherCondition Same label; different
+                                                superclass
+                                                TW: TwinShipQuality
+                                                VAI: dul:Event
+                                                INCOMPATIBLE superclass
+                                                rdfs:seeAlso only
+                                                (already implemented)
+WindCondition          10_metre_U/V_wind_       Partial overlap;
+                       component_surface        VAI uses vector
+                                                components, TW uses
+                                                scalar bearing
+                                                rdfs:seeAlso only
+                                                (already implemented)
+windSpeed              (none equivalent)        No direct match in VAI
+windDirection          (none equivalent)        No direct match in VAI
+
+---
+
+operational-modes.ttl overlaps:
+--------------------------------
+
+TwinShip term          VesselAI candidate       Overlap type
+---------------------- ------------------------ ---------------------
+OperatingState         (none)                   Not in VesselAI
+EngineMode             (none)                   Not in VesselAI
+DraftMode              (none)                   Not in VesselAI
+TrimMode               (none)                   Not in VesselAI
+DraftTrimMode          (none)                   Not in VesselAI
+CruiseState            (none)                   Not in VesselAI
+PortState              (none)                   Not in VesselAI
+ManeuveringState       (none)                   Not in VesselAI
+
+---
+
+operational-context.ttl overlaps:
+----------------------------------
+
+TwinShip term          VesselAI candidate       Overlap type
+---------------------- ------------------------ ---------------------
+Voyage                 VesselAI:Trajectory      Related concept;
+                                                semantically different
+                                                TW: TwinShipProcess
+                                                VAI: dul:Region
+                                                rdfs:seeAlso safe
+VoyageLeg              TrajectoryPart/Segment   Related but different
+                                                TW: TwinShipProcess
+                                                VAI: dul:Region
+                                                rdfs:seeAlso safe
+Route                  VesselAI:Route           Same label; different
+                                                superclass
+                                                TW: InformationObject
+                                                VAI: dul:Region
+                                                rdfs:seeAlso safe
+Port                   VesselAI:Port            Same label; different
+                                                superclass
+                                                TW: InformationObject
+                                                VAI: dul:PhysicalPlace
+                                                rdfs:seeAlso safe
+OperationalProfile     (none)                   Not in VesselAI
+SpeedBin               (none)                   Not in VesselAI
+FrequencyDistribution  (none)                   Not in VesselAI
+FuelConsumptionObs.    (none directly)          VesselAI has no
+                                                observation class
+FuelConsumptionSummary CO2_emissionReport       Related (report-level)
+                                                TW: InformationObject
+                                                VAI: dul:InfoEntity
+                                                rdfs:seeAlso safe
+FuelConsumptionEstimate (none)                  Not in VesselAI
+FuelConsumptionGapAna. (none)                   Not in VesselAI
+PerformanceDeviation   (none)                   Not in VesselAI
+
+
+================================================================================
+SECTION 5 -- SEMANTIC COMPATIBILITY ANALYSIS
+================================================================================
+
+For each key candidate:
+
+------------------------------------------------------------------------------
+CANDIDATE 1: WeatherCondition
+------------------------------------------------------------------------------
+
+VesselAI meaning: A weather event occurring at a trajectory position.
+  Modelled as a subclass of Environmental -> Event -> dul:Event.
+  It is a temporal occurrence, not a quality or state.
+
+TwinShip meaning: An environmental quality describing weather conditions.
+  Modelled as a subclass of TwinShipQuality -> ido:Quality.
+  It is a quality attributed to a physical situation, not an event.
+
+VesselAI type: dul:Event (via Event -> Environmental -> WeatherCondition)
+TwinShip type: TwinShipQuality (-> ido:Quality)
+
+Compatible? NO.
+  dul:Event and ido:Quality are categorially different.
+  An OWL reasoner would not classify TwinShip WeatherCondition
+  individuals as VesselAI WeatherCondition instances.
+
+Would extraction preserve semantics? NO.
+  To extract without DUL, WeatherCondition would need a new superclass.
+  Its semantics (temporal occurrence at a position) would need to be
+  abandoned or replaced, at which point it is effectively redefined.
+
+Would extraction redefine the concept? YES.
+  Removing dul:Event from the hierarchy fundamentally changes what the
+  class asserts.
+
+rdfs:seeAlso safe? YES -- already implemented in weather-conditions.ttl.
+skos:relatedMatch safe? YES (related concept in same domain).
+skos:closeMatch safe? NO -- the superclasses are categorially different.
+owl:equivalentClass safe? NO -- incompatible superclasses.
+
+------------------------------------------------------------------------------
+CANDIDATE 2: Vessel vs VesselSystem
+------------------------------------------------------------------------------
+
+VesselAI meaning: A moving object with floating capabilities.
+  Modelled as subClassOf MovingObject subClassOf dul:Agent.
+  dul:Agent implies agency and intentionality.
+
+TwinShip meaning: A maritime vessel as a physical artefact.
+  Modelled as subClassOf TwinShipInanimatePhysicalObject
+  subClassOf ido:InanimatePhysicalObject.
+  ido:InanimatePhysicalObject implies a physical thing without agency.
+
+VesselAI type: dul:Agent
+TwinShip type: TwinShipInanimatePhysicalObject (ido:InanimatePhysicalObject)
+
+Compatible? NO.
+  Rooting a vessel in dul:Agent (usually for cognitive agents) is a
+  modelling decision driven by VesselAI's focus on movement/tracking.
+  TwinShip correctly models a vessel as an inanimate physical object.
+
+rdfs:seeAlso safe? YES.
+skos:relatedMatch safe? YES.
+skos:closeMatch safe? Marginal -- the labels match but superclasses differ.
+  Use skos:relatedMatch to be conservative.
+owl:equivalentClass safe? NO.
+
+------------------------------------------------------------------------------
+CANDIDATE 3: Voyage vs Trajectory
+------------------------------------------------------------------------------
+
+VesselAI meaning: A spatial-temporal track of AIS positions.
+  Trajectory is a dul:Region (a spatial region, not a process).
+
+TwinShip meaning: A vessel operational process (port-to-port passage).
+  Voyage is a TwinShipProcess (subClassOf ido:Activity).
+
+VesselAI type: dul:Region
+TwinShip type: TwinShipProcess (ido:Activity)
+
+Compatible? NO -- fundamentally different categories.
+  A region (spatial extent) is not a process (temporal activity).
+
+rdfs:seeAlso safe? YES (conceptually related in the maritime domain).
+skos:relatedMatch safe? YES.
+skos:closeMatch safe? NO.
+owl:equivalentClass safe? NO.
+
+------------------------------------------------------------------------------
+CANDIDATE 4: Route (TwinShip) vs Route (VesselAI)
+------------------------------------------------------------------------------
+
+VesselAI meaning: A geographic course between two locations.
+  Modelled as subClassOf dul:Region (a spatial region).
+
+TwinShip meaning: Planned or observed route data.
+  Modelled as TwinShipInformationObject (ido:InformationObject).
+
+VesselAI type: dul:Region
+TwinShip type: TwinShipInformationObject (ido:InformationObject)
+
+Compatible? NO.
+  A dul:Region is a spatial extent. An ido:InformationObject is
+  a piece of information. These are different even though both can
+  represent "a route". The modelling choice in TwinShip (route as
+  information artefact) is intentional for the first release.
+
+rdfs:seeAlso safe? YES.
+skos:relatedMatch safe? YES.
+skos:closeMatch safe? Marginal -- same label but different category.
+owl:equivalentClass safe? NO.
+
+------------------------------------------------------------------------------
+CANDIDATE 5: FuelConsumptionSummary vs CO2_emissionReport
+------------------------------------------------------------------------------
+
+VesselAI meaning: A report capturing EU-MRV fuel and CO2 metrics.
+  Modelled as subClassOf dul:InformationEntity.
+  All values typed as xsd:string.
+
+TwinShip meaning: Derived or aggregated fuel consumption summary.
+  Modelled as TwinShipInformationObject (ido:InformationObject).
+  Values use xsd:decimal.
+
+VesselAI type: dul:InformationEntity
+TwinShip type: TwinShipInformationObject (ido:InformationObject)
+
+Compatible? Conceptually related but superclasses differ.
+  ido:InformationObject and dul:InformationEntity are not equivalent
+  but are both information categories. Semantically closer than the
+  dul:Event vs ido:Quality case.
+
+rdfs:seeAlso safe? YES.
+skos:relatedMatch safe? YES.
+skos:closeMatch safe? Borderline -- conceptually close, different superclass.
+  Use skos:relatedMatch to be conservative.
+owl:equivalentClass safe? NO.
+
+------------------------------------------------------------------------------
+CANDIDATE 6: Port (TwinShip) vs Port (VesselAI)
+------------------------------------------------------------------------------
+
+VesselAI meaning: A physical port location (dul:PhysicalPlace).
+  With UNLOCODE and port feature properties. Many port type subclasses.
+
+TwinShip meaning: A port identifier/code (TwinShipInformationObject).
+  Pragmatic first-release modelling.
+
+Compatible? NO -- physical place vs information object.
+  Same label, same domain, but different ontological category.
+
+rdfs:seeAlso safe? YES.
+skos:relatedMatch safe? YES.
+skos:closeMatch safe? NO -- different categories.
+owl:equivalentClass safe? NO.
+
+------------------------------------------------------------------------------
+CANDIDATE 7: VesselAI RoPax / Ro-Ro_Passenger_Ship vs TwinShip RoPax
+------------------------------------------------------------------------------
+
+VesselAI: Ro-Ro_Passenger_Ship subClassOf Passenger_Vessel subClassOf Vessel
+  (dul:Agent)
+TwinShip: RoPax subClassOf VesselSystem
+  (ido:InanimatePhysicalObject)
+
+Compatible? Same real-world concept; different upper class.
+  At the vessel type label level, these refer to the same type of ship.
+
+rdfs:seeAlso safe? YES.
+skos:relatedMatch safe? YES.
+skos:closeMatch safe? Acceptable at the domain level despite different
+  upper classes -- the label refers to the same vessel type.
+  Use skos:relatedMatch to be conservative given the superclass mismatch.
+owl:equivalentClass safe? NO -- different upper classes.
+
+Same analysis applies to: RoRo / Ro-Ro_Cargo, Tanker / Tanker.
+
+------------------------------------------------------------------------------
+SUMMARY OF SECTION 5
+------------------------------------------------------------------------------
+
+No VesselAI term is semantically compatible enough with TwinShip to
+justify owl:equivalentClass or owl:equivalentProperty assertions.
+
+skos:closeMatch is UNSAFE for:
+  WeatherCondition (dul:Event vs ido:Quality -- incompatible categories)
+  Vessel / VesselSystem (dul:Agent vs ido:InanimatePhysicalObject)
+  Trajectory / Voyage (dul:Region vs ido:Activity)
+  Route (dul:Region vs ido:InformationObject)
+  Port (dul:PhysicalPlace vs ido:InformationObject)
+
+skos:relatedMatch is SAFE for all the above.
+
+rdfs:seeAlso is safe universally (it is non-semantic).
+
+The pattern is consistent: VesselAI is DUL-based, TwinShip is IDO-based.
+These upper ontologies represent different philosophical commitments.
+DUL categories (Agent, Region, Event, InformationEntity) do not map
+cleanly onto IDO categories (InanimatePhysicalObject, Activity, Event,
+Quality, InformationObject). Safe semantic mapping requires per-term
+analysis; broad equivalence claims would be incorrect.
+
+
+================================================================================
+SECTION 6 -- SHOULD VesselAI-simplified.ttl BE CREATED?
+================================================================================
+
+Option A: Do not create VesselAI-simplified.ttl. Define needed concepts
+          natively in TwinShip. Use rdfs:seeAlso annotations only.
+
+Option B: Create VesselAI-simplified.ttl as a DUL-free vocabulary extract.
+          Do not import it into core TwinShip modules.
+
+Option C: Create VesselAI-simplified.ttl and import it from selected modules.
+
+Option D: Keep importing full VesselAI.
+
+Evaluation of each option:
+
+OPTION A -- No simplified file
+--------------------------------
+Complexity:          LOW. No new file, no maintenance burden.
+Maintainability:     HIGH. No external dependency to track.
+Risk of DUL:         NONE. DUL cannot enter through a non-existent file.
+Semantic compat.:    HIGH. TwinShip remains IDO-pure.
+Value for users:     MODERATE. Users only see TwinShip-native terms.
+                     VesselAI connection is documented via rdfs:seeAlso.
+Query simplicity:    HIGH. No mixed namespace queries.
+Documentation:       LOW burden. Explain that VesselAI is external ref.
+Long-term arch.:     CLEAN. IDO-only commitment is maintained.
+IDO alignment:       FULL. No second upper-ontology path.
+Supports reuse goal: YES, in the sense that the investigation has been
+                     done and the decision documented with evidence.
+                     rdfs:seeAlso provides traceability.
+
+OPTION B -- Simplified file, not imported
+------------------------------------------
+Complexity:          MODERATE. A new file to maintain; no functional
+                     benefit unless imported somewhere.
+Maintainability:     MODERATE. Must be kept in sync with VesselAI
+                     updates; risk of bit-rot.
+Risk of DUL:         LOW. File exists but is not imported. A future
+                     developer could accidentally import it.
+Semantic compat.:    PROBLEMATIC. Stripping DUL from VesselAI terms
+                     effectively redefines them. The resulting file
+                     would not represent VesselAI semantics faithfully.
+                     It would be a new, underdefined vocabulary.
+Value for users:     LOW. If it is not imported, it adds no value that
+                     rdfs:seeAlso annotations cannot provide.
+Query simplicity:    Unaffected (not imported).
+Documentation:       MODERATE burden. Must explain what was stripped.
+Long-term arch.:     AMBIGUOUS. File exists as a future temptation for
+                     import.
+IDO alignment:       MAINTAINED (if not imported).
+Supports reuse goal: PARTIALLY. Provides a thin reference vocabulary
+                     but without DUL it loses its semantic grounding
+                     in VesselAI. Users cannot use VesselAI reasoners
+                     against the simplified file.
+
+OPTION C -- Simplified file, imported into modules
+----------------------------------------------------
+Complexity:          HIGH. Maintaining a DUL-free extract is ongoing work.
+Maintainability:     LOW. VesselAI updates require re-stripping.
+Risk of DUL:         MEDIUM TO HIGH. Any property in the simplified file
+                     that subclasses or references a DUL concept will
+                     reintroduce DUL if not carefully audited.
+Semantic compat.:    PROBLEMATIC. As above -- stripping superclasses
+                     redefines terms.
+Value for users:     LOW. The DUL-free terms lose their place in the
+                     VesselAI hierarchy and provide little additional
+                     value over TwinShip-native equivalents.
+Query simplicity:    LOW. Two term namespaces in one ontology is
+                     confusing for SPARQL users.
+Documentation:       HIGH burden.
+Long-term arch.:     FRAGILE.
+IDO alignment:       COMPROMISED unless very carefully managed.
+Supports reuse goal: MARGINALLY. The goal was reuse; what is produced
+                     is effectively new term definitions that can no
+                     longer be used with VesselAI tools.
+
+OPTION D -- Keep importing full VesselAI
+------------------------------------------
+Complexity:          HIGH. DUL, GeoSPARQL, OWL-Time all enter.
+Maintainability:     LOW. External dependency on three large ontologies.
+Risk of DUL:         CERTAIN. DUL is in the import closure already.
+Semantic compat.:    INCOMPATIBLE. DUL and IDO are different foundations.
+Value for users:     LOW. VesselAI adds confusion rather than value
+                     given the semantic incompatibility.
+Query simplicity:    LOW. Multiple upper ontologies in one graph.
+Documentation:       HIGH burden.
+Long-term arch.:     PROBLEMATIC.
+IDO alignment:       BROKEN.
+Supports reuse goal: NO. The owl:imports currently in twinship-base.ttl
+                     is the evidence that Option D was attempted and
+                     has introduced the exact architectural problem
+                     the design decision is meant to resolve.
+
+RECOMMENDED OPTION: A
+
+Rationale: The evidence from this audit clearly shows that VesselAI
+terms cannot be reused without retaining DUL semantics or effectively
+redefining the terms. In either case, creating a simplified file adds
+no benefit over native TwinShip definitions. rdfs:seeAlso annotations
+satisfy the traceability goal without any semantic risk. Option A also
+requires the removal of the existing owl:imports <VesselAI> statement
+from twinship-base.ttl, which is the most urgent implementation action.
+
+
+================================================================================
+SECTION 7 -- IF VesselAI-simplified.ttl IS RECOMMENDED
+================================================================================
+
+VesselAI-simplified.ttl is NOT recommended (Option A was chosen).
+This section is therefore not applicable.
+
+If, in a future review, the decision is reversed (e.g., due to a
+community requirement to reuse VesselAI labels), the following terms
+would be candidates for extraction -- but only with rdfs:subClassOf
+replaced by owl:Thing or left unspecified:
+
+  - Vessel (as a lightweight label class, without dul:Agent)
+  - CO2_emissionReport property names (as annotation templates)
+  - WeatherPhenomena vocabulary (WMO codes -- but reference WMO directly)
+
+Even in that hypothetical case, the extracted file would be a new
+lightweight vocabulary, not a faithful representation of VesselAI.
+
+
+================================================================================
+SECTION 8 -- IF VesselAI-simplified.ttl IS NOT RECOMMENDED
+================================================================================
+
+This section documents the decision NOT to create VesselAI-simplified.ttl.
+
+1. Clear reasons why VesselAI-simplified.ttl is not recommended:
+
+   a. DUL pervasiveness: Every major VesselAI class is either directly
+      subClassOf a DUL class or transitively so. There is no non-trivial
+      VesselAI class that can be extracted without either keeping a DUL
+      reference (reintroducing the dependency) or removing the superclass
+      (effectively redefining the term as something new).
+
+   b. Semantic mismatch at upper-ontology level: DUL and IDO represent
+      different ontological commitments. VesselAI terms inherit DUL
+      semantics that are incompatible with IDO categories:
+        - VesselAI:Vessel is a dul:Agent (IDO models vessels as
+          InanimatePhysicalObjects)
+        - VesselAI:WeatherCondition is a dul:Event (IDO models conditions
+          as Qualities)
+        - VesselAI:Trajectory is a dul:Region (TwinShip models voyages
+          as Activities/Processes)
+      No realistic extraction can bridge this without redefinition.
+
+   c. TwinShip already covers the needed concepts natively and with
+      better semantics (IDO-aligned, with proper OWL restriction patterns,
+      and correct numeric datatypes). VesselAI adds no semantic value
+      that TwinShip does not already provide or cannot provide natively.
+
+   d. VesselAI measurement properties use xsd:string for all numeric
+      values. This is a significant data quality issue. TwinShip correctly
+      uses xsd:decimal / xsd:double for measurements. Reusing VesselAI
+      measurement patterns would degrade TwinShip data quality.
+
+   e. VesselAI has no coverage of engine/propulsion/machinery systems
+      (the most detailed part of TwinShip's vessel.ttl). The intersection
+      between VesselAI and TwinShip is too small to justify a dependency.
+
+   f. Creating a simplified file and not importing it provides no
+      functional benefit over rdfs:seeAlso annotations alone.
+
+   g. Creating a simplified file and importing it would require ongoing
+      maintenance as VesselAI evolves, with risk of reintroducing DUL.
+
+2. VesselAI terms that SHOULD still be referenced with rdfs:seeAlso:
+
+   Already implemented (in weather-conditions.ttl):
+     :WeatherCondition rdfs:seeAlso
+       <http://www.vesselAI-project.eu/ontology#WeatherCondition>
+     :WindCondition rdfs:seeAlso
+       <http://www.vesselAI-project.eu/ontology#10_metre_U_wind_component_surface>
+     :WindCondition rdfs:seeAlso
+       <http://www.vesselAI-project.eu/ontology#10_metre_V_wind_component_surface>
+
+   Recommended for addition (see Section 9 mapping table for details):
+     :VesselSystem  -> VesselAI:Vessel
+     :RoPax         -> VesselAI:Ro-Ro_Passenger_Ship
+     :RoRo          -> VesselAI:Ro-Ro_Cargo
+     :Tanker        -> VesselAI:Tanker
+     :Voyage        -> VesselAI:Trajectory
+     :VoyageLeg     -> VesselAI:Segment (or TrajectoryPart)
+     :Route         -> VesselAI:Route
+     :Port          -> VesselAI:Port
+     :FuelConsumptionSummary -> VesselAI:CO2_emissionReport
+
+3. Which TwinShip modules should contain native definitions instead:
+
+   Module                    Concepts that replace VesselAI
+   ------------------------- ------------------------------------
+   vessel.ttl                VesselSystem, RoPax, RoRo, Tanker,
+                             vessel type taxonomy extensions
+   weather-conditions.ttl    WeatherCondition, WindCondition
+                             (already native, no VesselAI import)
+   operational-modes.ttl     OperatingState, EngineMode, DraftMode,
+                             TrimMode, DraftTrimMode (already native)
+   operational-context.ttl   Voyage, VoyageLeg, Route, Port,
+                             FuelConsumptionSummary (already native)
+   future: emissions.ttl     EU-MRV fuel/CO2 reporting properties
+                             (inspired by VesselAI CO2_emissionReport
+                             but defined natively with proper datatypes)
+
+4. Whether existing TwinShip comments should mention VesselAI:
+
+   YES -- where rdfs:seeAlso annotations are added. The rdfs:comment
+   on each annotated class should note that VesselAI treats the
+   concept differently (different superclass, different upper ontology).
+   This is already done correctly in weather-conditions.ttl.
+
+5. VesselAI dependencies that should remain in external/ for inspection:
+
+   All files in model/external/vesselai/ should remain as reference
+   material. They are valuable for:
+   - Cross-checking label and concept choices
+   - Understanding the EU-MRV reporting vocabulary
+   - Comparing vessel type taxonomies
+   - Traceability documentation
+
+   They should NOT be imported into any TwinShip module.
+
+6. Whether the catalog VesselAI entry should remain:
+
+   The catalog entry in model/catalog-v001.xml that maps VesselAI
+   to external/vesselai/vesselAI_ontology_v2.owl should be:
+   - KEPT but documented as "external reference only, not imported"
+   - OR removed once the owl:imports statement is removed from
+     twinship-base.ttl (at which point the catalog entry is unused)
+
+   The more conservative approach is to keep it with a comment
+   explaining it is for inspection only. The duplicate entry in the
+   <group> block can be removed as redundant.
+
+7. Documentation statement recommended:
+
+   The following statement should be added to CLAUDE.md (when updated)
+   and to relevant README files:
+
+   "VesselAI is not imported by any TwinShip module. The VesselAI
+   files are retained in model/external/vesselai/ for inspection and
+   reference only. Selected TwinShip terms reference VesselAI terms
+   using non-semantic rdfs:seeAlso annotations for source traceability.
+   No skos:closeMatch or owl:equivalentClass assertions to VesselAI
+   terms are made because VesselAI is DUL-based and TwinShip is
+   IDO-based; these upper ontologies represent incompatible
+   ontological commitments. See docs/ontology/vesselai-full-reuse-audit.txt
+   for the full design decision justification."
+
+8. How this decision supports the IDO-only architecture:
+
+   IDO (ISO 15926-14) provides a coherent set of top-level categories
+   for the engineering and industrial domain. TwinShip's abstraction
+   layer (TwinShipInanimatePhysicalObject, TwinShipProcess,
+   TwinShipQuality, TwinShipInformationObject) maps cleanly onto IDO.
+   VesselAI's DUL-based hierarchy would introduce a second top-level
+   classification path, causing:
+   - Potential reasoning conflicts (dul:Agent and ido:InanimatePhysical-
+     Object are asserted to be the superclass of the same vessel)
+   - SPARQL query complexity (two namespaces for the same domain)
+   - Maintenance complexity (two upper ontologies to track)
+   Removing the VesselAI import from twinship-base.ttl and keeping
+   all TwinShip terms under the IDO hierarchy ensures a clean,
+   single-root architecture.
+
+9. How this decision satisfies the original reuse investigation goal:
+
+   The original intent was to assess whether VesselAI could be reused.
+   This audit has performed that assessment comprehensively and found
+   that direct reuse is not semantically justified. The decision to
+   NOT import VesselAI is an evidence-based design decision, not an
+   arbitrary one. The audit documentation serves as the permanent
+   justification for this architectural choice.
+
+
+================================================================================
+SECTION 9 -- MAPPING RECOMMENDATIONS
+================================================================================
+
+Conservative approach applied:
+  - rdfs:seeAlso for source traceability (non-semantic, always safe)
+  - skos:relatedMatch for conceptual relation in same domain
+  - skos:closeMatch only if very close in meaning and same domain area
+  - No owl:equivalentClass or owl:equivalentProperty anywhere
+
+Abbreviations: TS = TwinShip, VAI = VesselAI
+IRI prefix for VAI terms: http://www.vesselAI-project.eu/ontology#
+
+  TS Term                      VAI Term                  Relation
+  Reason                                                 Risk    Implement
+  --------------------------   ------------------------- -------- ----------
+  :VesselSystem                VAI:Vessel                seeAlso  Now
+  Same domain, different        
+  upper class (IDO vs DUL)                              Low
+
+  :RoPax                       VAI:Ro-Ro_Passenger_Ship  seeAlso  Now
+  Same vessel type                                      Low
+
+  :RoRo                        VAI:Ro-Ro_Cargo           seeAlso  Now
+  Same vessel type                                      Low
+
+  :Tanker                      VAI:Tanker                seeAlso  Now
+  Same vessel type                                      Low
+
+  :WeatherCondition            VAI:WeatherCondition      seeAlso  Done
+  Different superclass                                  Low
+  (already in weather-conditions.ttl)
+
+  :WindCondition               VAI:10_metre_U_wind       seeAlso  Done
+  Vector vs scalar              _component_surface       Low
+  (already in weather-conditions.ttl)
+
+  :WindCondition               VAI:10_metre_V_wind       seeAlso  Done
+  Vector vs scalar              _component_surface       Low
+  (already in weather-conditions.ttl)
+
+  :Voyage                      VAI:Trajectory            seeAlso  Defer
+  Process vs Region                                     Low
+
+  :VoyageLeg                   VAI:Segment               seeAlso  Defer
+  Process vs Region                                     Low
+
+  :Route                       VAI:Route                 seeAlso  Defer
+  InfoObject vs Region                                  Low
+
+  :Port                        VAI:Port                  seeAlso  Defer
+  InfoObject vs PhysicalPlace                           Low
+
+  :FuelConsumption-            VAI:CO2_emissionReport    seeAlso  Defer
+  Summary                      (related concept)
+  Different superclass                                  Low
+
+  :TwinShipEvent               VAI:Event                 seeAlso  Defer
+  Both are "events" but         (dul:Event)
+  different upper ontologies                            Low
+
+  :Organization                (none)                    none     -
+  Not in VesselAI
+
+  :EngineSystem                (none)                    none     -
+  Not in VesselAI
+
+  (All engine/propulsion)      (none)                    none     -
+  Not in VesselAI
+
+  :OperatingState              (none)                    none     -
+  Not in VesselAI
+
+  :EngineMode                  (none)                    none     -
+  Not in VesselAI
+
+  :DraftMode                   (none)                    none     -
+  Not in VesselAI
+
+  :SpeedBin                    (none)                    none     -
+  Not in VesselAI
+
+  :OperationalProfile          (none)                    none     -
+  Not in VesselAI
+
+DO NOT USE these mapping relations with any VesselAI term:
+  owl:equivalentClass       -- risk HIGH for all VesselAI classes
+  owl:equivalentProperty    -- risk HIGH for all VesselAI properties
+  skos:closeMatch           -- risk MEDIUM to HIGH for most classes
+                              (incompatible upper classes)
+
+The two safest exceptions where skos:relatedMatch would be acceptable
+(not implemented, deferred):
+  :FuelConsumptionSummary skos:relatedMatch VAI:CO2_emissionReport
+    Both are information objects about fuel/emissions.
+  :VesselSystem skos:relatedMatch VAI:Vessel
+    Both refer to the same real-world entity class.
+
+Even these should use skos:relatedMatch, not skos:closeMatch, because
+the upper ontology categories differ.
+
+
+================================================================================
+SECTION 10 -- QUDT, SIMPLE DATA PROPERTIES, AND QUANTITY VALUES
+================================================================================
+
+1. Whether VesselAI measurement properties are useful:
+
+   NO in their current form. VesselAI declares all numeric and temporal
+   measurements as owl:ObjectProperty with rdfs:range xsd:string. This
+   is incorrect OWL design. Values that are measurements (speed,
+   heading, temperature, fuel mass) should be xsd:decimal or appropriate
+   numeric types, or should be modelled as data properties.
+
+   Specific issues found:
+   - hasSpeedOverGround: domain TrajectoryPart, range xsd:string
+     (should be range xsd:decimal or qudt:Quantity)
+   - hasCourseOverGround: range xsd:string (should be xsd:decimal in degrees)
+   - hasHeading: range xsd:string (should be xsd:decimal)
+   - 10_metre_U_wind_component_surface: range xsd:string (should be
+     a numeric data property for m/s values)
+   - reportedFuelConsumption: range xsd:string (should be xsd:decimal)
+   - All CO2_emissionReport properties: range xsd:string
+
+   These represent a clear design defect in VesselAI that TwinShip
+   should NOT reproduce.
+
+2. Whether VesselAI uses proper numeric datatypes:
+
+   NO. All quantitative properties in VesselAI use rdfs:range xsd:string.
+   TwinShip correctly uses xsd:decimal / xsd:double for measurements
+   (e.g., windSpeed rdfs:range xsd:decimal; twShaftPowerMaxInKW
+   rdfs:range xsd:double).
+
+3. Whether TwinShip's current simple data properties are better:
+
+   YES. TwinShip's current pattern (simple xsd:decimal / xsd:double
+   data properties) is correct, SPARQL-friendly, and semantically
+   adequate for first release. It avoids the xsd:string mistake in
+   VesselAI and avoids the complexity of full QUDT quantity values.
+
+4. Whether QUDT modelling should be added now or deferred:
+
+   DEFER. QUDT quantity-value modelling (pairing a numeric value with
+   a unit via qudt:Quantity / qudt:value / qudt:unit) adds significant
+   complexity and is not required for the current TwinShip use cases
+   (performance analysis, fuel consumption profiling). The current
+   pattern of using xsd:decimal with unit convention documented in
+   rdfs:comment is sufficient.
+
+   The QUDT schema and vocabularies are already local
+   (external/SCHEMA_QUDT-simplified.ttl, vocabularies/VOCAB_QUDT_UNIT2-
+   simplified.ttl, vocabularies/VOCAB_QUDT-QUANTITY-KINDS-simplified.ttl)
+   and imported in twinship-base.ttl, so a future QUDT upgrade path
+   is available without requiring new imports.
+
+5. Whether optional QUDT measurement modules are justified:
+
+   Not for the current release. If in future TwinShip needs to support
+   interoperability with systems that require explicit unit annotation,
+   optional modules such as:
+   - measurements-qudt.ttl
+   - weather-qudt.ttl
+   - vessel-qudt.ttl
+   could be defined as optional extensions without modifying the core
+   modules. This is the preferred extensibility approach.
+
+6. Whether this affects the VesselAI-simplified.ttl decision:
+
+   It reinforces Option A. VesselAI's measurement patterns are
+   inferior to TwinShip's. Adopting any VesselAI measurement properties
+   would regress TwinShip data quality from xsd:decimal to xsd:string.
+
+
+================================================================================
+SECTION 11 -- RECOMMENDED NEXT ACTION PLAN
+================================================================================
+
+Based on Option A (no VesselAI-simplified.ttl, rdfs:seeAlso only),
+the following concrete action steps are recommended:
+
+PRIORITY 1 (Immediate -- architectural correctness)
+----------------------------------------------------
+1a. Remove the owl:imports for VesselAI from twinship-base.ttl.
+
+    Current (twinship-base.ttl, line 52):
+      owl:imports <http://www.vesselAI-project.eu/vesselai> ;
+
+    This single statement must be removed. It is inconsistent with
+    the IDO-only architecture and with the CLAUDE.md instructions.
+    After removal:
+      - DUL, GeoSPARQL, OWL-Time will no longer be in the import closure.
+      - Tools and reasoners will no longer attempt to load VesselAI.
+      - The catalog entry for VesselAI becomes unused.
+
+1b. Keep VesselAI files in model/external/vesselai/ as inspection/
+    reference material. Do NOT delete them. They are the evidence base
+    for this design decision.
+
+1c. Document the VesselAI catalog entry in model/catalog-v001.xml as
+    "external reference only, not used by owl:imports" via an XML comment.
+    Remove the redundant duplicate entry in the <group> block.
+
+PRIORITY 2 (Near-term -- traceability annotations)
+----------------------------------------------------
+2a. Add rdfs:seeAlso annotations to vessel.ttl:
+
+      :VesselSystem rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#Vessel>
+      :RoPax rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#Ro-Ro_Passenger_Ship>
+      :RoRo rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#Ro-Ro_Cargo>
+      :Tanker rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#Tanker>
+
+2b. Consider adding rdfs:seeAlso in operational-context.ttl (defer if
+    not urgent):
+
+      :Voyage rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#Trajectory>
+      :VoyageLeg rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#Segment>
+      :Route rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#Route>
+      :Port rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#Port>
+      :FuelConsumptionSummary rdfs:seeAlso
+        <http://www.vesselAI-project.eu/ontology#CO2_emissionReport>
+
+2c. Weather-conditions.ttl already has the correct rdfs:seeAlso
+    annotations. No changes needed.
+
+PRIORITY 3 (Near-term -- documentation update)
+------------------------------------------------
+3a. Update CLAUDE.md to explicitly state that:
+    - VesselAI is not imported by any TwinShip module.
+    - The owl:imports in twinship-base.ttl has been removed.
+    - VesselAI files remain in external/ for inspection.
+    - rdfs:seeAlso is used for traceability.
+    - Reference this audit report as the design decision justification.
+
+3b. Update model/README.md to describe external/vesselai/ as
+    "external reference only, not imported."
+
+3c. Store this audit report permanently at
+    docs/ontology/vesselai-full-reuse-audit.txt (done by this audit).
+
+PRIORITY 4 (Continue TwinShip-native development)
+--------------------------------------------------
+4a. Continue developing vessel.ttl natively:
+    - Additional vessel types (BulkCarrier, ContainerShip, etc.)
+      can be added as needed, with rdfs:seeAlso to VesselAI types.
+    - Vessel identification properties (vesselIMO, vesselCallsign,
+      vesselDeadweightTonnage, vesselGrossTonnage) can be added
+      natively as TwinShip xsd:string/xsd:integer data properties.
+
+4b. Continue developing operational-context.ttl natively:
+    - Extend fuel/emissions reporting properties using EU-MRV names
+      as inspiration (but declare as proper numeric types).
+    - Consider a future emissions-reporting.ttl module for MRV properties.
+
+4c. Continue developing weather-conditions.ttl natively:
+    - Add sea state and wave properties (significantWaveHeight,
+      meanWavePeriod, meanWaveDirection, seaSurfaceTemperature,
+      airPressure) as native TwinShip xsd:decimal data properties.
+    - Reference VesselAI/ERA5 variable names in rdfs:comment.
+    - Reference WMO code table 4678 in rdfs:seeAlso if a weather
+      phenomena vocabulary is needed.
+
+4d. Defer GeoSPARQL and OWL-Time:
+    - Do not add geospatial (hasGeometry, ogc:Geometry) or OWL-Time
+      imports until concrete use cases require them.
+    - When they are needed, import them directly into a new module
+      (e.g., vessel-geospatial.ttl or trajectory.ttl), not via VesselAI.
+
+4e. Defer QUDT quantity-value modelling:
+    - Continue with simple xsd:decimal / xsd:double data properties.
+    - The QUDT schema/vocabulary imports in twinship-base.ttl remain
+      but should be audited separately to confirm they are used;
+      if no QUDT terms are used in any module, these imports should
+      also be reviewed for removal to simplify the closure.
+
+PRIORITY 5 (Future considerations)
+------------------------------------
+5a. If a trajectory module (for AIS data) is needed in future:
+    - Define it natively (e.g., trajectory.ttl) with IDO anchoring.
+    - Trajectory as TwinShipProcess (subClassOf ido:Activity) or as
+      a new TwinShipSpatioTemporalExtent class.
+    - Import GeoSPARQL and OWL-Time directly in that module only.
+    - Do not route this through VesselAI.
+
+5b. If EU-MRV annual reporting needs a dedicated module:
+    - Define emissions-reporting.ttl natively.
+    - Use VesselAI CO2_emissionReport property NAMES as inspiration.
+    - Declare all values as xsd:decimal (not xsd:string as VesselAI does).
+    - Add rdfs:seeAlso to VesselAI CO2_emissionReport.
+
+5c. If cargo domain coverage is needed:
+    - Define cargo.ttl natively.
+    - VesselAI's UN dangerous goods taxonomy is well-structured and
+      can serve as a reference; reference with rdfs:seeAlso.
+
+5d. Run the full build pipeline (./scripts/generate_website.sh) after
+    removing the VesselAI owl:imports to confirm no regressions.
+
+
+================================================================================
+SECTION 12 -- FINAL RECOMMENDATION
+================================================================================
+
+1. Recommended option: A
+
+   Do not create VesselAI-simplified.ttl. Remove the existing VesselAI
+   owl:imports from twinship-base.ttl. Continue developing TwinShip-
+   native modules under the IDO-based abstraction layer. Use rdfs:seeAlso
+   annotations only for source traceability.
+
+2. Rationale:
+
+   VesselAI is a well-structured domain ontology, but it is fundamentally
+   DUL-based (DOLCE Ultralight) and its core classes cannot be extracted
+   without either retaining DUL dependencies or effectively redefining
+   the terms as something new. Every meaningful VesselAI class roots in
+   dul:Agent, dul:Region, dul:Event, dul:PhysicalPlace, or
+   dul:InformationEntity -- categories that are categorially different
+   from the corresponding IDO classes used in TwinShip. VesselAI also
+   uses xsd:string for all quantitative properties, which is a
+   significant data quality defect compared to TwinShip's correct use
+   of numeric datatypes. TwinShip already natively covers all the
+   domains where VesselAI would have contributed terms (vessel types,
+   weather conditions, voyage/leg structure, fuel consumption, modes
+   and states) and does so with semantically superior IDO-aligned
+   definitions. The traceability goal can be fully satisfied by
+   rdfs:seeAlso annotations, which are already partially implemented
+   in weather-conditions.ttl. Keeping VesselAI files in external/ as
+   reference material preserves the investigation record without
+   creating any import dependency.
+
+3. Create VesselAI-simplified.ttl now: NO
+
+4. Import VesselAI anywhere in TwinShip now: NO
+   Additionally, the EXISTING owl:imports in twinship-base.ttl must
+   be REMOVED as a priority action.
+
+5. Keep VesselAI files in external/: YES
+   They serve as audit evidence and design decision documentation.
+
+6. Keep the VesselAI catalog entry: YES (with documentation comment)
+   Once the owl:imports is removed, the entry is functionally unused.
+   Keep it clearly marked as "external reference only" to prevent
+   future inadvertent imports. Alternatively, remove after cleanup.
+
+7. Use rdfs:seeAlso annotations: YES
+   Already implemented in weather-conditions.ttl. Extend to vessel.ttl
+   (VesselSystem, RoPax, RoRo, Tanker) as priority 2 actions.
+   Optionally extend to operational-context.ttl (Voyage, Route, Port,
+   FuelConsumptionSummary).
+
+8. Use SKOS mappings: YES, but conservatively.
+   skos:relatedMatch ONLY (not skos:closeMatch) for:
+     :VesselSystem skos:relatedMatch VAI:Vessel
+     :FuelConsumptionSummary skos:relatedMatch VAI:CO2_emissionReport
+   All other candidate mappings should use rdfs:seeAlso only.
+   NO skos:closeMatch assertions recommended for current release.
+
+9. Use OWL equivalence: NO
+   owl:equivalentClass and owl:equivalentProperty must not be used
+   with any VesselAI term. All candidate VesselAI terms have incompatible
+   upper-ontology superclasses with their TwinShip counterparts.
+
+10. Concrete next implementation prompt:
+
+   "Remove the owl:imports <http://www.vesselAI-project.eu/vesselai>
+   statement from model/twinship-base.ttl, verify the build pipeline
+   still runs cleanly, and add rdfs:seeAlso annotations for VesselSystem,
+   RoPax, RoRo, and Tanker in model/modules/vessel.ttl."
+
+
+================================================================================
+END OF AUDIT REPORT
+================================================================================
