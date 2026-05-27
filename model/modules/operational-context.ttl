@@ -37,12 +37,34 @@
 :Voyage a owl:Class ;
     rdfs:label "Voyage" ;
     rdfs:comment "A vessel operational process representing a voyage or passage, typically between departure and arrival locations." ;
-    rdfs:subClassOf :TwinShipProcess .
+    rdfs:subClassOf :TwinShipProcess ,
+        [ a owl:Restriction ; owl:onProperty :hasVoyageLeg                  ; owl:someValuesFrom :VoyageLeg                ],
+        [ a owl:Restriction ; owl:onProperty :hasDeparturePort              ; owl:someValuesFrom :Port                    ],
+        [ a owl:Restriction ; owl:onProperty :hasArrivalPort                ; owl:someValuesFrom :Port                    ],
+        [ a owl:Restriction ; owl:onProperty :followsRoute                  ; owl:someValuesFrom :Route                   ],
+        [ a owl:Restriction ; owl:onProperty :hasOperationalProfile         ; owl:someValuesFrom :OperationalProfile       ],
+        [ a owl:Restriction ; owl:onProperty :hasFuelConsumptionObservation ; owl:someValuesFrom :FuelConsumptionObservation ],
+        [ a owl:Restriction ; owl:onProperty :hasFuelConsumptionSummary     ; owl:someValuesFrom :FuelConsumptionSummary   ],
+        [ a owl:Restriction ; owl:onProperty :hasOperatingState             ; owl:someValuesFrom :OperatingState           ],
+        [ a owl:Restriction ; owl:onProperty :twVoyageIdentifier            ; owl:someValuesFrom xsd:string               ],
+        [ a owl:Restriction ; owl:onProperty :twVoyageDurationHours         ; owl:someValuesFrom xsd:decimal              ],
+        [ a owl:Restriction ; owl:onProperty :twVoyageStartTime             ; owl:someValuesFrom xsd:dateTime             ],
+        [ a owl:Restriction ; owl:onProperty :twVoyageEndTime               ; owl:someValuesFrom xsd:dateTime             ],
+        [ a owl:Restriction ; owl:onProperty :twDeparturePortCode           ; owl:someValuesFrom xsd:string               ],
+        [ a owl:Restriction ; owl:onProperty :twArrivalPortCode             ; owl:someValuesFrom xsd:string               ] .
 
 :VoyageLeg a owl:Class ;
     rdfs:label "Voyage Leg" ;
     rdfs:comment "A subdivision of a voyage used for segment-wise operational analysis." ;
-    rdfs:subClassOf :TwinShipProcess .
+    rdfs:subClassOf :TwinShipProcess ,
+        [ a owl:Restriction ; owl:onProperty :observedDuringVoyage          ; owl:someValuesFrom :Voyage                   ],
+        [ a owl:Restriction ; owl:onProperty :hasFuelConsumptionObservation ; owl:someValuesFrom :FuelConsumptionObservation ],
+        [ a owl:Restriction ; owl:onProperty :hasOperatingState             ; owl:someValuesFrom :OperatingState            ],
+        [ a owl:Restriction ; owl:onProperty :twStateDurationHours          ; owl:someValuesFrom xsd:decimal               ],
+        [ a owl:Restriction ; owl:onProperty :twTimeSharePercentage         ; owl:someValuesFrom xsd:decimal               ],
+        [ a owl:Restriction ; owl:onProperty :twStateLabel                  ; owl:someValuesFrom xsd:string                ],
+        [ a owl:Restriction ; owl:onProperty :twEngineRPM                   ; owl:someValuesFrom xsd:decimal               ],
+        [ a owl:Restriction ; owl:onProperty :twEngineLoad                  ; owl:someValuesFrom xsd:decimal               ] .
 
 :Route a owl:Class ;
     rdfs:label "Route" ;
@@ -63,7 +85,12 @@
 :FuelConsumptionObservation a owl:Class ;
     rdfs:label "Fuel Consumption Observation" ;
     rdfs:comment "A measured or logged fuel-consumption value associated with a vessel, voyage, voyage leg, operating state, or time interval." ;
-    rdfs:subClassOf :TwinShipQuality .
+    rdfs:subClassOf :TwinShipQuality ,
+        [ a owl:Restriction ; owl:onProperty :observedDuringVoyage    ; owl:someValuesFrom :Voyage    ],
+        [ a owl:Restriction ; owl:onProperty :observedDuringVoyageLeg ; owl:someValuesFrom :VoyageLeg ],
+        [ a owl:Restriction ; owl:onProperty :twFuelConsumedMass      ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :twEngineRPM             ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :twEngineLoad            ; owl:someValuesFrom xsd:decimal ] .
 
 # #################################################################
 # #
@@ -74,37 +101,68 @@
 :OperationalProfile a owl:Class ;
     rdfs:label "Operational Profile" ;
     rdfs:comment "A derived or statistical representation of vessel operation, typically described by frequencies or durations over operating states, modes, and speed bins." ;
-    rdfs:subClassOf :TwinShipInformationObject .
+    rdfs:subClassOf :TwinShipInformationObject ,
+        [ a owl:Restriction ; owl:onProperty :hasSpeedBin               ; owl:someValuesFrom :SpeedBin              ],
+        [ a owl:Restriction ; owl:onProperty :hasFrequencyDistribution  ; owl:someValuesFrom :FrequencyDistribution ],
+        [ a owl:Restriction ; owl:onProperty :hasFuelConsumptionSummary ; owl:someValuesFrom :FuelConsumptionSummary ],
+        [ a owl:Restriction ; owl:onProperty :summarisesVoyage          ; owl:someValuesFrom :Voyage                ],
+        [ a owl:Restriction ; owl:onProperty :summarisesOperatingState  ; owl:someValuesFrom :OperatingState        ],
+        [ a owl:Restriction ; owl:onProperty :twRecordCount             ; owl:someValuesFrom xsd:integer            ],
+        [ a owl:Restriction ; owl:onProperty :twSamplingIntervalMinutes ; owl:someValuesFrom xsd:decimal            ] .
 
 :SpeedBin a owl:Class ;
     rdfs:label "Speed Bin" ;
     rdfs:comment "A speed interval used to group vessel observations for statistical analysis." ;
-    rdfs:subClassOf :TwinShipInformationObject .
+    rdfs:subClassOf :TwinShipInformationObject ,
+        [ a owl:Restriction ; owl:onProperty :twSpeedBinLowerBound ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :twSpeedBinUpperBound ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :twSpeedValue         ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :twStateFrequency     ; owl:someValuesFrom xsd:decimal ] .
 
 :FrequencyDistribution a owl:Class ;
     rdfs:label "Frequency Distribution" ;
     rdfs:comment "A statistical distribution describing frequency, duration, or share of observations in states, modes, or bins." ;
-    rdfs:subClassOf :TwinShipInformationObject .
+    rdfs:subClassOf :TwinShipInformationObject ,
+        [ a owl:Restriction ; owl:onProperty :summarisesOperatingState ; owl:someValuesFrom :OperatingState ],
+        [ a owl:Restriction ; owl:onProperty :twStateDurationHours     ; owl:someValuesFrom xsd:decimal    ],
+        [ a owl:Restriction ; owl:onProperty :twTimeSharePercentage    ; owl:someValuesFrom xsd:decimal    ],
+        [ a owl:Restriction ; owl:onProperty :twStateFrequency         ; owl:someValuesFrom xsd:decimal    ],
+        [ a owl:Restriction ; owl:onProperty :twRecordCount            ; owl:someValuesFrom xsd:integer    ] .
 
 :FuelConsumptionSummary a owl:Class ;
     rdfs:label "Fuel Consumption Summary" ;
     rdfs:comment "A derived or aggregated summary of fuel consumption, such as mean, median, total, or rate over a voyage, state, mode, bin, or profile." ;
-    rdfs:subClassOf :TwinShipInformationObject .
+    rdfs:subClassOf :TwinShipInformationObject ,
+        [ a owl:Restriction ; owl:onProperty :summarisesVoyage         ; owl:someValuesFrom :Voyage         ],
+        [ a owl:Restriction ; owl:onProperty :summarisesOperatingState ; owl:someValuesFrom :OperatingState ],
+        [ a owl:Restriction ; owl:onProperty :twFuelConsumedMass       ; owl:someValuesFrom xsd:decimal     ],
+        [ a owl:Restriction ; owl:onProperty :twAnnualFuelConsumedMass ; owl:someValuesFrom xsd:decimal     ],
+        [ a owl:Restriction ; owl:onProperty :twMeanFuelConsumption    ; owl:someValuesFrom xsd:decimal     ],
+        [ a owl:Restriction ; owl:onProperty :twAverageFuelConsumption ; owl:someValuesFrom xsd:decimal     ],
+        [ a owl:Restriction ; owl:onProperty :twFuelConsumptionRate    ; owl:someValuesFrom xsd:decimal     ] .
 
 :FuelConsumptionEstimate a owl:Class ;
     rdfs:label "Fuel Consumption Estimate" ;
     rdfs:comment "Estimated or model-derived fuel consumption, used for gap analysis and performance benchmarking." ;
-    rdfs:subClassOf :TwinShipInformationObject .
+    rdfs:subClassOf :TwinShipInformationObject ,
+        [ a owl:Restriction ; owl:onProperty :twEstimatedMeanFuelConsumption ; owl:someValuesFrom xsd:decimal ] .
 
 :FuelConsumptionGapAnalysis a owl:Class ;
     rdfs:label "Fuel Consumption Gap Analysis" ;
     rdfs:comment "Comparison of estimated fuel consumption and observed fuel consumption, used for performance monitoring." ;
-    rdfs:subClassOf :TwinShipInformationObject .
+    rdfs:subClassOf :TwinShipInformationObject ,
+        [ a owl:Restriction ; owl:onProperty :hasFuelConsumptionSummary            ; owl:someValuesFrom :FuelConsumptionSummary ],
+        [ a owl:Restriction ; owl:onProperty :twActualFuelConsumption              ; owl:someValuesFrom xsd:decimal             ],
+        [ a owl:Restriction ; owl:onProperty :twEstimatedMeanFuelConsumption       ; owl:someValuesFrom xsd:decimal             ],
+        [ a owl:Restriction ; owl:onProperty :twFuelConsumptionDeviation           ; owl:someValuesFrom xsd:decimal             ],
+        [ a owl:Restriction ; owl:onProperty :twFuelConsumptionDeviationPercentage ; owl:someValuesFrom xsd:decimal             ] .
 
 :PerformanceDeviation a owl:Class ;
     rdfs:label "Performance Deviation" ;
     rdfs:comment "A derived deviation between expected and observed performance, used in gap analysis and operational benchmarking." ;
-    rdfs:subClassOf :TwinShipInformationObject .
+    rdfs:subClassOf :TwinShipInformationObject ,
+        [ a owl:Restriction ; owl:onProperty :twFuelConsumptionDeviation           ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :twFuelConsumptionDeviationPercentage ; owl:someValuesFrom xsd:decimal ] .
 
 # #################################################################
 # #
@@ -224,38 +282,38 @@
 # #
 # #################################################################
 
-:voyageIdentifier a owl:DatatypeProperty ;
-    rdfs:label "voyage identifier" ;
+:twVoyageIdentifier a owl:DatatypeProperty ;
+    rdfs:label "twinship voyage identifier" ;
     rdfs:comment "A string identifier for a voyage (e.g., sequential number or code from operational dataset)." ;
     rdfs:range xsd:string ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:voyageDurationHours a owl:DatatypeProperty ;
-    rdfs:label "voyage duration hours" ;
+:twVoyageDurationHours a owl:DatatypeProperty ;
+    rdfs:label "twinship voyage duration hours" ;
     rdfs:comment "Total duration of a voyage in decimal hours." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:voyageStartTime a owl:DatatypeProperty ;
-    rdfs:label "voyage start time" ;
+:twVoyageStartTime a owl:DatatypeProperty ;
+    rdfs:label "twinship voyage start time" ;
     rdfs:comment "UTC date-time at which a voyage started." ;
     rdfs:range xsd:dateTime ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:voyageEndTime a owl:DatatypeProperty ;
-    rdfs:label "voyage end time" ;
+:twVoyageEndTime a owl:DatatypeProperty ;
+    rdfs:label "twinship voyage end time" ;
     rdfs:comment "UTC date-time at which a voyage ended." ;
     rdfs:range xsd:dateTime ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:departurePortCode a owl:DatatypeProperty ;
-    rdfs:label "departure port code" ;
+:twDeparturePortCode a owl:DatatypeProperty ;
+    rdfs:label "twinship departure port code" ;
     rdfs:comment "UN/LOCODE or other identifier for the port of departure." ;
     rdfs:range xsd:string ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:arrivalPortCode a owl:DatatypeProperty ;
-    rdfs:label "arrival port code" ;
+:twArrivalPortCode a owl:DatatypeProperty ;
+    rdfs:label "twinship arrival port code" ;
     rdfs:comment "UN/LOCODE or other identifier for the port of arrival." ;
     rdfs:range xsd:string ;
     rdfs:subPropertyOf :TwinShipDataProperties .
@@ -269,20 +327,20 @@
 # #
 # #################################################################
 
-:stateDurationHours a owl:DatatypeProperty ;
-    rdfs:label "state duration hours" ;
+:twStateDurationHours a owl:DatatypeProperty ;
+    rdfs:label "twinship state duration hours" ;
     rdfs:comment "Total duration spent in an operating state, in decimal hours." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:timeSharePercentage a owl:DatatypeProperty ;
-    rdfs:label "time share percentage" ;
+:twTimeSharePercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship time share percentage" ;
     rdfs:comment "Percentage of total time spent in a given operating state, speed bin, or mode (0\u2013100)." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:stateLabel a owl:DatatypeProperty ;
-    rdfs:label "state label" ;
+:twStateLabel a owl:DatatypeProperty ;
+    rdfs:label "twinship state label" ;
     rdfs:comment "A human-readable label for an operating state, as recorded in the source dataset." ;
     rdfs:range xsd:string ;
     rdfs:subPropertyOf :TwinShipDataProperties .
@@ -293,14 +351,14 @@
 # #
 # #################################################################
 
-:engineRPM a owl:DatatypeProperty ;
-    rdfs:label "engine RPM" ;
+:twEngineRPM a owl:DatatypeProperty ;
+    rdfs:label "twinship engine RPM" ;
     rdfs:comment "Engine rotational speed in revolutions per minute at time of observation." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:engineLoad a owl:DatatypeProperty ;
-    rdfs:label "engine load" ;
+:twEngineLoad a owl:DatatypeProperty ;
+    rdfs:label "twinship engine load" ;
     rdfs:comment "Engine load as a decimal fraction or percentage of maximum continuous rating (MCR)." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
@@ -311,20 +369,20 @@
 # #
 # #################################################################
 
-:speedValue a owl:DatatypeProperty ;
-    rdfs:label "speed value" ;
+:twSpeedValue a owl:DatatypeProperty ;
+    rdfs:label "twinship speed value" ;
     rdfs:comment "Speed value in knots associated with an observation or speed bin." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:speedBinLowerBound a owl:DatatypeProperty ;
-    rdfs:label "speed bin lower bound" ;
+:twSpeedBinLowerBound a owl:DatatypeProperty ;
+    rdfs:label "twinship speed bin lower bound" ;
     rdfs:comment "Lower bound of a speed bin interval, in knots (inclusive)." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:speedBinUpperBound a owl:DatatypeProperty ;
-    rdfs:label "speed bin upper bound" ;
+:twSpeedBinUpperBound a owl:DatatypeProperty ;
+    rdfs:label "twinship speed bin upper bound" ;
     rdfs:comment "Upper bound of a speed bin interval, in knots (exclusive)." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
@@ -335,20 +393,20 @@
 # #
 # #################################################################
 
-:stateFrequency a owl:DatatypeProperty ;
-    rdfs:label "state frequency" ;
+:twStateFrequency a owl:DatatypeProperty ;
+    rdfs:label "twinship state frequency" ;
     rdfs:comment "Relative frequency of observations in a given state or bin (0.0\u20131.0)." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:recordCount a owl:DatatypeProperty ;
-    rdfs:label "record count" ;
+:twRecordCount a owl:DatatypeProperty ;
+    rdfs:label "twinship record count" ;
     rdfs:comment "Number of data records (observations) in a given state, bin, or voyage." ;
     rdfs:range xsd:integer ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:samplingIntervalMinutes a owl:DatatypeProperty ;
-    rdfs:label "sampling interval minutes" ;
+:twSamplingIntervalMinutes a owl:DatatypeProperty ;
+    rdfs:label "twinship sampling interval minutes" ;
     rdfs:comment "Time interval between successive sensor readings or data records, in minutes." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
@@ -359,32 +417,32 @@
 # #
 # #################################################################
 
-:fuelConsumedMass a owl:DatatypeProperty ;
-    rdfs:label "fuel consumed mass" ;
+:twFuelConsumedMass a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel consumed mass" ;
     rdfs:comment "Total mass of fuel consumed during a voyage, leg, or interval, in metric tonnes." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:annualFuelConsumedMass a owl:DatatypeProperty ;
-    rdfs:label "annual fuel consumed mass" ;
+:twAnnualFuelConsumedMass a owl:DatatypeProperty ;
+    rdfs:label "twinship annual fuel consumed mass" ;
     rdfs:comment "Annualised total fuel consumed mass, in metric tonnes per year." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:meanFuelConsumption a owl:DatatypeProperty ;
-    rdfs:label "mean fuel consumption" ;
+:twMeanFuelConsumption a owl:DatatypeProperty ;
+    rdfs:label "twinship mean fuel consumption" ;
     rdfs:comment "Mean fuel consumption rate or total over a statistical sample, in metric tonnes per hour or metric tonnes per voyage." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:averageFuelConsumption a owl:DatatypeProperty ;
-    rdfs:label "average fuel consumption" ;
+:twAverageFuelConsumption a owl:DatatypeProperty ;
+    rdfs:label "twinship average fuel consumption" ;
     rdfs:comment "Average fuel consumption over a period or across voyages. Use meanFuelConsumption for statistical means; this property accommodates simpler average computations." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:fuelConsumptionRate a owl:DatatypeProperty ;
-    rdfs:label "fuel consumption rate" ;
+:twFuelConsumptionRate a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel consumption rate" ;
     rdfs:comment "Instantaneous or interval fuel consumption rate in metric tonnes per hour." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
@@ -395,26 +453,26 @@
 # #
 # #################################################################
 
-:estimatedMeanFuelConsumption a owl:DatatypeProperty ;
-    rdfs:label "estimated mean fuel consumption" ;
+:twEstimatedMeanFuelConsumption a owl:DatatypeProperty ;
+    rdfs:label "twinship estimated mean fuel consumption" ;
     rdfs:comment "Model-estimated mean fuel consumption for comparison with observed values, in metric tonnes per hour." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:actualFuelConsumption a owl:DatatypeProperty ;
-    rdfs:label "actual fuel consumption" ;
+:twActualFuelConsumption a owl:DatatypeProperty ;
+    rdfs:label "twinship actual fuel consumption" ;
     rdfs:comment "Observed actual fuel consumption for gap analysis comparison, in metric tonnes per hour." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:fuelConsumptionDeviation a owl:DatatypeProperty ;
-    rdfs:label "fuel consumption deviation" ;
+:twFuelConsumptionDeviation a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel consumption deviation" ;
     rdfs:comment "Absolute deviation between estimated and actual fuel consumption, in metric tonnes per hour." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:fuelConsumptionDeviationPercentage a owl:DatatypeProperty ;
-    rdfs:label "fuel consumption deviation percentage" ;
+:twFuelConsumptionDeviationPercentage a owl:DatatypeProperty ;
+    rdfs:label "twinship fuel consumption deviation percentage" ;
     rdfs:comment "Relative deviation between estimated and actual fuel consumption, expressed as a percentage." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .

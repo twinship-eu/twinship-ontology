@@ -9,7 +9,7 @@
 # Design principles verified:
 #   - WeatherCondition and WindCondition are TwinShipQuality-based (IDO-aligned)
 #   - No VesselAI, DUL, GeoSPARQL, or OWL-Time imports
-#   - Simple xsd:decimal data properties for windSpeed and windDirection
+#   - Simple xsd:decimal data properties for twWindSpeed and twWindDirection
 #   - hasWindCondition is a subproperty of hasWeatherCondition
 
 PREFIX : <https://twin-ship.eu/twinship#>
@@ -64,13 +64,13 @@ WHERE {
 # }
 
 # ============================================================
-# Query 5 — windSpeed and windDirection have xsd:decimal range
+# Query 5 — twWindSpeed and twWindDirection have xsd:decimal range
 # ============================================================
 # Expected: both properties with range xsd:decimal
 
 # SELECT ?prop ?range
 # WHERE {
-#   VALUES ?prop { :windSpeed :windDirection }
+#   VALUES ?prop { :twWindSpeed :twWindDirection }
 #   ?prop rdfs:range ?range .
 # }
 
@@ -109,8 +109,8 @@ WHERE {
 # SELECT ?observation ?speed ?direction
 # WHERE {
 #   ?observation a :WindCondition .
-#   OPTIONAL { ?observation :windSpeed ?speed }
-#   OPTIONAL { ?observation :windDirection ?direction }
+#   OPTIONAL { ?observation :twWindSpeed ?speed }
+#   OPTIONAL { ?observation :twWindDirection ?direction }
 # }
 # ORDER BY ?observation
 

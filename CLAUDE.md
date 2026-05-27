@@ -65,6 +65,41 @@ There is also a **build pipeline dependency**: `generate_viz_ontology.py` synthe
 
 **In summary:** the restriction-based principle applies to *domain* constraints only. OWL restrictions define which classes use a property; `rdfs:range` on properties defines what the value must be. The build scripts rely on this exact split.
 
+**Applying restrictions — required for every class in every module:**
+
+Every class must declare `rdfs:subClassOf` restrictions for all object and data properties that are characteristic of it. This applies to **all modules**, not just `vessel.ttl`. Use `owl:someValuesFrom` for both object and datatype properties:
+
+```turtle
+:MyClass rdfs:subClassOf
+    [ a owl:Restriction ; owl:onProperty :hasRelatedThing   ; owl:someValuesFrom :RelatedClass ],
+    [ a owl:Restriction ; owl:onProperty :twMyDataProperty  ; owl:someValuesFrom xsd:decimal ] .
+```
+
+This is what Protégé shows as "subclass of `twinship my data property`" and "subclass of `hasRelatedThing some RelatedClass`" — they are anonymous restriction classes, not direct class-to-class or class-to-property relationships. The `generate_viz_ontology.py` build script reads these restrictions to synthesize `rdfs:domain` in the visualization output, so missing restrictions means the property will not appear in the WebVOWL graph.
+
+## Naming Conventions
+
+All TwinShip entity names are in the shared `twinship#` namespace (`:` prefix). These conventions apply to **all modules** — follow them when adding new terms.
+
+| Category | Pattern | Examples |
+|---|---|---|
+| Foundation classes | `TwinShip` + PascalCase | `:TwinShipQuality`, `:TwinShipProcess`, `:TwinShipInanimatePhysicalObject` |
+| Domain classes | Plain PascalCase | `:VesselSystem`, `:OperatingState`, `:Voyage` |
+| Acronym classes | ALL-CAPS | `:CPP`, `:FPP`, `:PTO` |
+| Object properties | lowerCamelCase (`has<Thing>` dominant) | `:hasOperatingState`, `:followsRoute`, `:hasFuelConsumptionSummary` |
+| **Data properties** | **`tw` + UpperCamelCase + optional unit suffix** | **`:twBoilerPowerMaxInKW`, `:twVoyageDurationHours`, `:twWindSpeed`** |
+| **Data property labels** | **`"twinship <descriptive name>"` (lowercase)** | **`"twinship voyage duration hours"`, `"twinship wind speed"`** |
+| Named individuals (descriptive) | PascalCase | `:CruiseState`, `:EvenKeel`, `:SternTrim` |
+| Named individuals (abbreviations) | ALL-CAPS | `:HFO`, `:MGO`, `:CPP` |
+| Ontology IRIs | kebab-case path | `https://twin-ship.eu/twinship/operational-modes` |
+
+**Unit suffix convention for data properties** (established in `vessel.ttl`):
+- `InM` — metres; `InKW` — kilowatts; `InMT` — metric tonnes; `InDegC` — degrees Celsius
+- `InRevPerMin` — RPM; `KgPerHr` — kg/hr; `KJPerKg` — kJ/kg
+- No unit suffix for dimensionless ratios, counts, string identifiers, or `xsd:dateTime` properties
+
+**Do NOT** use plain lowerCamelCase for data properties (e.g., `:windSpeed`, `:voyageIdentifier`) — always use the `tw` prefix.
+
 ## Repository Structure
 
 ### Source files (version-controlled, manually edited)
@@ -74,7 +109,7 @@ There is also a **build pipeline dependency**: `generate_viz_ontology.py` synthe
 - `model/modules/*.ttl` — Domain-specific modules (vessel, weather-conditions, operational-modes, operational-context)
   - **`model/modules/weather-conditions.ttl`** — Canonical module for TwinShip-native weather and wind conditions: `WeatherCondition` (subClassOf `TwinShipQuality`), `WindCondition` (subClassOf `WeatherCondition`), `hasWeatherCondition`, `hasWindCondition`, `windSpeed`, `windDirection`. Does **not** import VesselAI, DUL, GeoSPARQL, or OWL-Time. IRI: `https://twin-ship.eu/twinship/weather-conditions`.
   - **`model/modules/operational-modes.ttl`** — Canonical module for all categorical operational states and modes: `OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`, and related individuals (CruiseState, EvenKeel, SternTrim, etc.). Use this file for all new mode/state concepts. IRI: `https://twin-ship.eu/twinship/operational-modes`.
-  - **`model/modules/operational-context.ttl`** — Canonical module for operational context: `Voyage`, `VoyageLeg`, `Route`, `Port`, `OperationalProfile`, `SpeedBin`, `FrequencyDistribution`, `FuelConsumptionObservation`, `FuelConsumptionSummary`, and related voyage/context/statistical-summary properties and data properties. IRI: `https://twin-ship.eu/twinship/operational-context`.
+  - **`model/modules/operational-context.ttl`** — Canonical module for operational context: `Voyage`, `VoyageLeg`, `Route`, `Port`, `OperationalProfile`, `SpeedBin`, `FrequencyDistribution`, `FuelConsumptionObservation`, `FuelConsumptionSummary`, and related voyage/context/statistical-summary properties and data properties. IRI: `https://twin-ship.eu/twinship/operational-context`. Imports: `twinship-base` + `operational-modes` (references `:OperatingState` in property range constraints).
   - **Do NOT** add new mode/state classes to `operational-context.ttl`. Mode and state concepts belong in `operational-modes.ttl`.
   - **Do NOT** add voyage or context concepts to `operational-modes.ttl`.
   - **Do NOT** import VesselAI into any TwinShip module. **VesselAI is not currently imported by TwinShip.** The `owl:imports <http://www.vesselAI-project.eu/vesselai>` statement has been removed from `twinship-base.ttl`. VesselAI uses DUL/DOLCE as its upper ontology, which is incompatible with IDO; importing it would pull DUL, GeoSPARQL, and OWL-Time into the import closure. The files under `model/external/vesselai/` are retained for inspection and reference only. The full design decision is documented in `docs/ontology/vesselai-full-reuse-audit.txt`.
@@ -182,7 +217,7 @@ uv run python scripts/enhance_webvowl_json.py build/twinship-core-complete-viz-c
 
 ## When Adding a New Module
 
-1. Create `model/modules/<name>.ttl` with `owl:imports <https://twin-ship.eu/twinship/base>`
+1. Create `model/modules/<name>.ttl` with `owl:imports <https://twin-ship.eu/twinship/base>`. If the new module references classes defined in another module (e.g., `:OperatingState` from `operational-modes`), also import that module — cross-module imports are permitted provided they form a strict DAG (no circular dependencies).
 2. Add URI mapping to `model/catalog-v001.xml`
 3. Add `owl:imports` to `model/twinship-core.ttl`
 4. Run the build pipeline to verify integration

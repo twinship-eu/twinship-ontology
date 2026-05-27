@@ -6,9 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- `operational-modes.ttl` module: categorical operating states and modes (`OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`) with named individuals (`CruiseState`, `PortState`, `ManeuveringState`, `DriftState`, `EvenKeel`, `SternTrim`, `BowTrim`, `OptimalTrim`, etc.)
+- `operational-context.ttl` module: voyage, port, and operational profile concepts (`Voyage`, `VoyageLeg`, `Route`, `Port`, `OperationalProfile`, `SpeedBin`, `FrequencyDistribution`, `FuelConsumptionObservation`, `FuelConsumptionSummary`, `FuelConsumptionEstimate`, `FuelConsumptionGapAnalysis`, `PerformanceDeviation`)
+- Naming conventions documented in `CLAUDE.md` and `model/README.md` (data property `tw` prefix, `"twinship <name>"` label pattern, unit suffix conventions)
+- VesselAI full reuse audit (`docs/ontology/vesselai-full-reuse-audit.txt`)
+- MIT license
+- Ontology statistics
+
 ### Changed
-- Added MIT license
-- Added ontology statistics
+- Removed VesselAI import from `twinship-base.ttl` (DUL/DOLCE upper ontology incompatible with IDO; VesselAI files retained under `model/external/vesselai/` for reference only)
+- Renamed all data properties in `weather-conditions.ttl` and `operational-context.ttl` to `tw` prefix convention (28 properties; e.g. `:windSpeed` → `:twWindSpeed`, `:voyageIdentifier` → `:twVoyageIdentifier`)
+- Updated `rdfs:label` annotations to `"twinship <name>"` pattern throughout extension modules
+- Added OWL `owl:someValuesFrom` restrictions to all classes in `weather-conditions.ttl` and `operational-context.ttl`, aligning with the design pattern established in `vessel.ttl`
+- Expanded `model/README.md` with corrected architecture diagram (import DAG), naming conventions reference, and design pattern documentation
+- Updated `queries/weather-conditions-validation.rq` to reflect renamed properties
 
 ## [0.0.4] - 2026-03-03
 

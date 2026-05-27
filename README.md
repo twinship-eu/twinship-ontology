@@ -4,14 +4,14 @@ Welcome to the TwinShip Ontology repository! This project provides a modular, ex
 
 ## Repository Structure
 
-- `model/` — Source ontology files (base, modules, external references)
-- `build/` — Auto-generated build artifacts (gitignored)
-- `docs/` — Documentation, diagrams, design decisions, and generated website
+- `model/`   — Source ontology files (base, modules, external references)
+- `build/`   — Auto-generated build artifacts (gitignored)
+- `docs/`    — Documentation, diagrams, design decisions, and generated website
 - `scripts/` — Build and processing scripts (Python + shell)
 - `queries/` — SPARQL validation queries
-- `data/` — Vessel instance data (gitignored; may contain sensitive data)
-- `tests/` — Test directory (pytest configured; no tests yet)
-- `tools/` — Downloaded WIDOCO JAR (gitignored)
+- `data/`    — Vessel instance data (gitignored; may contain sensitive data)
+- `tests/`   — Test directory (pytest configured; no tests yet)
+- `tools/`   — Downloaded WIDOCO JAR (gitignored)
 
 ## Getting Started
 

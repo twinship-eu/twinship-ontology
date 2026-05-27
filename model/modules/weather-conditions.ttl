@@ -28,13 +28,16 @@
 :WeatherCondition a owl:Class ;
     rdfs:label "Weather Condition"@en ;
     rdfs:comment "An environmental quality describing weather conditions affecting vessel operations. Extends TwinShipQuality in the IDO-aligned TwinShip ontology. Note: VesselAI models WeatherCondition as a subclass of dul:Event (a temporal occurrence); TwinShip models it as a quality, which is the appropriate IDO-based pattern. No semantic equivalence is asserted."@en ;
-    rdfs:subClassOf :TwinShipQuality ;
+    rdfs:subClassOf :TwinShipQuality ,
+        [ a owl:Restriction ; owl:onProperty :hasWindCondition ; owl:someValuesFrom :WindCondition ] ;
     rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#WeatherCondition> .
 
 :WindCondition a owl:Class ;
     rdfs:label "Wind Condition"@en ;
-    rdfs:comment "A weather quality describing scalar wind speed and wind direction relevant to vessel operation. Subclass of WeatherCondition. Distinct from VesselAI U/V wind vector components (10_metre_U_wind_component_surface, 10_metre_V_wind_component_surface), which represent directional vector quantities; TwinShip windSpeed and windDirection represent scalar speed and meteorological bearing."@en ;
-    rdfs:subClassOf :WeatherCondition ;
+    rdfs:comment "A weather quality describing scalar wind speed and wind direction relevant to vessel operation. Subclass of WeatherCondition. Distinct from VesselAI U/V wind vector components (10_metre_U_wind_component_surface, 10_metre_V_wind_component_surface), which represent directional vector quantities; TwinShip twWindSpeed and twWindDirection represent scalar speed and meteorological bearing."@en ;
+    rdfs:subClassOf :WeatherCondition ,
+        [ a owl:Restriction ; owl:onProperty :twWindSpeed     ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :twWindDirection ; owl:someValuesFrom xsd:decimal ] ;
     rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#10_metre_U_wind_component_surface> ,
                  <http://www.vesselAI-project.eu/ontology#10_metre_V_wind_component_surface> .
 
@@ -62,14 +65,14 @@
 #
 #################################################################
 
-:windSpeed a owl:DatatypeProperty ;
-    rdfs:label "wind speed"@en ;
+:twWindSpeed a owl:DatatypeProperty ;
+    rdfs:label "twinship wind speed"@en ;
     rdfs:comment "Scalar wind speed in m/s, knots, or another stated unit. Distinct from VesselAI U/V wind vector components."@en ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:windDirection a owl:DatatypeProperty ;
-    rdfs:label "wind direction"@en ;
+:twWindDirection a owl:DatatypeProperty ;
+    rdfs:label "twinship wind direction"@en ;
     rdfs:comment "Meteorological wind direction in degrees from 0 to 360, where 0/360 is north and values indicate the direction from which the wind blows."@en ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
