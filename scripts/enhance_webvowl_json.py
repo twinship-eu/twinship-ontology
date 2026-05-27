@@ -117,8 +117,18 @@ def enhance_webvowl_json(ontology_file, webvowl_json_file):
     
     # Load WebVOWL JSON
     print(f"Loading WebVOWL JSON: {webvowl_json_file}")
-    with open(webvowl_json_file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        with open(webvowl_json_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except UnicodeDecodeError:
+        # WIDOCO on Windows may write the JSON in the system locale encoding
+        # (e.g. cp1252) instead of UTF-8.  Re-read with the platform default
+        # so we can at least process the file; the writer always emits UTF-8.
+        import locale
+        fallback = locale.getpreferredencoding(False)
+        print(f"  Warning: JSON is not valid UTF-8, retrying with {fallback}")
+        with open(webvowl_json_file, 'r', encoding=fallback, errors='replace') as f:
+            data = json.load(f)
     
     # Enhance propertyAttribute objects
     enhanced_props = 0

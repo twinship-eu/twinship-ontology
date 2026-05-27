@@ -207,6 +207,7 @@ uv run python scripts/enhance_webvowl_json.py build/twinship-core-complete-viz-c
 7. **`tests/` directory exists but has no tests yet** — pytest is configured but unused
 8. **Version synchronization**: All version numbers are synchronized to "0.0.4" across ontology files and project metadata
 9. **Ontology files use UTF-8** — ensure encoding is preserved when editing `.ttl` files
+10. **Windows UTF-8 encoding** — on Windows, Java defaults to the system locale (cp1252), so WIDOCO would write `ontology.json` in cp1252 rather than UTF-8, causing `UnicodeDecodeError` in `enhance_webvowl_json.py`. Fixed by passing `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8` in the `java` invocation (`generate_widoco_docs.py`). A fallback reader is also present in `enhance_webvowl_json.py` for previously generated cp1252 files.
 
 ## When Modifying Ontology Classes/Properties
 

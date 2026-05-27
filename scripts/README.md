@@ -151,7 +151,7 @@ These scripts were used during development and have been removed.
 
 **Requirements:**
 - Python 3.9+ with rdflib (install: `uv sync`)
-- Java 11+ (for WIDOCO)
+- Java 11+ (for WIDOCO) — the build passes `-Dfile.encoding=UTF-8` to Java automatically, which is required on Windows to prevent WIDOCO writing `ontology.json` in cp1252 instead of UTF-8
 
 **Usage:**
 

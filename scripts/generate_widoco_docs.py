@@ -96,7 +96,7 @@ def run_widoco(jar_path, input_file, output_dir, include_diagram=True,
     
     # Build WIDOCO command
     cmd = [
-        'java', '-jar', str(jar_path),
+        'java', '-Dfile.encoding=UTF-8', '-Dstdout.encoding=UTF-8', '-jar', str(jar_path),
         '-ontFile', str(input_path),
         '-outFolder', str(output_path),
         '-lang', lang,
