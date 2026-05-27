@@ -17,22 +17,23 @@ This directory contains the TwinShip ontology organized in a **modular architect
 │          │  │                  │  │ conditions.ttl     │  │ .ttl                 │
 │ Base     │  │ Vessels, Engines │  │ Weather, Wind      │  │ Voyages, Ports,      │
 │ classes, │  │ Propulsion,      │  │ conditions         │  │ Profiles, Statistics │
-│ props    │  │ Fuel, Gearbox    │  │                    │  └─────────┬────────────┘
-└────┬─────┘  └────────┬─────────┘  └────────┬───────────┘            │ imports
-     │                 │                     │                        ▼
-     │◄────────────────┘─────────────────────┘              ┌──────────────────────┐
-     │                                                      │ modules/             │
-     │◄─────────────────────────────────────────────────────┤ operational-modes    │
-     │                                                      │ .ttl                 │
-     ▼                                                      │ States, Modes,       │
-┌──────────────────────────────────────────────────────┐    │ Draft/Trim modes     │
-│  External Ontologies (imported): IDO, PAV, QUDT      │    └──────────────────────┘
+│ props    │  │ Fuel, Gearbox    │  │                    │  └──┬──────────┬─────────┘
+└────┬─────┘  └────────┬─────────┘  └────────┬───────────┘     │ imports  │ imports
+     │                 │                     │◄────────────────┘          │
+     │◄────────────────┘                     │                            ▼
+     │                                       │               ┌──────────────────────┐
+     │◄──────────────────────────────────────┘               │ modules/             │
+     │◄──────────────────────────────────────────────────────┤ operational-modes    │
+     │                                                       │ .ttl                 │
+     ▼                                                       │ States, Modes,       │
+┌──────────────────────────────────────────────────────┐     │ Draft/Trim modes     │
+│  External Ontologies (imported): IDO, PAV, QUDT      │     └──────────────────────┘
 └──────────────────────────────────────────────────────┘
 ```
 
 **Import dependency summary:**
 - `vessel`, `weather-conditions`, `operational-modes` each import only `twinship-base`
-- `operational-context` imports `twinship-base` + `operational-modes` (references `:OperatingState`)
+- `operational-context` imports `twinship-base` + `operational-modes` + `weather-conditions`
 - No circular dependencies — the graph is a strict DAG
 
 ## Directory Structure
@@ -105,7 +106,7 @@ build/                          # Auto-generated build artifacts (gitignored)
 5. **modules/operational-modes.ttl** — Canonical module for categorical modes and states
    - Operating states: `OperatingState` with individuals `CruiseState`, `PortState`, `MaintenanceLayupState`, `ManeuveringState`, `DriftState`, `UnknownOperatingState`
    - Engine modes: `EngineMode`
-   - Draft modes: `DraftMode`, `TrimMode`, `DraftTrimMode` with individuals `EvenKeel`, `SternTrim`, `BowTrim`, `OptimalTrim`
+   - Draft modes: `DraftMode` with individuals `BallastDraft`, `LadenDraft`, `PartLoadDraft`; `TrimMode`; `DraftTrimMode` with individuals `EvenKeel`, `SternTrim`, `BowTrim`, `OptimalTrim`
    - Object properties: `hasOperatingState`, `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`
    - All mode/state classes extend `TwinShipQuality`
    - IRI: `https://twin-ship.eu/twinship/operational-modes`
@@ -118,7 +119,7 @@ build/                          # Auto-generated build artifacts (gitignored)
    - Object properties: voyage structure, profile/statistics, fuel, context links
    - Data properties: voyage times/IDs, state statistics, engine observations, speed bins, fuel consumption
    - IRI: `https://twin-ship.eu/twinship/operational-context`
-   - Imports: `twinship-base`, `operational-modes`
+   - Imports: `twinship-base`, `operational-modes`, `weather-conditions`
 
 ## Import Patterns
 

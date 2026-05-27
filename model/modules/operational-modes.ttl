@@ -150,3 +150,21 @@
 :OptimalTrim a :DraftTrimMode ;
     rdfs:label "Optimal Trim" ;
     rdfs:comment "Draft\u2013trim mode selected or recommended to minimise hull resistance or fuel consumption under given operating conditions." .
+
+# #################################################################
+# #
+# #    Individuals — Draft Mode
+# #
+# #################################################################
+
+:BallastDraft a :DraftMode ;
+    rdfs:label "Ballast" ;
+    rdfs:comment "Draft mode where the vessel is operating without cargo (ballast condition), riding high in the water." .
+
+:LadenDraft a :DraftMode ;
+    rdfs:label "Laden" ;
+    rdfs:comment "Draft mode where the vessel is operating at or near full cargo load (laden condition), riding low in the water." .
+
+:PartLoadDraft a :DraftMode ;
+    rdfs:label "Part Load" ;
+    rdfs:comment "Draft mode where the vessel is operating with a partial cargo load, between ballast and full laden conditions." .

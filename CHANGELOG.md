@@ -19,6 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Renamed all data properties in `weather-conditions.ttl` and `operational-context.ttl` to `tw` prefix convention (28 properties; e.g. `:windSpeed` → `:twWindSpeed`, `:voyageIdentifier` → `:twVoyageIdentifier`)
 - Updated `rdfs:label` annotations to `"twinship <name>"` pattern throughout extension modules
 - Added OWL `owl:someValuesFrom` restrictions to all classes in `weather-conditions.ttl` and `operational-context.ttl`, aligning with the design pattern established in `vessel.ttl`
+- Added missing subject-side OWL restrictions for `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`, `hasWeatherCondition` on `Voyage`/`VoyageLeg`
+- Added `owl:imports <weather-conditions>` to `operational-context.ttl` (required for `hasWeatherCondition some WeatherCondition` restriction on `VoyageLeg`)
+- Added named individuals to `DraftMode`: `BallastDraft`, `LadenDraft`, `PartLoadDraft`
 - Expanded `model/README.md` with corrected architecture diagram (import DAG), naming conventions reference, and design pattern documentation
 - Updated `queries/weather-conditions-validation.rq` to reflect renamed properties
 
