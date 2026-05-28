@@ -6,6 +6,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
 <https://twin-ship.eu/twinship/weather-conditions> a owl:Ontology ;
     owl:versionIRI <https://twin-ship.eu/twinship/weather-conditions/0.0.4> ;
@@ -34,10 +35,10 @@
 
 :WindCondition a owl:Class ;
     rdfs:label "Wind Condition"@en ;
-    rdfs:comment "A weather quality describing scalar wind speed and wind direction relevant to vessel operation. Subclass of WeatherCondition. Distinct from VesselAI U/V wind vector components (10_metre_U_wind_component_surface, 10_metre_V_wind_component_surface), which represent directional vector quantities; TwinShip twWindSpeed and twWindDirection represent scalar speed and meteorological bearing."@en ;
+    rdfs:comment "A weather quality describing scalar wind speed and wind direction relevant to vessel operation. Subclass of WeatherCondition. Distinct from VesselAI U/V wind vector components (10_metre_U_wind_component_surface, 10_metre_V_wind_component_surface), which represent directional vector quantities; TwinShip twWindSpeedInKnots and twWindDirectionInDegrees represent scalar speed (knots) and meteorological bearing (degrees)."@en ;
     rdfs:subClassOf :WeatherCondition ,
-        [ a owl:Restriction ; owl:onProperty :twWindSpeed     ; owl:someValuesFrom xsd:decimal ],
-        [ a owl:Restriction ; owl:onProperty :twWindDirection ; owl:someValuesFrom xsd:decimal ] ;
+        [ a owl:Restriction ; owl:onProperty :twWindSpeedInKnots     ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :twWindDirectionInDegrees ; owl:someValuesFrom xsd:decimal ] ;
     rdfs:seeAlso <http://www.vesselAI-project.eu/ontology#10_metre_U_wind_component_surface> ,
                  <http://www.vesselAI-project.eu/ontology#10_metre_V_wind_component_surface> .
 
@@ -65,15 +66,23 @@
 #
 #################################################################
 
-:twWindSpeed a owl:DatatypeProperty ;
-    rdfs:label "twinship wind speed"@en ;
-    rdfs:comment "Scalar wind speed in m/s, knots, or another stated unit. Distinct from VesselAI U/V wind vector components."@en ;
+:twWindSpeedInKnots a owl:DatatypeProperty ;
+    rdfs:label "wind speed in knots"@en ;
+    rdfs:comment "Scalar wind speed in knots. Distinct from VesselAI U/V wind vector components."@en ;
+    skos:notation "IMO0359" ;
+    skos:altLabel "Wind speed" ;
+    dcterms:description "The measure of wind speed." ;
+    dcterms:source <https://www.imo.org/> ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twWindDirection a owl:DatatypeProperty ;
-    rdfs:label "twinship wind direction"@en ;
+:twWindDirectionInDegrees a owl:DatatypeProperty ;
+    rdfs:label "wind direction in degrees"@en ;
     rdfs:comment "Meteorological wind direction in degrees from 0 to 360, where 0/360 is north and values indicate the direction from which the wind blows."@en ;
+    skos:notation "IMO0360" ;
+    skos:altLabel "Wind direction" ;
+    dcterms:description "True direction, from where wind is blowing (or will blow), measured in degrees." ;
+    dcterms:source <https://www.imo.org/> ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 

@@ -54,6 +54,20 @@ uv sync
 pip install -r requirements.txt
 ```
 
+## Python Coding Conventions
+
+All scripts in this directory follow these conventions:
+
+- **Package manager**: `uv` (preferred). Run with `uv run python scripts/<name>.py` or activate `.venv` first.
+- **Dependencies**: `rdflib>=7.0.0`, `beautifulsoup4>=4.12.0`, `lxml>=5.0.0`, `openpyxl>=3.1.5` (see `pyproject.toml`)
+- **Style**: Procedural (no classes), `pathlib.Path` for paths, `print()` with emoji for status output (not `logging`)
+- **Line length**: 100 (configured for black/ruff in `pyproject.toml`)
+- **Python version**: 3.9+
+- **Argument parsing**: `argparse` in production scripts; some utility scripts use `sys.argv` directly
+- **Error handling**: Minimal — relies on shell `set -e` and natural exceptions
+- **All scripts must be run from the repo root**
+- **Windows encoding**: `uv run` automatically loads `.env` from the repo root, which sets `PYTHONUTF8=1`. This ensures emoji in `print()` output and UTF-8 file I/O work correctly on Windows. If running without `uv run`, set `PYTHONUTF8=1` in your environment manually.
+
 ## Quick Start: Website Generation
 
 The complete workflow uses a **two-pipeline architecture** that generates documentation and visualization separately:
@@ -106,8 +120,10 @@ These scripts form the main website generation pipeline:
 
 ### Legacy Scripts
 
-- **`generate_docs.sh`** - Older documentation generation script (superseded by generate_website.sh)
-- **`setup_webvowl.py`** - Legacy WebVOWL setup (superseded by WIDOCO's built-in converter)
+- **`extract_imo_compendium.py`** — Download and extract the IMO Compendium (FAL.5/Circ.56) to CSV for ontology alignment. Outputs a stable full-compendium CSV to `model/external/imo/imo_compendium_all.csv` and transient working artifacts to `data/`. Supports `--match-ttl` to generate ranked IMO candidate matches for unlinked properties, and `--compare` for gap analysis.
+- **`generate_stats_table.py`** — Generate ontology statistics table for STATISTICS.md
+- **`generate_docs.sh`** — Older documentation generation script (superseded by generate_website.sh)
+- **`setup_webvowl.py`** — Legacy WebVOWL setup (superseded by WIDOCO's built-in converter)
 
 ### Development/Debug Scripts
 

@@ -17,7 +17,7 @@ This directory contains the TwinShip ontology organized in a **modular architect
 │          │  │                  │  │ conditions.ttl     │  │ .ttl                 │
 │ Base     │  │ Vessels, Engines │  │ Weather, Wind      │  │ Voyages, Ports,      │
 │ classes, │  │ Propulsion,      │  │ conditions         │  │ Profiles, Statistics │
-│ props    │  │ Fuel, Gearbox    │  │                    │  └──┬──────────┬─────────┘
+│ props    │  │ Fuel, Gearbox    │  │                    │  └──┬──────────┬────────┘
 └────┬─────┘  └────────┬─────────┘  └────────┬───────────┘     │ imports  │ imports
      │                 │                     │◄────────────────┘          │
      │◄────────────────┘                     │                            ▼
@@ -233,7 +233,7 @@ All data properties use the **`tw` prefix** (two-character lowercase abbreviatio
 |---|---|---|
 | `:twBoilerPowerMaxInKW` | `xsd:decimal` | Unit suffix `InKW` |
 | `:twVoyageDurationHours` | `xsd:decimal` | Unit embedded in name |
-| `:twWindSpeed` | `xsd:decimal` | No unit suffix (unit varies by dataset) |
+| `:twWindSpeedInKnots` | `xsd:decimal` | Unit suffix `InKnots` |
 | `:twVoyageIdentifier` | `xsd:string` | No unit suffix (string identifier) |
 | `:twVoyageStartTime` | `xsd:dateTime` | No unit suffix (temporal) |
 | `:twRecordCount` | `xsd:integer` | No unit suffix (dimensionless count) |
@@ -243,11 +243,51 @@ All data properties use the **`tw` prefix** (two-character lowercase abbreviatio
 - `InRevPerMin` — RPM; `KgPerHr` — kg/hr; `KJPerKg` — kJ/kg
 - Omit suffix for dimensionless ratios, counts, string identifiers, and `xsd:dateTime` properties
 
-**`rdfs:label`** for data properties must follow `"twinship <descriptive name>"` (lowercase), matching the established pattern in `vessel.ttl`:
+**`rdfs:label`** for data properties must be a plain lowercase descriptive name (no namespace prefix), matching the established pattern in `vessel.ttl`:
 ```turtle
-:twVoyageDurationHours rdfs:label "twinship voyage duration hours" .
-:twWindSpeed          rdfs:label "twinship wind speed"@en .
+:twVoyageDurationHours  rdfs:label "voyage duration hours" .
+:twWindSpeedInKnots     rdfs:label "wind speed in knots"@en .
 ```
+
+### Standards Traceability for Data Properties
+
+Data property names should ideally be traceable to a recognised maritime standard. The **preference is IMO** (publicly accessible) over **ISO** (closed standard, requires purchase). When a property corresponds to a standard definition, annotate it with all four of the following triples:
+
+| Annotation | Purpose | Example |
+|---|---|---|
+| `skos:notation` | Standard's identifier code | `"IMO0670"`, `"ME_AIR_PRS"` |
+| `skos:altLabel` | Standard's name for the concept | `"Fuel consumed, by Main Engine"` |
+| `dcterms:description` | Standard's definition text | (verbatim from the standard) |
+| `dcterms:source` | Source URI | `<https://www.imo.org/>` or `<https://www.iso.org/>` |
+
+**IMO example** (`dcterms:source <https://www.imo.org/>`):
+```turtle
+:twFuelConsumptionTotalInMT a owl:DatatypeProperty ;
+    rdfs:label "fuel consumption total in MT" ;
+    rdfs:comment "Total fuel consumption in metric tons. Value -1 indicates unknown." ;
+    skos:notation "IMO0670" ;
+    skos:altLabel "Fuel consumed, by Main Engine" ;
+    dcterms:description "Fuel consumed by Main Engine, measured in metric tons since last reporting." ;
+    dcterms:source <https://www.imo.org/> ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+```
+
+**ISO example** (`dcterms:source <https://www.iso.org/>`):
+```turtle
+:twInletAirPressureMaxInHPa a owl:DatatypeProperty ;
+    rdfs:label "inlet air pressure max in hPa" ;
+    rdfs:comment "Maximum inlet air pressure in hectopascals. Value -1 indicates unknown." ;
+    skos:notation "ME_AIR_PRS" ;
+    skos:altLabel "Main Engine Air Pressure" ;
+    dcterms:description "The pressure of the air supplied to the main engine for combustion or other purposes, measured at the designated point in the air system." ;
+    dcterms:source <https://www.iso.org/> ;
+    rdfs:subPropertyOf :twPressureMaxInHPa .
+```
+
+Properties without a matching standard need no `skos:notation` / `skos:altLabel` / `dcterms:description` / `dcterms:source` — `rdfs:label` and `rdfs:comment` are sufficient for those.
+
+**IMO Compendium reference:** A stable CSV of all 1,206 IMO Compendium BBIE data elements (FAL.5/Circ.56) is committed at `model/external/imo/imo_compendium_all.csv` (columns: `imo_code`, `name`, `definition`, `format`). Use `scripts/extract_imo_compendium.py --match-ttl model/modules/vessel.ttl` to generate ranked candidate matches for unlinked properties into `data/imo_candidates.csv`.
 
 ### Named Individuals
 

@@ -87,8 +87,8 @@ All TwinShip entity names are in the shared `twinship#` namespace (`:` prefix). 
 | Domain classes | Plain PascalCase | `:VesselSystem`, `:OperatingState`, `:Voyage` |
 | Acronym classes | ALL-CAPS | `:CPP`, `:FPP`, `:PTO` |
 | Object properties | lowerCamelCase (`has<Thing>` dominant) | `:hasOperatingState`, `:followsRoute`, `:hasFuelConsumptionSummary` |
-| **Data properties** | **`tw` + UpperCamelCase + optional unit suffix** | **`:twBoilerPowerMaxInKW`, `:twVoyageDurationHours`, `:twWindSpeed`** |
-| **Data property labels** | **`"twinship <descriptive name>"` (lowercase)** | **`"twinship voyage duration hours"`, `"twinship wind speed"`** |
+| **Data properties** | **`tw` + UpperCamelCase + optional unit suffix** | **`:twBoilerPowerMaxInKW`, `:twVoyageDurationHours`, `:twWindSpeedInKnots`** |
+| **Data property labels** | **Plain lowercase descriptive name** | **`"voyage duration hours"`, `"wind speed in knots"`** |
 | Named individuals (descriptive) | PascalCase | `:CruiseState`, `:EvenKeel`, `:SternTrim` |
 | Named individuals (abbreviations) | ALL-CAPS | `:HFO`, `:MGO`, `:CPP` |
 | Ontology IRIs | kebab-case path | `https://twin-ship.eu/twinship/operational-modes` |
@@ -100,101 +100,47 @@ All TwinShip entity names are in the shared `twinship#` namespace (`:` prefix). 
 
 **Do NOT** use plain lowerCamelCase for data properties (e.g., `:windSpeed`, `:voyageIdentifier`) — always use the `tw` prefix.
 
+**Standards-based naming and traceability for data properties:**
+
+When a data property corresponds to an IMO (preferred) or ISO standard definition, annotate it with all four triples together: `skos:notation`, `skos:altLabel`, `dcterms:description`, `dcterms:source`. See `model/README.md` → "Standards Traceability for Data Properties" for full examples and the IMO Compendium CSV (`model/external/imo/imo_compendium_all.csv`).
+
 ## Repository Structure
 
-### Source files (version-controlled, manually edited)
+Source files are in `model/` (committed) and scripts in `scripts/`. See `model/README.md` for the full directory tree and module descriptions. See `scripts/README.md` for the build pipeline and Python coding conventions. Run scripts with `uv run python scripts/<name>.py` from the repo root.
 
-- `model/twinship-base.ttl` — Foundation layer (base classes, properties)
-- `model/twinship-core.ttl` — Aggregate (~15 lines, imports base + all modules)
-- `model/modules/*.ttl` — Domain-specific modules (vessel, weather-conditions, operational-modes, operational-context)
-  - **`model/modules/weather-conditions.ttl`** — Canonical module for TwinShip-native weather and wind conditions: `WeatherCondition` (subClassOf `TwinShipQuality`), `WindCondition` (subClassOf `WeatherCondition`), `hasWeatherCondition`, `hasWindCondition`, `windSpeed`, `windDirection`. Does **not** import VesselAI, DUL, GeoSPARQL, or OWL-Time. IRI: `https://twin-ship.eu/twinship/weather-conditions`.
-  - **`model/modules/operational-modes.ttl`** — Canonical module for all categorical operational states and modes: `OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`, and related individuals (`CruiseState`, `PortState`, `ManeuveringState`, `DriftState` for OperatingState; `BallastDraft`, `LadenDraft`, `PartLoadDraft` for DraftMode; `EvenKeel`, `SternTrim`, `BowTrim`, `OptimalTrim` for DraftTrimMode). Use this file for all new mode/state concepts. IRI: `https://twin-ship.eu/twinship/operational-modes`.
-  - **`model/modules/operational-context.ttl`** — Canonical module for operational context: `Voyage`, `VoyageLeg`, `Route`, `Port`, `OperationalProfile`, `SpeedBin`, `FrequencyDistribution`, `FuelConsumptionObservation`, `FuelConsumptionSummary`, and related voyage/context/statistical-summary properties and data properties. IRI: `https://twin-ship.eu/twinship/operational-context`. Imports: `twinship-base` + `operational-modes` (references `:OperatingState` in restrictions) + `weather-conditions` (references `:WeatherCondition` in `VoyageLeg` restriction for `hasWeatherCondition`).
-  - **Do NOT** add new mode/state classes to `operational-context.ttl`. Mode and state concepts belong in `operational-modes.ttl`.
-  - **Do NOT** add voyage or context concepts to `operational-modes.ttl`.
-  - **Do NOT** import VesselAI into any TwinShip module. **VesselAI is not currently imported by TwinShip.** The `owl:imports <http://www.vesselAI-project.eu/vesselai>` statement has been removed from `twinship-base.ttl`. VesselAI uses DUL/DOLCE as its upper ontology, which is incompatible with IDO; importing it would pull DUL, GeoSPARQL, and OWL-Time into the import closure. The files under `model/external/vesselai/` are retained for inspection and reference only. The full design decision is documented in `docs/ontology/vesselai-full-reuse-audit.txt`.
-  - **Do NOT** reference VesselAI terms using `owl:equivalentClass` or `skos:closeMatch`. VesselAI's `WeatherCondition` is a `dul:Event`; TwinShip's `WeatherCondition` is a `TwinShipQuality` — these are genuinely different semantic categories. Use `rdfs:seeAlso` only for source traceability. `skos:relatedMatch` is acceptable for `:VesselSystem` / `VAI:Vessel` and `:FuelConsumptionSummary` / `VAI:CO2_emissionReport` where the domain concepts are closely related, but never `skos:closeMatch` or OWL equivalence.
-  - A future `operational-requirements.ttl` module is reserved for requirements/constraints (ETARequirement, SpeedRequirement, RouteRequirement, FuelRequirement, EmissionRequirement, WeatherConstraint, PortConstraint). Do not add `Voyage`, `VoyageLeg`, `Route`, or `Port` to that module when it is created.
-  - Do not create or reference `draft-trim-mode.ttl`, `draft_time_mode.ttl`, `draft_trim_mode.ttl`, `operations.ttl`, or `weatherconditions.ttl` — those were replaced by the canonical modules listed above.
-- `model/external/` — Local copies of external ontologies (IDO, PAV, QUDT). The `vesselai/` subdirectory contains VesselAI ontology files retained for inspection and reference **only** — they are **not imported** by any TwinShip module. See `docs/ontology/vesselai-full-reuse-audit.txt`.
-- `model/vocabularies/` — QUDT vocabulary files
-- `model/catalog-v001.xml` — OASIS XML catalog mapping ontology URIs to local file paths
-- `scripts/*.py`, `scripts/*.sh` — Build and processing scripts
-- `docs/ontology/` — Ontology design decision reports (e.g., `vesselai-full-reuse-audit.txt`)
-- `queries/` — SPARQL validation queries
+**Directory split — committed vs gitignored:**
+- `model/` — ontology source files and external reference data; everything here is committed
+- `data/` — gitignored entirely; use for transient working artifacts, vessel instance data, and download caches (e.g., `data/IMO_Compendium.xlsx`, `data/imo_candidates.csv`)
+- `build/` and `docs/website/documentation/` — generated by the build pipeline; **never manually edit these**
 
-### Generated artifacts (gitignored, never manually edit)
+**Key namespaces:**
+- `:` → `https://twin-ship.eu/twinship#` — all TwinShip entities
+- `ido:` → `http://rds.posccaesar.org/ontology/lis14/rdl/` — upper ontology (ISO 15926-14)
 
-- `build/` — Intermediate `.ttl` files produced by the build pipeline
-- `docs/website/` — Generated website (WIDOCO docs + WebVOWL visualization)
-- `tools/` — Downloaded WIDOCO JAR
-- `tmp*/` — WIDOCO temporary files
+### Module Boundaries
 
-### Build artifact naming convention
+Each module has a clearly defined responsibility. Do not mix concepts across modules:
 
-Files in `build/` follow a strict naming pattern:
-1. `complete.ttl` — All modules merged
-2. `complete-viz.ttl` — + domain/range + virtual properties
-3. `complete-docs.ttl` — TwinShip-only classes
-4. `complete-docs-viz.ttl` — For WIDOCO documentation (no virtual properties)
-5. `complete-viz-clean.ttl` — TwinShip + IDO only
-6. `complete-viz-clean-minimal.ttl` — Final WebVOWL source (no external parents)
+- **`operational-modes.ttl`** — all categorical states/modes (`OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`) and their named individuals. **Do NOT add mode/state classes to `operational-context.ttl`.**
+- **`operational-context.ttl`** — voyage, leg, port, route, profiles, observations, summaries. **Do NOT add voyage/context concepts to `operational-modes.ttl`.**
+- **`weather-conditions.ttl`** — `WeatherCondition`, `WindCondition`, wind data properties. Does not import VesselAI, DUL, GeoSPARQL, or OWL-Time.
+- **`vessel.ttl`** — vessel systems, engines, propulsion, fuel, gearbox.
+- A future **`operational-requirements.ttl`** is reserved for requirements/constraints (ETARequirement, SpeedRequirement, etc.). Do not pre-populate `Voyage`/`Port`/`Route` there.
+- **Do not create or reference** `draft-trim-mode.ttl`, `draft_time_mode.ttl`, `operations.ttl`, or `weatherconditions.ttl` — those were replaced by the canonical modules above.
 
-## Two-Pipeline Build Architecture
+### VesselAI
 
-The website generation (`scripts/generate_website.sh`) uses separate optimized ontologies:
+**Do NOT import VesselAI** into any TwinShip module. `owl:imports <http://www.vesselAI-project.eu/vesselai>` has been removed from `twinship-base.ttl`. VesselAI uses DUL/DOLCE (incompatible with IDO) — importing it would pull DUL, GeoSPARQL, and OWL-Time into the closure. Files under `model/external/vesselai/` are retained for reference only. See `docs/ontology/vesselai-full-reuse-audit.txt`.
 
-**Documentation Pipeline (WIDOCO):** Uses `complete-docs-viz.ttl` — original properties with multiple domains, TwinShip classes only. Shows comprehensive property tables.
+**Do NOT** use `owl:equivalentClass` or `skos:closeMatch` with VesselAI terms. VesselAI's `WeatherCondition` is a `dul:Event`; TwinShip's is a `TwinShipQuality` — genuinely different. Use `rdfs:seeAlso` for traceability; `skos:relatedMatch` is acceptable for closely related domain concepts (`:VesselSystem`/`VAI:Vessel`).
 
-**Visualization Pipeline (WebVOWL):** Uses `complete-viz-clean-minimal.ttl` — virtual properties with single domains, TwinShip + IDO classes only. Eliminates blank union nodes for clean graph.
-
-Virtual properties (`*_viz1`, `*_viz2`) only exist in visualization build artifacts and are created by `generate_viz_ontology.py` for properties with multiple domains.
-
-## Key Namespaces
-
-| Prefix | URI | Notes |
-|--------|-----|-------|
-| `:` (default) | `https://twin-ship.eu/twinship#` | All TwinShip entities |
-| base ontology | `https://twin-ship.eu/twinship/base` | Foundation |
-| core ontology | `https://twin-ship.eu/twinship/core` | Aggregate |
-| `ido:` | `http://rds.posccaesar.org/ontology/lis14/rdl/` | ISO 15926-14 upper ontology |
-| `pav:` | `http://purl.org/pav/` | Provenance/versioning |
-| `qudt:` | `http://qudt.org/schema/qudt/` | Units of measure |
-| `skos:` | `http://www.w3.org/2004/02/skos/core#` | Notation, altLabel |
-| `dcterms:` | `http://purl.org/dc/terms/` | Dublin Core metadata |
-
-## Python Scripts — Conventions
-
-- **Package manager**: `uv` (preferred). Run with `uv run python scripts/<name>.py` or activate `.venv` first.
-- **Dependencies**: `rdflib>=7.0.0`, `beautifulsoup4>=4.12.0`, `lxml>=5.0.0` (see `pyproject.toml`)
-- **Style**: Procedural (no classes), `pathlib.Path` for paths, `print()` with emoji for status output (not `logging`)
-- **Line length**: 100 (configured for black/ruff in `pyproject.toml`)
-- **Python version**: 3.9+
-- **Argument parsing**: `argparse` in production scripts; some utility scripts use `sys.argv` directly
-- **Error handling**: Minimal — relies on shell `set -e` and natural exceptions
-- **All scripts run from repo root**
-
-## Build Pipeline Commands
+## Build Pipeline
 
 ```bash
-# Full website generation (the main command)
-./scripts/generate_website.sh --verbose
-
-# Individual steps (for development/debugging)
-uv run python scripts/merge_modules.py --auto model/twinship-core.ttl
-uv run python scripts/generate_viz_ontology.py --auto build/twinship-core-complete.ttl
-uv run python scripts/generate_docs_ontology.py -o build/clean.ttl build/complete.ttl
-uv run python scripts/strip_for_webvowl.py input.ttl output.ttl
-uv run python scripts/generate_widoco_docs.py build/twinship-core-complete-docs-viz.ttl
-uv run python scripts/enhance_widoco_html.py docs/website/documentation/index-en.html build/twinship-core-complete-docs-viz.ttl
-uv run python scripts/enhance_webvowl_json.py build/twinship-core-complete-viz-clean-minimal.ttl docs/website/documentation/webvowl/data/ontology.json
+./scripts/generate_website.sh --verbose   # full website generation
 ```
 
-## Prerequisites
-
-- Python 3.9+
-- Java 11+ (required for WIDOCO — `java -version` to check)
-- `uv` package manager (`brew install uv` or `curl -LsSf https://astral.sh/uv/install.sh | sh`)
+Two pipelines: **Documentation** (WIDOCO, uses `complete-docs-viz.ttl`) and **Visualization** (WebVOWL, uses `complete-viz-clean-minimal.ttl`). See `scripts/README.md` for individual step commands and Python coding conventions.
 
 ## Common Pitfalls
 
@@ -203,11 +149,14 @@ uv run python scripts/enhance_webvowl_json.py build/twinship-core-complete-viz-c
 3. **The `--auto` flag** on merge/viz scripts auto-derives output filenames — don't also specify an output path
 4. **`strip_for_webvowl.py`** uses `sys.argv` (not argparse), unlike most other scripts
 5. **The landing page HTML** is generated inline inside `generate_website.sh` via heredoc — edit the shell script, not the HTML file
-6. **`build/` files have a specific dependency order** — later stages depend on earlier stages
+6. **`build/` and `docs/website/documentation/` are generated by the pipeline — never manually edit them.** Edit source `.ttl` files in `model/` and re-run `./scripts/generate_website.sh`. The `build/` stages also have a strict dependency order — later stages depend on earlier ones.
 7. **`tests/` directory exists but has no tests yet** — pytest is configured but unused
 8. **Version synchronization**: All version numbers are synchronized to "0.0.4" across ontology files and project metadata
 9. **Ontology files use UTF-8** — ensure encoding is preserved when editing `.ttl` files
-10. **Windows UTF-8 encoding** — on Windows, Java defaults to the system locale (cp1252), so WIDOCO would write `ontology.json` in cp1252 rather than UTF-8, causing `UnicodeDecodeError` in `enhance_webvowl_json.py`. Fixed by passing `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8` in the `java` invocation (`generate_widoco_docs.py`). A fallback reader is also present in `enhance_webvowl_json.py` for previously generated cp1252 files.
+10. **Windows UTF-8 encoding** — three layers of protection are in place; do not remove them:
+    - **`.env`** at repo root sets `PYTHONUTF8=1` — `uv run` loads this automatically, fixing emoji `print()` output on Windows consoles. `.vscode/settings.json` sets `python.terminal.useEnvFile: true` so VS Code terminals pick it up too.
+    - **All file I/O** in Python scripts uses explicit `encoding='utf-8'` — never use bare `open(path)` or `Path.write_text(content)` without `encoding='utf-8'`.
+    - **WIDOCO Java** invocation passes `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8` so `ontology.json` is written in UTF-8. A cp1252 fallback reader remains in `enhance_webvowl_json.py` for any previously generated files.
 
 ## When Modifying Ontology Classes/Properties
 

@@ -15,7 +15,7 @@ def clean_webvowl_json(input_file, output_file):
     """Merge duplicate Literal nodes in WebVOWL JSON."""
     
     print(f"Loading: {input_file}")
-    with open(input_file, 'r') as f:
+    with open(input_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
     # Find all Literal nodes
@@ -61,7 +61,7 @@ def clean_webvowl_json(input_file, output_file):
     
     # Write output
     Path(output_file).parent.mkdir(parents=True, exist_ok=True)
-    with open(output_file, 'w') as f:
+    with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
     
     print(f"✓ Written: {output_file}")

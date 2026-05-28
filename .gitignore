@@ -3,6 +3,9 @@
 data/*
 !data/README.md
 
+# IMO Compendium Excel is cached in data/ alongside other transient artifacts
+# (re-downloadable via extract_imo_compendium.py; committed CSV lives in model/external/imo/)
+
 # Working prompts folder (may contain sensitive vessel data)
 prompts/
 

@@ -42,9 +42,10 @@ WIDOCO_URL = f"https://github.com/dgarijo/Widoco/releases/download/v{WIDOCO_VERS
 def check_java():
     """Check if Java is installed and get version."""
     try:
-        result = subprocess.run(['java', '-version'], 
-                              capture_output=True, 
-                              text=True, 
+        result = subprocess.run(['java', '-version'],
+                              capture_output=True,
+                              text=True,
+                              encoding='utf-8',
                               check=True)
         version_output = result.stderr.split('\n')[0]
         print(f"✓ Java found: {version_output}")
@@ -119,7 +120,7 @@ def run_widoco(jar_path, input_file, output_dir, include_diagram=True,
     print(f"  Options: diagram={include_diagram}, crossref={include_crossref}, lang={lang}")
     
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True, encoding='utf-8')
         print(f"\n✓ Documentation generated successfully!")
         print(f"  Open: {output_path / 'index-en.html'}")
         return True
@@ -146,7 +147,7 @@ def create_index_redirect(output_dir):
 </html>
 """
     
-    index_path.write_text(html_content)
+    index_path.write_text(html_content, encoding='utf-8')
     print(f"✓ Created index redirect: {index_path}")
 
 
