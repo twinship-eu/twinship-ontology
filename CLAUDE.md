@@ -88,7 +88,7 @@ All TwinShip entity names are in the shared `twinship#` namespace (`:` prefix). 
 | Acronym classes | ALL-CAPS | `:CPP`, `:FPP`, `:PTO` |
 | Object properties | lowerCamelCase (`has<Thing>` dominant) | `:hasOperatingState`, `:followsRoute`, `:hasFuelConsumptionSummary` |
 | **Data properties** | **`tw` + UpperCamelCase + optional unit suffix** | **`:twBoilerPowerMaxInKW`, `:twVoyageDurationHours`, `:twWindSpeedInKnots`** |
-| **Data property labels** | **Plain lowercase descriptive name** | **`"voyage duration hours"`, `"wind speed in knots"`** |
+| **Data property labels** | **Sentence-case descriptive name (first letter capitalised)** | **`"Voyage duration hours"`, `"Wind speed in knots"`** |
 | Named individuals (descriptive) | PascalCase | `:CruiseState`, `:EvenKeel`, `:SternTrim` |
 | Named individuals (abbreviations) | ALL-CAPS | `:HFO`, `:MGO`, `:CPP` |
 | Ontology IRIs | kebab-case path | `https://twin-ship.eu/twinship/operational-modes` |

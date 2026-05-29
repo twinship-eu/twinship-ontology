@@ -243,10 +243,10 @@ All data properties use the **`tw` prefix** (two-character lowercase abbreviatio
 - `InRevPerMin` — RPM; `KgPerHr` — kg/hr; `KJPerKg` — kJ/kg
 - Omit suffix for dimensionless ratios, counts, string identifiers, and `xsd:dateTime` properties
 
-**`rdfs:label`** for data properties must be a plain lowercase descriptive name (no namespace prefix), matching the established pattern in `vessel.ttl`:
+**`rdfs:label`** for data properties must be a sentence-case descriptive name (first letter capitalised, no namespace prefix), matching the established pattern in `vessel.ttl`:
 ```turtle
-:twVoyageDurationHours  rdfs:label "voyage duration hours" .
-:twWindSpeedInKnots     rdfs:label "wind speed in knots"@en .
+:twVoyageDurationHours  rdfs:label "Voyage duration hours" .
+:twWindSpeedInKnots     rdfs:label "Wind speed in knots"@en .
 ```
 
 ### Standards Traceability for Data Properties

@@ -67,7 +67,7 @@
 #################################################################
 
 :twWindSpeedInKnots a owl:DatatypeProperty ;
-    rdfs:label "wind speed in knots"@en ;
+    rdfs:label "Wind speed in knots"@en ;
     rdfs:comment "Scalar wind speed in knots. Distinct from VesselAI U/V wind vector components."@en ;
     skos:notation "IMO0359" ;
     skos:altLabel "Wind speed" ;
@@ -77,7 +77,7 @@
     rdfs:subPropertyOf :TwinShipDataProperties .
 
 :twWindDirectionInDegrees a owl:DatatypeProperty ;
-    rdfs:label "wind direction in degrees"@en ;
+    rdfs:label "Wind direction in degrees"@en ;
     rdfs:comment "Meteorological wind direction in degrees from 0 to 360, where 0/360 is north and values indicate the direction from which the wind blows."@en ;
     skos:notation "IMO0360" ;
     skos:altLabel "Wind direction" ;
