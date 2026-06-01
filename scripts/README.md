@@ -118,9 +118,16 @@ These scripts form the main website generation pipeline:
 - **`enhance_webvowl_json.py`** - Post-process WebVOWL JSON to add SKOS and dcterms annotations
 - **`clean_webvowl_json.py`** - Post-process WebVOWL JSON to merge duplicate Literal nodes
 
+### Standards Alignment Scripts
+
+- **`align_imo.py`** — **Two-step IMO Compendium alignment workflow** (preferred for systematic alignment).
+  - `--prepare`: Analyses all modules with rdflib, generates ranked candidate matches (up to 5 per property) against the IMO Compendium, and writes/updates `data/imo_alignment_review.csv` (gitignored, transient). Previously decided rows (`confirm`/`reject`/`iso`) are preserved across re-runs.
+  - `--apply [--dry-run]`: Reads `confirm` rows from the review CSV and injects `skos:notation`, `skos:altLabel`, `dcterms:description`, `dcterms:source` into the correct `.ttl` files. Idempotent — already-annotated properties are skipped.
+  - Requires `model/external/imo/imo_compendium_all.csv` — generate it with `extract_imo_compendium.py` first.
+
 ### Legacy Scripts
 
-- **`extract_imo_compendium.py`** — Download and extract the IMO Compendium (FAL.5/Circ.56) to CSV for ontology alignment. Outputs a stable full-compendium CSV to `model/external/imo/imo_compendium_all.csv` and transient working artifacts to `data/`. Supports `--match-ttl` to generate ranked IMO candidate matches for unlinked properties, and `--compare` for gap analysis.
+- **`extract_imo_compendium.py`** — Download and extract the IMO Compendium (FAL.5/Circ.56) to CSV. Outputs the stable full-compendium CSV to `model/external/imo/imo_compendium_all.csv` and transient working artifacts to `data/`. Use `align_imo.py` for systematic multi-module alignment; use this script for ad-hoc keyword searches with `--keywords`.
 - **`generate_stats_table.py`** — Generate ontology statistics table for STATISTICS.md
 - **`generate_docs.sh`** — Older documentation generation script (superseded by generate_website.sh)
 - **`setup_webvowl.py`** — Legacy WebVOWL setup (superseded by WIDOCO's built-in converter)

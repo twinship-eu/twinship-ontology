@@ -91,6 +91,22 @@ uv run python scripts/generate_stats_table.py
 - **[Scripts Documentation](scripts/README.md)** - All available processing scripts
 - **[Model Structure](model/README.md)** - Ontology architecture and design patterns
 
+### IMO Standards Alignment
+
+Data properties can be aligned to the [IMO Compendium (FAL.5/Circ.56)](https://imocompendium.imo.org/) using a two-step workflow:
+
+```bash
+# Step 1: Extract compendium and generate ranked candidates for review
+uv run python scripts/extract_imo_compendium.py   # first run only
+uv run python scripts/align_imo.py --prepare       # writes data/imo_alignment_review.csv
+
+# Step 2: Edit data/imo_alignment_review.csv (set action=confirm/reject/iso), then apply
+uv run python scripts/align_imo.py --apply --dry-run   # preview
+uv run python scripts/align_imo.py --apply             # write to .ttl files
+```
+
+The stable reference CSV of all 1,206 IMO Compendium elements is committed at `model/external/imo/imo_compendium_all.csv`. The working review file lives in `data/` (gitignored).
+
 ### Workflow testing
 Currently, Deployment workflow only supports deployment to Hostinger.
 The **[deployment workflow](.github/workflows/deploy.yml)** can be tested locally using [act](https://github.com/nektos/act).

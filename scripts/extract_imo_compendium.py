@@ -195,7 +195,8 @@ def match_ttl_to_imo(ttl_path: Path, elements: list[dict], out_path: Path) -> No
         writer.writeheader()
         writer.writerows(rows)
     print(f"✓  Candidate matches ({len(unlinked)} properties → {len(rows)} candidates) → {out_path}")
-    print("    Review: set action='confirm' for correct matches, then re-run with --apply-matches.")
+    print("    Review: set action='confirm' for correct matches, then apply with:")
+    print("        uv run python scripts/align_imo.py --apply --dry-run")
 
 
 def alignment_gap_report(ttl_path: Path, elements: list[dict], out_path: Path) -> None:
@@ -292,11 +293,21 @@ def main() -> None:
         else:
             download_excel(xlsx_path)
 
-    # 2. Load all BBIE elements
-    elements = load_elements(xlsx_path)
-
-    # 3. Write full compendium CSV to model/external/imo/ (committed, stable reference)
-    write_csv(elements, out_dir / "imo_compendium_all.csv")
+    # 2 & 3. Load elements — reuse existing CSV when it is already newer than the
+    # Excel file (i.e. the cached xlsx has not changed since last extraction).
+    csv_path = out_dir / "imo_compendium_all.csv"
+    csv_is_fresh = (
+        csv_path.exists()
+        and csv_path.stat().st_mtime >= xlsx_path.stat().st_mtime
+    )
+    if csv_is_fresh:
+        print(f"📂 {csv_path} is up to date — skipping extraction")
+        with open(csv_path, encoding="utf-8") as _f:
+            elements = list(csv.DictReader(_f))
+        print(f"✓  Loaded {len(elements)} data elements from existing CSV")
+    else:
+        elements = load_elements(xlsx_path)
+        write_csv(elements, csv_path)
 
     # 4. Write filtered CSV to data/ (transient working artifact, gitignored)
     if args.keywords:
@@ -325,14 +336,16 @@ def main() -> None:
 
     print(
         "\n📋 Next steps:"
-        "\n   1. Open data/imo_compendium_all.csv in a spreadsheet"
+        "\n   1. Open model/external/imo/imo_compendium_all.csv in a spreadsheet"
         "\n   2. Search/filter by domain keywords (fuel, speed, power, temperature, etc.)"
-        "\n   3. For each match, add to the ontology:"
+        "\n   3. For systematic alignment across all modules use align_imo.py:"
+        "\n      uv run python scripts/align_imo.py --prepare"
+        "\n      (opens data/imo_alignment_review.csv for review, then --apply)"
+        "\n   4. For manual one-off annotations, add to the .ttl file:"
         '\n      skos:notation "IMO####" ;'
         '\n      skos:altLabel "<IMO name>" ;'
         '\n      dcterms:description "<IMO definition>" ;'
         '\n      dcterms:source <https://www.imo.org/> ;'
-        "\n   4. Re-run with --compare to check remaining gaps"
     )
 
 
