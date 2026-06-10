@@ -1,0 +1,20 @@
+# CQ-29 — What is the maximum power (kW) of each Bow Thruster, and what fuel does it consume in emergency mode?
+#
+# Coverage: Instance-level. Requires BowThruster individuals. twBowThrusterEmergencyDOMode is a flag (1=active, 0=inactive, -1=unknown).
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?bt ?maxPowerKW ?emergencyDOMode
+WHERE {
+  ?vessel a :VesselSystem .
+  ?bt ido:partOf ?vessel ;
+      a :BowThruster .
+  OPTIONAL { ?bt :twBowThrusterPowerMaxInKW    ?maxPowerKW      }
+  OPTIONAL { ?bt :twBowThrusterEmergencyDOMode ?emergencyDOMode }
+}
+ORDER BY ?vessel

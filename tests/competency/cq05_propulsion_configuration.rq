@@ -1,0 +1,19 @@
+# CQ-05 — What is the propulsion configuration of a vessel — Mechanical (direct drive) or Diesel-Electric?
+#
+# Coverage: Instance-level. Requires configuration individuals typed as MechanicalConfiguration or DieselElectricConfiguration.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?configuration ?configurationType
+WHERE {
+  ?vessel a :VesselSystem .
+  ?configuration ido:partOf ?vessel ;
+                 a ?configurationType .
+  VALUES ?configurationType { :MechanicalConfiguration :DieselElectricConfiguration }
+}
+ORDER BY ?vessel ?configurationType

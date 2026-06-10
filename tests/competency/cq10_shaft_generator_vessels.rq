@@ -1,0 +1,21 @@
+# CQ-10 — Which vessels use a Shaft Generator System, and what is its maximum power output?
+#
+# Coverage: Instance-level. Requires ShaftGeneratorSystem individuals with ido:partOf a VesselSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?sg ?sgType ?powerMaxKW
+WHERE {
+  ?vessel a :VesselSystem .
+  ?sg ido:partOf ?vessel ;
+      a ?sgType .
+  ?sgType rdfs:subClassOf* :ShaftGeneratorSystem .
+  FILTER (isIRI(?sgType))
+  OPTIONAL { ?sg :twShaftGeneratorPowerMaxInKW ?powerMaxKW }
+}
+ORDER BY ?vessel ?sgType

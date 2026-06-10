@@ -82,7 +82,7 @@ build/                          # Auto-generated build artifacts (gitignored)
 
 ### Domain Modules
 
-3. **modules/vessel.ttl** (1134 lines)
+3. **modules/vessel.ttl** (≈1960 lines)
    - Vessel types: `VesselSystem`, `RoRo`, `RoPax`, `Tanker`
    - Hull properties: displacement, draft (aft, fore, mid port/starboard), depth of water
    - Engine systems: `EngineSystem`, `MainEngineSystem`, `AuxiliaryEngineSystem`
@@ -91,7 +91,7 @@ build/                          # Auto-generated build artifacts (gitignored)
    - Transmission: `GearboxSystem`, `DirectDrive`, `Reduction`, `TISO`
    - Power: `ShaftGeneratorSystem`, `RGShaftGenerator`, `PTO`
    - Equipment: `Maneuvering`, `EmergencyEquipment`
-   - Fuel: `Fuel` class + individuals (HFO, MGO, MDO)
+   - Fuel: `Fuel` class + named individuals `:AMM` (Ammonia), `:BF` (Bio-fuel)
    - 130+ engine and vessel properties
    - Imports: `twinship-base`
 
@@ -294,7 +294,7 @@ Properties without a matching standard need no `skos:notation` / `skos:altLabel`
 | Sub-pattern | Convention | Examples |
 |---|---|---|
 | Descriptive names | PascalCase | `:CruiseState`, `:EvenKeel`, `:SternTrim`, `:OptimalTrim` |
-| Industry abbreviations | ALL-CAPS | `:HFO`, `:MGO`, `:MDO` |
+| Industry abbreviations | ALL-CAPS | `:AMM`, `:BF`, `:CPP`, `:FPP` |
 
 ### Ontology IRIs
 

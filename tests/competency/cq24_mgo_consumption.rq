@@ -1,0 +1,22 @@
+# CQ-24 — Which vessels in the fleet are consuming MGO, and what is the MGO mass flow rate (kg/hr)?
+#
+# Coverage: Instance-level. Note: MGO is not a named individual in the current ontology. Uses MGO-specific mass flow properties on Boiler and ShaftGeneratorSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?system ?systemType ?mgoMassKgPerHr
+WHERE {
+  ?vessel a :VesselSystem .
+  ?system ido:partOf ?vessel ;
+          a ?systemType .
+  VALUES ?mgoProperty { :twBoilerMGOMassInKgPerHr :twShaftGeneratorMGOMassInKgPerHr }
+  ?system ?mgoProperty ?mgoMassKgPerHr .
+  FILTER (?mgoMassKgPerHr > 0)
+  FILTER (isIRI(?systemType))
+}
+ORDER BY ?vessel ?systemType

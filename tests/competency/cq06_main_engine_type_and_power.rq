@@ -1,0 +1,22 @@
+# CQ-06 — What type of main engine (TwoStroke or FourStroke) is installed, and what is its maximum power (kW) and rated speed (RPM)?
+#
+# Coverage: Instance-level. Requires MainEngineSystem individuals with stroke-type and power/speed data.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?engine ?strokeType ?powerMaxKW ?ratedSpeedRPM
+WHERE {
+  ?vessel a :VesselSystem .
+  ?engine ido:partOf ?vessel ;
+          a :MainEngineSystem ;
+          a ?strokeType .
+  VALUES ?strokeType { :TwoStroke :FourStroke }
+  OPTIONAL { ?engine :twDieselEnginePowerMaxInKW     ?powerMaxKW    }
+  OPTIONAL { ?engine :twDieselEngineSpeedInRevPerMin ?ratedSpeedRPM }
+}
+ORDER BY ?vessel ?strokeType

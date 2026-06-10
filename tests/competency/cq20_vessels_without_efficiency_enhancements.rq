@@ -1,0 +1,22 @@
+# CQ-20 — Which vessels have no Efficiency Enhancement System components and are candidates for retrofitting?
+#
+# Coverage: Instance-level. Requires VesselSystem individuals; uses FILTER NOT EXISTS.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?label
+WHERE {
+  ?vessel a :VesselSystem .
+  OPTIONAL { ?vessel rdfs:label ?label }
+  FILTER NOT EXISTS {
+    ?ees ido:partOf ?vessel ;
+         a ?eesType .
+    ?eesType rdfs:subClassOf* :EfficiencyEnhancementSystem .
+  }
+}
+ORDER BY ?vessel

@@ -1,0 +1,18 @@
+# CQ-02 — What is the maximum displacement (in MT) of each VesselSystem in the fleet?
+#
+# Coverage: Instance-level. Requires VesselSystem individuals with twDisplacementMaxInMT data.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?label ?displacementMT
+WHERE {
+  ?vessel a :VesselSystem .
+  OPTIONAL { ?vessel rdfs:label               ?label         }
+  OPTIONAL { ?vessel :twDisplacementMaxInMT   ?displacementMT }
+}
+ORDER BY ?vessel

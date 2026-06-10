@@ -1,0 +1,25 @@
+# CQ-14 — Does any vessel use ammonia (AMM) or bio-fuel (BF) as a fuel, and what is its power capacity?
+#
+# Coverage: Partially covered: :AMM and :BF exist as named Fuel individuals with LHV data. Engine instances are required for full answer.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+# STRICT
+SELECT ?fuel ?fuelLabel ?lhvKJPerKg ?engine ?powerCapacityKWh
+WHERE {
+  VALUES ?fuel { :AMM :BF }
+  ?fuel a :Fuel .
+  OPTIONAL { ?fuel rdfs:label      ?fuelLabel     }
+  OPTIONAL { ?fuel :twFuelLHVKJPerKg ?lhvKJPerKg }
+  OPTIONAL {
+    ?engine :consume ?fuel ;
+            a :FuelCellSystem ;
+            :twAMMCELLPowerCapacityInKWh ?powerCapacityKWh .
+  }
+}
+ORDER BY ?fuel

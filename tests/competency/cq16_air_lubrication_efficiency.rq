@@ -1,0 +1,20 @@
+# CQ-16 — What is the power reduction efficiency (%) of the Air Lubrication System fitted to a vessel?
+#
+# Coverage: Instance-level. Requires AirLubricationSystem individuals with ido:partOf a VesselSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?als ?powerKW ?powerReductionEfficiencyPct
+WHERE {
+  ?vessel a :VesselSystem .
+  ?als ido:partOf ?vessel ;
+       a :AirLubricationSystem .
+  OPTIONAL { ?als :twALSPowerInKW                         ?powerKW                   }
+  OPTIONAL { ?als :twALSPowerReductionEfficiencyPercentage ?powerReductionEfficiencyPct }
+}
+ORDER BY ?vessel

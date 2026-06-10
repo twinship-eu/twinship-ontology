@@ -1,0 +1,22 @@
+# CQ-21 — For each vessel, what is the total CO2 emission rate (g/hr) calculated from fuel consumption and the fuel's CO2 emission factor?
+#
+# Coverage: Instance-level. Requires MainEngineSystem individuals with fuel consumption and Fuel individuals with CO2 emission factor.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?engine ?fuel
+       ?fuelConsumptionRateMTPerHr ?co2FactorGPerKgFuel
+WHERE {
+  ?vessel a :VesselSystem .
+  ?engine ido:partOf ?vessel ;
+          a :MainEngineSystem ;
+          :consume ?fuel .
+  OPTIONAL { ?engine :twFuelConsumptionRateInMTPerHr      ?fuelConsumptionRateMTPerHr  }
+  OPTIONAL { ?fuel   :twFuelEmissionFactorCo2InGPerKgFuel  ?co2FactorGPerKgFuel         }
+}
+ORDER BY ?vessel ?engine

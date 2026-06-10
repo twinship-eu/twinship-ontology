@@ -1,0 +1,20 @@
+# CQ-26 — Is any vessel connected to On Shore Power (cold ironing), and for how many hours and at what power (kWh)?
+#
+# Coverage: Instance-level. Requires OSP individuals with ido:partOf a VesselSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?osp ?timeInHours ?powerKWh
+WHERE {
+  ?vessel a :VesselSystem .
+  ?osp ido:partOf ?vessel ;
+       a :OSP .
+  OPTIONAL { ?osp :twOSPTimeInHours ?timeInHours }
+  OPTIONAL { ?osp :twOSPPowerInKWh  ?powerKWh    }
+}
+ORDER BY ?vessel

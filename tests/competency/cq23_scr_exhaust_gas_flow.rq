@@ -1,0 +1,19 @@
+# CQ-23 — What is the exhaust gas flow rate (kg/hr) through the SCR catalyst for each main engine?
+#
+# Coverage: Instance-level. Requires SCR individuals with twSCRExhaustGasFlowrateInKgPerHr.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?scr ?exhaustGasFlowKgPerHr
+WHERE {
+  ?vessel a :VesselSystem .
+  ?scr ido:partOf ?vessel ;
+       a :SCR .
+  OPTIONAL { ?scr :twSCRExhaustGasFlowrateInKgPerHr ?exhaustGasFlowKgPerHr }
+}
+ORDER BY ?vessel

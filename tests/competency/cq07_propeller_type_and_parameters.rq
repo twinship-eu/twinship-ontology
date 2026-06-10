@@ -1,0 +1,24 @@
+# CQ-07 — What Propeller System type (FPP or CPP) is fitted, and what are its key parameters?
+#
+# Coverage: Instance-level. Requires PropellerSystem individuals typed as FPP or CPP with dimensional data.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?propeller ?propellerType
+       ?diameterMm ?pitchDiamRatio ?blades ?efficiency
+WHERE {
+  ?vessel a :VesselSystem .
+  ?propeller ido:partOf ?vessel ;
+             a ?propellerType .
+  VALUES ?propellerType { :FPP :CPP }
+  OPTIONAL { ?propeller :twPropellerDiameterMm          ?diameterMm     }
+  OPTIONAL { ?propeller :twPropellerPitchDiameterRatio  ?pitchDiamRatio }
+  OPTIONAL { ?propeller :twPropellerBlades              ?blades         }
+  OPTIONAL { ?propeller :twPropellerEfficiency          ?efficiency     }
+}
+ORDER BY ?vessel ?propellerType

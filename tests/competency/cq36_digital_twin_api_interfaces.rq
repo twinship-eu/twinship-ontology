@@ -1,0 +1,22 @@
+# CQ-36 — What are the documented API interfaces of the Digital Twin, and which third-party systems are they compatible with?
+#
+# Coverage: Not yet modelled. The ontology covers domain concepts but does not yet define API interface entities. This query returns TwinShipInformationObject instances as a placeholder.
+# Module:   operational-context
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+# Note: CQ-36 concerns Digital Twin API documentation. The current ontology
+# does not yet define API interface classes. This query returns any
+# TwinShipInformationObject instances, which are the most likely future anchor
+# for API descriptors. Expect xfail until an API module is added.
+SELECT ?infoObj ?label ?comment
+WHERE {
+  ?infoObj a :TwinShipInformationObject .
+  OPTIONAL { ?infoObj rdfs:label   ?label   }
+  OPTIONAL { ?infoObj rdfs:comment ?comment }
+}
+ORDER BY ?infoObj

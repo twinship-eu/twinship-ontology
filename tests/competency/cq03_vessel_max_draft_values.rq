@@ -1,0 +1,20 @@
+# CQ-03 — What are the maximum draft values (aft, fore, mid-port, mid-starboard) for a vessel?
+#
+# Coverage: Instance-level. Requires VesselSystem individuals with draft data properties.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?draftAftM ?draftForeM ?draftMidPortM ?draftMidStbdM
+WHERE {
+  ?vessel a :VesselSystem .
+  OPTIONAL { ?vessel :twVesselDraftAftMaxInM      ?draftAftM     }
+  OPTIONAL { ?vessel :twVesselDraftForMaxInM      ?draftForeM    }
+  OPTIONAL { ?vessel :twVesselDraftMidPortMaxInM  ?draftMidPortM }
+  OPTIONAL { ?vessel :twVesselDraftMidStbdMaxInM  ?draftMidStbdM }
+}
+ORDER BY ?vessel

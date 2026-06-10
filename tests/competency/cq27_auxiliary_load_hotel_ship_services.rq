@@ -1,0 +1,20 @@
+# CQ-27 — What is the hotel load power (kW) and ship services power (kW) for each vessel's Auxiliary Load?
+#
+# Coverage: Instance-level. Requires AUXLOAD individuals with ido:partOf a VesselSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?auxld ?hotelLoadKW ?shipServicesPowerKW
+WHERE {
+  ?vessel a :VesselSystem .
+  ?auxld ido:partOf ?vessel ;
+         a :AUXLOAD .
+  OPTIONAL { ?auxld :twAUXLDHotelLoadPowerInKW    ?hotelLoadKW        }
+  OPTIONAL { ?auxld :twAUXLDShipServicesPowerInKW ?shipServicesPowerKW }
+}
+ORDER BY ?vessel

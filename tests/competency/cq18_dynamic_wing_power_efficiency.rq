@@ -1,0 +1,20 @@
+# CQ-18 — What is the power (kW) and efficiency reduction (%) achieved by the Dynamic Wing system?
+#
+# Coverage: Instance-level. Requires DynamicWing individuals with ido:partOf a VesselSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?dw ?powerKW ?powerReductionEfficiencyPct
+WHERE {
+  ?vessel a :VesselSystem .
+  ?dw ido:partOf ?vessel ;
+      a :DynamicWing .
+  OPTIONAL { ?dw :twDWPowerInKW                          ?powerKW                   }
+  OPTIONAL { ?dw :twDWPowerReductionEfficiencyPercentage ?powerReductionEfficiencyPct }
+}
+ORDER BY ?vessel

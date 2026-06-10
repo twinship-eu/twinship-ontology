@@ -10,7 +10,7 @@ Welcome to the TwinShip Ontology repository! This project provides a modular, ex
 - `scripts/` — Build and processing scripts (Python + shell)
 - `queries/` — SPARQL validation queries
 - `data/`    — Vessel instance data (gitignored; may contain sensitive data)
-- `tests/`   — Test directory (pytest configured; no tests yet)
+- `tests/`   — pytest test suite: competency question SPARQL tests
 - `tools/`   — Downloaded WIDOCO JAR (gitignored)
 
 ## Getting Started
@@ -84,12 +84,29 @@ This reads from `build/twinship-core-complete-docs-viz.ttl` (produced by the ful
 uv run python scripts/generate_stats_table.py
 ```
 
+### Testing
+
+Competency questions are validated as SPARQL tests against the merged ontology using pytest.
+
+```bash
+# Build the merged ontology first
+uv run python scripts/merge_modules.py --auto
+
+# Run all competency question tests
+uv run pytest tests/ -v
+```
+
+Each `.rq` file in `tests/competency/` encodes one competency question. Tests default to **reporting-only** (`xfail`) until instance data is loaded; add `# STRICT` to a query to make it a hard requirement. See [tests/README.md](tests/README.md) for details.
+
+The human-readable competency question catalogue is at [docs/ontology/competency-questions.md](docs/ontology/competency-questions.md).
+
 ### Documentation
 
 - **[Website Generation Guide](docs/WEBSITE_GENERATION.md)** - Generate professional documentation with WIDOCO
 - **[Python Setup Guide](docs/PYTHON_SETUP.md)** - Using uv for dependency management
 - **[Scripts Documentation](scripts/README.md)** - All available processing scripts
 - **[Model Structure](model/README.md)** - Ontology architecture and design patterns
+- **[Competency Questions](docs/ontology/competency-questions.md)** - Full catalogue of 36 CQs with status and test links
 
 ### IMO Standards Alignment
 

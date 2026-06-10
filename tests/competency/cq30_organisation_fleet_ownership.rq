@@ -1,0 +1,32 @@
+# CQ-30 — Which Organisation owns a given vessel or fleet, enabling fleet-level performance aggregation?
+#
+# Coverage: Instance-level. Requires Organisation individuals with :ownedBy links from vessels or fleets.
+# Module:   operational-context
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?organisation ?orgLabel ?fleet ?fleetLabel ?vessel ?vesselLabel
+WHERE {
+  ?organisation a :Organization .
+  OPTIONAL { ?organisation rdfs:label ?orgLabel }
+  OPTIONAL {
+    ?fleet a :Fleet ;
+           :ownedBy ?organisation .
+    OPTIONAL { ?fleet rdfs:label ?fleetLabel }
+    OPTIONAL {
+      ?vessel a :VesselSystem ;
+              ido:partOf ?fleet .
+      OPTIONAL { ?vessel rdfs:label ?vesselLabel }
+    }
+  }
+  OPTIONAL {
+    ?vessel a :VesselSystem ;
+            :ownedBy ?organisation .
+    OPTIONAL { ?vessel rdfs:label ?vesselLabel }
+  }
+}
+ORDER BY ?organisation ?fleet ?vessel

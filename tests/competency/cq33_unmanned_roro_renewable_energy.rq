@@ -1,0 +1,25 @@
+# CQ-33 — What Wind Assisted Propulsion System or Dynamic Wing configurations are modelled for a future unmanned RoRo, and what renewable energy contribution (kW) do they provide?
+#
+# Coverage: Instance-level. Requires WASP and/or DynamicWing individuals on RoRo vessels.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?system ?systemType ?powerKW ?efficiencyPct
+WHERE {
+  ?vessel a :RoRo .
+  ?system ido:partOf ?vessel ;
+          a ?systemType .
+  VALUES ?systemType { :WindAssistedPropulsionSystem :DynamicWing }
+  OPTIONAL { ?system :twWASPPowerInKW                         ?waspPowerKW }
+  OPTIONAL { ?system :twDWPowerInKW                           ?dwPowerKW   }
+  OPTIONAL { ?system :twWASPPowerReductionEfficiencyPercentage ?waspEffPct  }
+  OPTIONAL { ?system :twDWPowerReductionEfficiencyPercentage   ?dwEffPct    }
+  BIND(COALESCE(?waspPowerKW, ?dwPowerKW)    AS ?powerKW      )
+  BIND(COALESCE(?waspEffPct,  ?dwEffPct)     AS ?efficiencyPct)
+}
+ORDER BY ?vessel ?systemType

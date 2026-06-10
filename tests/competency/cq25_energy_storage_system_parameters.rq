@@ -1,0 +1,22 @@
+# CQ-25 — What Energy Storage System (battery) capacity (MWh), C-rate, depth of discharge (%), and cycle life are available on each vessel?
+#
+# Coverage: Instance-level. Requires EnergyStorageSystem individuals with ido:partOf a VesselSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?ess ?capacityMWh ?cRate ?depthOfDischargePct ?cycleLife
+WHERE {
+  ?vessel a :VesselSystem .
+  ?ess ido:partOf ?vessel ;
+       a :EnergyStorageSystem .
+  OPTIONAL { ?ess :twESSCapacityInMWh              ?capacityMWh          }
+  OPTIONAL { ?ess :twESSCRate                      ?cRate                }
+  OPTIONAL { ?ess :twESSDepthOfDischargePercentage ?depthOfDischargePct  }
+  OPTIONAL { ?ess :twESSCycleLife                  ?cycleLife            }
+}
+ORDER BY ?vessel

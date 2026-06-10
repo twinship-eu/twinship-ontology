@@ -1,0 +1,24 @@
+# CQ-11 — What fuels does each Marine Engine System consume, and what are their CO2, CH4, and N2O emission factors (g/kg of fuel)?
+#
+# Coverage: Instance-level. Requires engine individuals linked to Fuel via :consume. Only :AMM and :BF are currently defined as named Fuel individuals.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?engine ?fuel ?fuelLabel
+       ?co2FactorGPerKgFuel ?ch4FactorGPerKgFuel ?n2oFactorGPerKgFuel
+WHERE {
+  ?vessel a :VesselSystem .
+  ?engine ido:partOf ?vessel ;
+          a :EngineSystem ;
+          :consume ?fuel .
+  OPTIONAL { ?fuel rdfs:label                               ?fuelLabel            }
+  OPTIONAL { ?fuel :twFuelEmissionFactorCo2InGPerKgFuel     ?co2FactorGPerKgFuel  }
+  OPTIONAL { ?fuel :twFuelEmissionFactorCH4InGPerKgFuel     ?ch4FactorGPerKgFuel  }
+  OPTIONAL { ?fuel :twFuelEmissionFactorN2OInGPerKgFuel     ?n2oFactorGPerKgFuel  }
+}
+ORDER BY ?vessel ?engine ?fuel

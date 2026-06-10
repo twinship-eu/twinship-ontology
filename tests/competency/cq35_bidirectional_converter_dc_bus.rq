@@ -1,0 +1,20 @@
+# CQ-35 — What Bidirectional Converter System nominal voltage and max current are defined for the DC bus, enabling ESS integration?
+#
+# Coverage: Instance-level. Requires BidirectionalConverterSystem individuals with DC bus voltage and current data.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?bcs ?nominalVoltageV ?maxCurrentA
+WHERE {
+  ?vessel a :VesselSystem .
+  ?bcs ido:partOf ?vessel ;
+       a :BidirectionalConverterSystem .
+  OPTIONAL { ?bcs :twDCBNominalVoltage ?nominalVoltageV }
+  OPTIONAL { ?bcs :twDCBMaxCurrent     ?maxCurrentA     }
+}
+ORDER BY ?vessel

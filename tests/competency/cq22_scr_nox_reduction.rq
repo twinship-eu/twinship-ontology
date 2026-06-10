@@ -1,0 +1,20 @@
+# CQ-22 — Which vessels have an SCR system, and what is its NOx reduction efficiency (%) and operating temperature?
+#
+# Coverage: Instance-level. Requires SCR individuals with ido:partOf a VesselSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?scr ?noxReductionEfficiencyPct ?operatingTempC
+WHERE {
+  ?vessel a :VesselSystem .
+  ?scr ido:partOf ?vessel ;
+       a :SCR .
+  OPTIONAL { ?scr :twSCRNOReductionEfficiency ?noxReductionEfficiencyPct }
+  OPTIONAL { ?scr :twSCROpTempCentigrade      ?operatingTempC            }
+}
+ORDER BY ?vessel

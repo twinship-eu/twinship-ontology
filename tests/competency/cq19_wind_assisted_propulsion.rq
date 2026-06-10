@@ -1,0 +1,20 @@
+# CQ-19 — What is the power (kW) and efficiency (%) of the Wind Assisted Propulsion System?
+#
+# Coverage: Instance-level. Requires WindAssistedPropulsionSystem individuals with ido:partOf a VesselSystem.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?wasp ?powerKW ?powerReductionEfficiencyPct
+WHERE {
+  ?vessel a :VesselSystem .
+  ?wasp ido:partOf ?vessel ;
+        a :WindAssistedPropulsionSystem .
+  OPTIONAL { ?wasp :twWASPPowerInKW                         ?powerKW                   }
+  OPTIONAL { ?wasp :twWASPPowerReductionEfficiencyPercentage ?powerReductionEfficiencyPct }
+}
+ORDER BY ?vessel

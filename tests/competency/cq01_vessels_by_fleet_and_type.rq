@@ -1,0 +1,19 @@
+# CQ-01 — Which vessels of type RoRo, RoPax, or Tanker belong to a given fleet?
+#
+# Coverage: Instance-level. Requires vessel individuals typed as RoRo/RoPax/Tanker with ido:partOf a Fleet.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?fleet ?vesselType ?vessel
+WHERE {
+  VALUES ?vesselType { :RoRo :RoPax :Tanker }
+  ?vessel a ?vesselType ;
+          ido:partOf ?fleet .
+  ?fleet a :Fleet .
+}
+ORDER BY ?fleet ?vesselType ?vessel

@@ -1,0 +1,23 @@
+# CQ-34 — Which systems are connected to the main switchboard (PMS), e.g. GenSetSystem, EnergyStorageSystem, FrequencyConverterSystem, ShaftGeneratorSystem?
+#
+# Coverage: Instance-level. The PMS represents the main switchboard. Queries systems with ido:connectedTo a Pms individual on the same vessel.
+# Module:   vessel
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?pms ?system ?systemType
+WHERE {
+  ?vessel a :VesselSystem .
+  ?pms ido:partOf ?vessel ;
+       a :Pms .
+  ?system ido:connectedTo ?pms ;
+          ido:partOf ?vessel ;
+          a ?systemType .
+  FILTER (isIRI(?systemType))
+  FILTER (?systemType NOT IN (owl:Class, rdfs:Class))
+}
+ORDER BY ?vessel ?systemType ?system
