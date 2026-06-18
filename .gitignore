@@ -9,6 +9,11 @@ data/*
 # Working prompts folder (may contain sensitive vessel data)
 prompts/
 
+# Paper-related discussions (may contain sensitive vessel data)
+papers/
+
+# VS code workspaces
+*.code-workspace
 
 # Python virtual environments and cache
 .venv/

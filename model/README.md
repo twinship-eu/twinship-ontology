@@ -121,6 +121,17 @@ build/                          # Auto-generated build artifacts (gitignored)
    - IRI: `https://twin-ship.eu/twinship/operational-context`
    - Imports: `twinship-base`, `operational-modes`, `weather-conditions`
 
+7. **twinship-qudt-vocabulary.ttl** — QUDT quantity and unit family classes (Nexus advanced pattern)
+   - Adds **22 quantity kind families** (Power, Energy, RotationalVelocity, Speed, Mass, MassFlowRate, MassDensity, MassRatio, SpecificEnergy, Temperature, Length, Angle, Pressure, VolumeFlowRate, Volume, Torque, Force, ElectricPotential, ElectricCurrent, Frequency, Time, DimensionlessRatio)
+   - Per family: `TwinShipQuantityKindFor[X]`, `TwinShipUnitFor[X]`, `TwinShipQuantityValue[X]`, `TwinShipQuantity[X]` classes
+   - Per family: `hasQuantity[X]` object property (`rdfs:subPropertyOf qudt:hasQuantity`)
+   - QUDT unit and quantity kind individuals typed as family members
+   - Imported by `twinship-base.ttl`; available to all domain modules automatically
+   - Domain class restrictions (`owl:someValuesFrom` on `hasQuantity[X]`) are declared in each domain module alongside the class and its XSD data properties
+   - **Coexistence policy**: existing `tw`-prefixed `owl:DatatypeProperty` declarations with XSD ranges are retained in source modules. QUDT object properties provide semantic grounding; XSD data properties provide SPARQL query access.
+   - IRI: `https://twin-ship.eu/twinship/qudt-vocabulary`
+   - Imports: QUDT schema + vocabulary files only (no twinship module imports)
+
 ## Import Patterns
 
 ### For Complete Ontology (Most Users)
@@ -155,6 +166,19 @@ build/                          # Auto-generated build artifacts (gitignored)
 ## Design Pattern
 
 TwinShip uses **OWL restriction-based modelling**: property usage on classes is declared with `owl:someValuesFrom` restrictions on the class rather than `rdfs:domain` on the property. `rdfs:range` is required on all properties. `rdfs:domain` assertions are never written manually — they are synthesized by the build pipeline from the restriction patterns for WIDOCO/WebVOWL compatibility.
+
+### QUDT Quantities and Units
+
+TwinShip follows the **Nexus advanced pattern** (see `model/external/nexus/model/nexus-core-advanced.ttl`) for representing quantities and units via QUDT. The vocabulary file `model/twinship-qudt-vocabulary.ttl` provides:
+
+- 22 quantity kind families, each with `TwinShipQuantityKindFor[X]`, `TwinShipUnitFor[X]`, `TwinShipQuantityValue[X]`, `TwinShipQuantity[X]` classes
+- `hasQuantity[X]` object properties (`rdfs:subPropertyOf qudt:hasQuantity`) for each family
+
+`twinship-qudt-vocabulary.ttl` is imported by `twinship-base.ttl`, so the family classes and properties are available to all domain modules automatically. Each domain module (`vessel.ttl`, `operational-context.ttl`, `weather-conditions.ttl`) declares its own `owl:someValuesFrom` restrictions linking its classes to the applicable quantity families — co-located with the class and XSD data property declarations in that module.
+
+The existing `tw`-prefixed `owl:DatatypeProperty` declarations (with `rdfs:range xsd:double` / `xsd:decimal`) are retained for SPARQL query compatibility. This dual-layer design is explicit project policy:
+- **QUDT layer**: semantic grounding, unit disambiguation, standards alignment
+- **XSD layer**: efficient literal-based SPARQL queries
 
 ### Why not rdfs:domain?
 

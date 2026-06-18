@@ -101,6 +101,43 @@ Restrictions are required because the visualization pipeline derives property do
 
 ---
 
+## QUDT Quantity and Unit Pattern
+
+TwinShip uses QUDT as the preferred approach for quantities and units, following the **Nexus advanced pattern** (see `model/external/nexus/model/nexus-core-advanced.ttl`).
+
+The QUDT vocabulary file is `model/twinship-qudt-vocabulary.ttl`, imported by `twinship-base.ttl` (and therefore available to all domain modules automatically). It adds **22 quantity kind families**, each comprising:
+
+```turtle
+# Per quantity kind X:
+:TwinShipQuantityKindFor[X] rdfs:subClassOf qudt:QuantityKind .
+:TwinShipUnitFor[X]         rdfs:subClassOf qudt:Unit .
+:TwinShipQuantityValue[X]   rdfs:subClassOf qudt:QuantityValue .
+:TwinShipQuantity[X]        rdfs:subClassOf qudt:Quantity ,
+    [ owl:onProperty qudt:hasQuantityKind ; owl:allValuesFrom :TwinShipQuantityKindFor[X] ] ,
+    [ owl:onProperty qudt:quantityValue   ; owl:allValuesFrom :TwinShipQuantityValue[X]   ] .
+
+:hasQuantity[X] rdfs:subPropertyOf qudt:hasQuantity ;
+    rdfs:range :TwinShipQuantity[X] .
+
+# Type the QUDT named individuals as family members:
+quantitykind:[X] a :TwinShipQuantityKindFor[X] .
+unit:[Y]         a :TwinShipUnitFor[X] .
+
+# Domain class restriction:
+:MyClass rdfs:subClassOf
+    [ owl:onProperty :hasQuantity[X] ; owl:someValuesFrom :TwinShipQuantity[X] ] .
+```
+
+**Coexistence with XSD data properties** (explicit policy):
+
+The existing `tw`-prefixed `owl:DatatypeProperty` declarations with `rdfs:range xsd:double` / `xsd:decimal` are **retained unchanged**. They serve as the pragmatic SPARQL query layer. The QUDT object properties provide semantic grounding and unit disambiguation. Both layers must be maintained.
+
+Rule: when adding a new numeric data property:
+1. Add the `hasQuantity[X]` family definition (4 classes + 1 property + QUDT individual type assertions) to `twinship-qudt-vocabulary.ttl`.
+2. Add the `owl:someValuesFrom` restriction to the owning class in the relevant domain module (`vessel.ttl`, `operational-context.ttl`, or `weather-conditions.ttl`).
+
+---
+
 ## Naming Rules
 
 All TwinShip terms use the `:` prefix:
@@ -189,6 +226,7 @@ Generated or transient:
 - `build/` — generated, do not edit
 - `docs/website/documentation/` — generated, do not edit
 - `data/` — gitignored working data/cache
+- `papers/` — gitignored; SWJ paper planning/readiness files (local only, never committed)
 
 Scripts:
 
@@ -227,7 +265,10 @@ Keep concepts in the correct module.
   Weather/wind conditions and wind data properties
 
 - `vessel.ttl`  
-  Vessel systems, engines, propulsion, fuel, gearbox
+  Vessel systems, engines, propulsion, fuel, gearbox. Includes QUDT `owl:someValuesFrom` restrictions for all vessel-domain classes.
+
+- `qudt-quantities.ttl`  
+  **Removed.** QUDT family class/property definitions are now in `twinship-qudt-vocabulary.ttl` (imported by base). Domain class restrictions are in the respective domain module files.
 
 Reserved future module:
 - `operational-requirements.ttl`
@@ -237,6 +278,7 @@ Do not create or reference obsolete modules:
 - `draft_time_mode.ttl`
 - `operations.ttl`
 - `weatherconditions.ttl`
+- `qudt-quantities.ttl` (superseded by `twinship-qudt-vocabulary.ttl` + per-module restrictions)
 
 ---
 

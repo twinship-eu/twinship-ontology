@@ -12,7 +12,7 @@
 | Classes             | 58    | TwinShipInanimatePhysicalObject<br>MainEngineSystem<br>PropellerSystem<br>ShaftGeneratorSystem<br>Boiler<br>GenSetSystem<br>Fuel<br>VesselSystem<br>EnergyStorageSystem<br>AuxiliaryEngineSystem |
 | Object properties   | 8     | componentOf<br>connectedTo<br>consume<br>directlyConnectedTo<br>hasComponent<br>ownedBy<br>partOf<br>twinshipObjectProperties |
 | Data properties     | 170   | twDieselEnginePowerMaxInKW<br>twDieselEngineSpeedInRevPerMin<br>twEMPowerInMWh<br>twFCFrequencyInHz<br>twFCVoltageInVolts<br>twGeneratorPowerMaxInKW<br>twGeneratorSpeedInRevPerMin<br>twShaftPowerMaxInKW<br>twShaftSpeedMaxInRevPerMin<br>twShaftTorqueMaxInKnm |
-| Imported ontologies | 5     | IDO (LIS14)<br>PAV<br>QUDT QuantityKind<br>QUDT Unit<br>VesselAI (DUL/Time) |
+| Imported ontologies | 4     | IDO (LIS14)<br>PAV<br>QUDT QuantityKind<br>QUDT Unit |
 
 ## Object Properties
 
@@ -37,4 +37,5 @@
 | PAV                 | <http://purl.org/pav/> |
 | QUDT QuantityKind   | <http://qudt.org/vocab/quantitykind/> |
 | QUDT Unit           | <http://qudt.org/vocab/unit/> |
-| VesselAI (DUL/Time) | <http://www.vesselAI-project.eu/vesselai> |
+
+> **Note:** VesselAI is **not** imported by any TwinShip module. It is retained under `model/external/vesselai/` as a reference artefact only. See `model/catalog-v001.xml` for the explicit exclusion comment.

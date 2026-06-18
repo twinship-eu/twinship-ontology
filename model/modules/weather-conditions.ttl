@@ -86,3 +86,24 @@
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
+
+# #################################################################
+# #
+# #    QUDT Quantity Restrictions
+# #
+# #    owl:someValuesFrom restrictions for the hasQuantity[X]
+# #    object properties defined in twinship-qudt-vocabulary.ttl.
+# #    These sit alongside the existing XSD datatype restrictions.
+# #
+# #################################################################
+
+:WeatherCondition rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantitySpeed ;
+      owl:someValuesFrom :TwinShipQuantitySpeed ] .
+
+:WindCondition rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityAngle ;
+      owl:someValuesFrom :TwinShipQuantityAngle ] .
+

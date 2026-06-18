@@ -12,6 +12,7 @@ Welcome to the TwinShip Ontology repository! This project provides a modular, ex
 - `data/`    — Vessel instance data (gitignored; may contain sensitive data)
 - `tests/`   — pytest test suite: competency question SPARQL tests
 - `tools/`   — Downloaded WIDOCO JAR (gitignored)
+- `papers/`  — SWJ paper planning files (gitignored; local only, never committed)
 
 ## Getting Started
 

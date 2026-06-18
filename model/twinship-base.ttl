@@ -48,7 +48,8 @@ The visualization version is regenerated whenever the source ontology changes, e
     owl:imports <http://purl.org/pav/>,
         <http://qudt.org/vocab/quantitykind/>,
         <http://qudt.org/vocab/unit/>,
-        <http://rds.posccaesar.org/ontology/lis14/ont/core/1.0> ;
+        <http://rds.posccaesar.org/ontology/lis14/ont/core/1.0>,
+        <https://twin-ship.eu/twinship/qudt-vocabulary> ;
     owl:versionIRI <https://twin-ship.eu/twinship/base/0.0.4> .
 
 # #################################################################

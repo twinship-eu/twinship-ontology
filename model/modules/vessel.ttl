@@ -1959,3 +1959,243 @@
     rdfs:label "Bio-fuel" ;
     rdfs:comment "Bio-diesel / Bio-fuel. A renewable fuel alternative for maritime applications." ;
     :twFuelLHVKJPerKg "40000"^^xsd:double .
+
+
+# #################################################################
+# #
+# #    QUDT Quantity Restrictions
+# #
+# #    owl:someValuesFrom restrictions for the hasQuantity[X]
+# #    object properties defined in twinship-qudt-vocabulary.ttl.
+# #    These sit alongside the existing XSD datatype restrictions.
+# #
+# #################################################################
+
+# --- Vessel / Hull ---
+
+:VesselSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityMass ;
+      owl:someValuesFrom :TwinShipQuantityMass ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityLength ;
+      owl:someValuesFrom :TwinShipQuantityLength ] .
+
+# --- Engine family (inherited by all engine subclasses) ---
+
+:EngineSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityPower ;
+      owl:someValuesFrom :TwinShipQuantityPower ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRotationalVelocity ;
+      owl:someValuesFrom :TwinShipQuantityRotationalVelocity ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityMassFlowRate ;
+      owl:someValuesFrom :TwinShipQuantityMassFlowRate ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityTemperature ;
+      owl:someValuesFrom :TwinShipQuantityTemperature ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityVolumeFlowRate ;
+      owl:someValuesFrom :TwinShipQuantityVolumeFlowRate ] .
+
+:GenSetSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityElectricPotential ;
+      owl:someValuesFrom :TwinShipQuantityElectricPotential ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityFrequency ;
+      owl:someValuesFrom :TwinShipQuantityFrequency ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityTorque ;
+      owl:someValuesFrom :TwinShipQuantityTorque ] .
+
+:MainEngineSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityPressure ;
+      owl:someValuesFrom :TwinShipQuantityPressure ] .
+
+# --- Propulsion ---
+
+:PropellerSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRotationalVelocity ;
+      owl:someValuesFrom :TwinShipQuantityRotationalVelocity ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityLength ;
+      owl:someValuesFrom :TwinShipQuantityLength ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityAngle ;
+      owl:someValuesFrom :TwinShipQuantityAngle ] .
+
+:GearboxSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRotationalVelocity ;
+      owl:someValuesFrom :TwinShipQuantityRotationalVelocity ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityTorque ;
+      owl:someValuesFrom :TwinShipQuantityTorque ] .
+
+:ShaftGeneratorSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityPower ;
+      owl:someValuesFrom :TwinShipQuantityPower ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRotationalVelocity ;
+      owl:someValuesFrom :TwinShipQuantityRotationalVelocity ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityMassFlowRate ;
+      owl:someValuesFrom :TwinShipQuantityMassFlowRate ] .
+
+# --- Maneuvering ---
+
+:Maneuvering rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityPower ;
+      owl:someValuesFrom :TwinShipQuantityPower ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRotationalVelocity ;
+      owl:someValuesFrom :TwinShipQuantityRotationalVelocity ] .
+
+:GateRudder rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRatio ;
+      owl:someValuesFrom :TwinShipQuantityRatio ] .
+
+# --- Efficiency Enhancement ---
+
+:EfficiencyEnhancementSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityPower ;
+      owl:someValuesFrom :TwinShipQuantityPower ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRatio ;
+      owl:someValuesFrom :TwinShipQuantityRatio ] .
+
+# --- Diesel-Electric components ---
+
+:FrequencyConverterSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityEnergy ;
+      owl:someValuesFrom :TwinShipQuantityEnergy ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityElectricPotential ;
+      owl:someValuesFrom :TwinShipQuantityElectricPotential ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityFrequency ;
+      owl:someValuesFrom :TwinShipQuantityFrequency ] .
+
+:ElectricMotorSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityEnergy ;
+      owl:someValuesFrom :TwinShipQuantityEnergy ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityElectricPotential ;
+      owl:someValuesFrom :TwinShipQuantityElectricPotential ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityFrequency ;
+      owl:someValuesFrom :TwinShipQuantityFrequency ] .
+
+:ElectricMotorShaft rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRotationalVelocity ;
+      owl:someValuesFrom :TwinShipQuantityRotationalVelocity ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityForce ;
+      owl:someValuesFrom :TwinShipQuantityForce ] .
+
+:BidirectionalConverterSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityElectricPotential ;
+      owl:someValuesFrom :TwinShipQuantityElectricPotential ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityElectricCurrent ;
+      owl:someValuesFrom :TwinShipQuantityElectricCurrent ] .
+
+:EnergyStorageSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityEnergy ;
+      owl:someValuesFrom :TwinShipQuantityEnergy ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityMass ;
+      owl:someValuesFrom :TwinShipQuantityMass ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityVolume ;
+      owl:someValuesFrom :TwinShipQuantityVolume ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRatio ;
+      owl:someValuesFrom :TwinShipQuantityRatio ] .
+
+:FuelCellSystem rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityEnergy ;
+      owl:someValuesFrom :TwinShipQuantityEnergy ] .
+
+:AUXLOAD rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityPower ;
+      owl:someValuesFrom :TwinShipQuantityPower ] .
+
+:OSP rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityEnergy ;
+      owl:someValuesFrom :TwinShipQuantityEnergy ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityTime ;
+      owl:someValuesFrom :TwinShipQuantityTime ] .
+
+# --- Emission Control ---
+
+:SCR rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityMassFlowRate ;
+      owl:someValuesFrom :TwinShipQuantityMassFlowRate ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityVolume ;
+      owl:someValuesFrom :TwinShipQuantityVolume ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRatio ;
+      owl:someValuesFrom :TwinShipQuantityRatio ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityTemperature ;
+      owl:someValuesFrom :TwinShipQuantityTemperature ] .
+
+# --- Fuel ---
+
+:Fuel rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantitySpecificEnergy ;
+      owl:someValuesFrom :TwinShipQuantitySpecificEnergy ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityMassDensity ;
+      owl:someValuesFrom :TwinShipQuantityMassDensity ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityRatio ;
+      owl:someValuesFrom :TwinShipQuantityRatio ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityMassRatio ;
+      owl:someValuesFrom :TwinShipQuantityMassRatio ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityTemperature ;
+      owl:someValuesFrom :TwinShipQuantityTemperature ] .
+
+# --- Loading / Draft conditions ---
+
+:LoadingCondition rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityMass ;
+      owl:someValuesFrom :TwinShipQuantityMass ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityLength ;
+      owl:someValuesFrom :TwinShipQuantityLength ] .
+
+:DraftCondition rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityLength ;
+      owl:someValuesFrom :TwinShipQuantityLength ] .
+
+:TrimCondition rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityLength ;
+      owl:someValuesFrom :TwinShipQuantityLength ] .

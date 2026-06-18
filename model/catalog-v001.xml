@@ -13,6 +13,8 @@
     <uri id="TwinShip OperationalModes Module Version" name="https://twin-ship.eu/twinship/operational-modes/0.0.4" uri="modules/operational-modes.ttl"/>
     <uri id="TwinShip OperationalContext Module" name="https://twin-ship.eu/twinship/operational-context" uri="modules/operational-context.ttl"/>
     <uri id="TwinShip OperationalContext Module Version" name="https://twin-ship.eu/twinship/operational-context/0.0.4" uri="modules/operational-context.ttl"/>
+    <uri id="TwinShip QUDT Vocabulary" name="https://twin-ship.eu/twinship/qudt-vocabulary" uri="twinship-qudt-vocabulary.ttl"/>
+    <uri id="TwinShip QUDT Vocabulary Version" name="https://twin-ship.eu/twinship/qudt-vocabulary/0.0.4" uri="twinship-qudt-vocabulary.ttl"/>
     
     <!-- External Ontologies -->
     <uri id="QUDT Schema" name="http://qudt.org/schema/qudt/" uri="external/SCHEMA_QUDT-simplified.ttl"/>
