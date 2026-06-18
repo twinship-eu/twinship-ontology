@@ -54,17 +54,83 @@ SELECT ?fuel ?lhvKJPerKg ...
 
 A `STRICT` test will fail (not xfail) if the query returns no results.
 
-## Testing with Instance Data
+## Testing with Live GraphDB Instance Data
 
-The `conftest.py` fixture loads `build/twinship-core-complete.ttl` by default. To also load vessel instance data (gitignored under `data/`), extend the fixture or add the instance file path to `conftest.py`:
+The `twinship-data-pipeline` repository provides a `docker-compose.yml` stack that runs GraphDB at `localhost:7200` with four test vessels loaded as separate repositories.
 
-```python
-INSTANCE_DATA = Path("data/vessel-instances.ttl")
-if INSTANCE_DATA.exists():
-    g.parse(str(INSTANCE_DATA), format="turtle")
+| Default placeholder | Vessel type |
+|---|---|
+| `vessel-roro` | RoRo |
+| `vessel-ropax` | RoPax |
+| `vessel-tanker` | Tanker |
+| `vessel-futuristic` | RoRo futuristic |
+
+The default repository IDs above are generic placeholders. The actual IDs in GraphDB are set by the data-pipeline; pass them via `--graphdb-repos` when running tests.
+
+### Starting the stack
+
+```bash
+cd ../twinship-data-pipeline
+docker-compose up -d
+# Run the Dagster pipeline to load vessel data into GraphDB
 ```
 
-Instance data files must **not** be committed to the repository — keep them under `data/` which is gitignored.
+### Running CQ tests against GraphDB
+
+Pass `--graphdb-url` to switch from rdflib to live SPARQL queries. Results are
+automatically combined across all configured vessel repositories.
+
+You must also pass `--graphdb-repos` with the actual repository IDs from your
+GraphDB instance (the data-pipeline sets these when loading vessel data).
+
+GraphDB uses Keycloak OpenID authentication. Credentials are **not stored in
+this repository** — obtain them from the `twinship-data-pipeline` deployment
+configuration and set them as environment variables before running tests.
+
+Provide credentials via one of:
+
+**Option A — Keycloak client credentials (token fetched automatically):**
+```bash
+KEYCLOAK_CLIENT_ID=<your-client-id> \
+KEYCLOAK_CLIENT_SECRET=<your-client-secret> \
+uv run pytest tests/ \
+  --graphdb-url http://localhost:7200 \
+  --graphdb-repos <repo1>,<repo2>,<repo3>,<repo4> \
+  -v
+```
+
+**Option B — Pre-acquired bearer token:**
+```bash
+# Get a token manually from Keycloak
+TOKEN=$(curl -s -X POST http://localhost:8080/realms/twinship/protocol/openid-connect/token \
+  -d "grant_type=client_credentials&client_id=<your-client-id>&client_secret=<your-client-secret>" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+
+GRAPHDB_TOKEN=$TOKEN uv run pytest tests/ \
+  --graphdb-url http://localhost:7200 \
+  --graphdb-repos <repo1>,<repo2>,<repo3>,<repo4> \
+  -v
+```
+
+### Specifying the repository list
+
+`--graphdb-repos` is required when using `--graphdb-url`; the default placeholders will not match real GraphDB repo IDs:
+
+```bash
+# Specify the actual repository IDs from your GraphDB instance
+uv run pytest tests/ --graphdb-url http://localhost:7200 \
+  --graphdb-repos <repo1>,<repo2>
+```
+
+### How it works
+
+`conftest.py` detects `--graphdb-url` and returns a `GraphDBFederatedSparql` client instead of an rdflib graph. The client:
+
+1. Posts each `.rq` query to every configured GraphDB repository's SPARQL endpoint
+2. Combines and deduplicates results across repositories
+3. Returns a list that `test_competency_questions.py` can use unchanged
+
+No changes to the `.rq` query files are required.
 
 ## Current Status
 

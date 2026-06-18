@@ -89,6 +89,7 @@ uv run python scripts/generate_stats_table.py
 
 Competency questions are validated as SPARQL tests against the merged ontology using pytest.
 
+**Schema-only (default — no instance data required):**
 ```bash
 # Build the merged ontology first
 uv run python scripts/merge_modules.py --auto
@@ -97,7 +98,19 @@ uv run python scripts/merge_modules.py --auto
 uv run pytest tests/ -v
 ```
 
-Each `.rq` file in `tests/competency/` encodes one competency question. Tests default to **reporting-only** (`xfail`) until instance data is loaded; add `# STRICT` to a query to make it a hard requirement. See [tests/README.md](tests/README.md) for details.
+**With live instance data (requires `twinship-data-pipeline` stack running):**
+```bash
+KEYCLOAK_CLIENT_ID=<your-client-id> \
+KEYCLOAK_CLIENT_SECRET=<your-client-secret> \
+uv run pytest tests/ \
+  --graphdb-url http://localhost:7200 \
+  --graphdb-repos <repo1>,<repo2>,<repo3>,<repo4> \
+  -v
+```
+
+Credentials and repository IDs are not stored in this repository. See [tests/README.md](tests/README.md) for full setup instructions.
+
+Each `.rq` file in `tests/competency/` encodes one competency question. Tests default to **reporting-only** (`xfail`) until instance data is loaded; add `# STRICT` to a query to make it a hard requirement.
 
 The human-readable competency question catalogue is at [docs/ontology/competency-questions.md](docs/ontology/competency-questions.md).
 

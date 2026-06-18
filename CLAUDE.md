@@ -340,6 +340,36 @@ Never manually edit generated files in:
 
 ---
 
+## Testing Competency Questions
+
+CQ tests run in two modes — select based on what you need:
+
+**Schema-only (default):** validates ontology structure against the merged TTL.
+```bash
+uv run python scripts/merge_modules.py --auto
+uv run pytest tests/ -v
+```
+Most CQs will `xfail` (no instance data). Add `# STRICT` to a `.rq` file to make it a hard failure.
+
+**Live GraphDB (instance data):** queries all vessel repositories in a running GraphDB instance.
+```bash
+KEYCLOAK_CLIENT_ID=<your-client-id> \
+KEYCLOAK_CLIENT_SECRET=<your-client-secret> \
+uv run pytest tests/ \
+  --graphdb-url http://localhost:7200 \
+  --graphdb-repos <repo1>,<repo2>,<repo3>,<repo4> \
+  -v
+```
+
+GraphDB is provided by the `twinship-data-pipeline` stack (`docker-compose up`). Credentials and repository IDs come from that deployment — **do not commit them**. See `tests/README.md` for full options.
+
+Privacy rules for tests:
+- No operator names, vessel names, or instance identifiers in committed test files.
+- `--graphdb-repos` defaults to generic placeholders (`vessel-roro`, etc.) — always override at runtime.
+- Credentials are passed only via environment variables, never stored in files.
+
+---
+
 ## Adding a New Module
 
 1. Create `model/modules/<name>.ttl` with `owl:imports <https://twin-ship.eu/twinship/base>`.
