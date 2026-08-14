@@ -13,7 +13,9 @@
     <uri id="TwinShip OperationalModes Module Version" name="https://twin-ship.eu/twinship/operational-modes/0.0.4" uri="modules/operational-modes.ttl"/>
     <uri id="TwinShip OperationalContext Module" name="https://twin-ship.eu/twinship/operational-context" uri="modules/operational-context.ttl"/>
     <uri id="TwinShip OperationalContext Module Version" name="https://twin-ship.eu/twinship/operational-context/0.0.4" uri="modules/operational-context.ttl"/>
-    
+    <uri id="TwinShip Prediction Module" name="https://twin-ship.eu/twinship/predictions" uri="modules/predictions.ttl"/>
+    <uri id="TwinShip Prediction Module Version" name="https://twin-ship.eu/twinship/predictions/0.0.2" uri="modules/predictions.ttl"/>
+
     <!-- External Ontologies -->
     <uri id="QUDT Schema" name="http://qudt.org/schema/qudt/" uri="external/SCHEMA_QUDT-simplified.ttl"/>
     <uri id="QUDT Quantity Kinds" name="http://qudt.org/vocab/quantitykind/" uri="vocabularies/VOCAB_QUDT-QUANTITY-KINDS-simplified.ttl"/>

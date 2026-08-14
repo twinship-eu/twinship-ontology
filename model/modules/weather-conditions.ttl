@@ -57,7 +57,7 @@
     rdfs:label "Current Condition"@en ;
     rdfs:comment "A weather quality describing current direction relevant to vessel operation. Subclass of WeatherCondition. TwinShip  twCurrentDirectionInDegrees represent meteorological bearing (degrees)."@en ;
     rdfs:subClassOf :WeatherCondition ,
-        [ a owl:Restriction ; owl:onProperty :twWaveDirectionInDegrees ; owl:someValuesFrom xsd:decimal ].
+        [ a owl:Restriction ; owl:onProperty :twCurrentDirectionInDegrees ; owl:someValuesFrom xsd:decimal ].
 
 
 #################################################################
