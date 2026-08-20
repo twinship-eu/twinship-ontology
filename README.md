@@ -68,6 +68,34 @@ The landing page provides links to:
 - `docs/website/documentation/webvowl/` — WebVOWL interactive visualization
 - `docs/website/index.html` - Landing page
 
+### Generate Diagrams
+
+Generate Graffoo-style draw.io diagrams from the ontology source for use in papers and presentations:
+
+```bash
+uv run python scripts/generate_drawio.py
+```
+
+This writes `.drawio` files to `diagrams/` (gitignored — regenerate as needed):
+
+| File | Contents |
+|---|---|
+| `diagrams/overview.drawio` | Module packages with root classes and cross-module links |
+| `diagrams/vessel.drawio` | Full vessel module: class hierarchy, properties, individuals |
+| `diagrams/operational-context.drawio` | Voyage, leg, port, route, profiles, observations |
+| `diagrams/operational-modes.drawio` | States/modes classes and named individuals |
+| `diagrams/weather-conditions.drawio` | Weather/wind/wave/current conditions |
+| `diagrams/predictions.drawio` | ML predictions and MCRO model card structure |
+
+Open any `.drawio` file in [draw.io (diagrams.net)](https://www.diagrams.net/) to tune the layout and export to PDF or SVG for publication.
+
+**Graffoo notation used:**
+- Yellow boxes = OWL classes (data properties listed inside)
+- Dashed hollow-triangle arrows = `rdfs:subClassOf`
+- Solid open-head arrows = object properties
+- Grey boxes = cross-module class references
+- Yellow ellipses = named individuals
+
 ### Ontology Statistics
 
 A summary of the current ontology metrics (classes, properties, and imported ontologies) is maintained in [STATISTICS.md](STATISTICS.md).
