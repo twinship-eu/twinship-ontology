@@ -54,6 +54,47 @@ SELECT ?fuel ?lhvKJPerKg ...
 
 A `STRICT` test will fail (not xfail) if the query returns no results.
 
+## Synthetic Test Repository (Public, No Confidential Data)
+
+The file `tests/data/twinship-test-instances.ttl` contains fully synthetic
+vessel instance data.  It uses three fictional vessels:
+
+| Individual | Type | Key systems |
+|---|---|---|
+| `td:Vessel1` | RoPax | Mechanical drive, FourStroke, FPP, GearboxSystem, ShaftGenerator, SCR, BowThruster, ALS, AuxEngine, AUXLOAD, OSP |
+| `td:Vessel2` | RoRo | Mechanical drive, TwoStroke, FPP, WASP, DynamicWing, GateRudder, AuxEngine, AUXLOAD |
+| `td:Vessel3` | RoRo (futuristic) | Diesel-electric, GenSet×2, CPP, FreqConverter, ESS, BidirConverter, AUXLOAD (unmanned) |
+
+No real vessel names, IMO numbers, or operator identities are used.  The file
+can be committed to the public repository and loaded into any GraphDB instance.
+
+### Loading test data into GraphDB
+
+```bash
+# Uses GRAPHDB_URL (default http://localhost:7200) and
+# GRAPHDB_TEST_REPO (default vessel-test).
+uv run python scripts/load_test_instances.py
+```
+
+The script creates the `vessel-test` repository if it does not exist, clears
+any previous data, and loads the TTL into the default graph.
+
+### Running CQ tests in strict mode against the test repo
+
+```bash
+uv run pytest tests/ \
+  --graphdb-url http://localhost:7200 \
+  --graphdb-test-repo vessel-test \
+  -v
+```
+
+In test-repo mode **all 35 CQs** (CQ-01..CQ-35) are treated as **strict
+assertions** — they must return at least one result row or the test fails.
+CQ-36 is exempt because the API-interface concept is not yet modelled.
+
+This mode is suitable for CI: it validates that the full ontology (schema +
+instance data) correctly answers every defined competency question.
+
 ## Testing with Live GraphDB Instance Data
 
 The `twinship-data-pipeline` repository provides a `docker-compose.yml` stack that runs GraphDB at `localhost:7200` with four test vessels loaded as separate repositories.
@@ -134,18 +175,19 @@ No changes to the `.rq` query files are required.
 
 ## Current Status
 
-| Category | CQs | Status |
-|----------|-----|--------|
-| Vessel & Fleet Structure | CQ-01–04 | xfail (needs instance data) |
-| Propulsion & Engine Configuration | CQ-05–10 | xfail (needs instance data) |
-| Energy & Fuel Consumption | CQ-11–15 | CQ-13, CQ-14 pass (`:AMM`, `:BF` defined); rest xfail |
-| Efficiency Enhancement Technologies | CQ-16–20 | xfail (needs instance data) |
-| Emissions & Sustainability | CQ-21–24 | xfail (needs instance data) |
-| Energy Storage & Alternative Power | CQ-25–26 | xfail (needs instance data) |
-| Auxiliary Systems & Loads | CQ-27–29 | xfail (needs instance data) |
-| Organisational & Fleet Management | CQ-30–31 | xfail (needs instance data) |
-| Unmanned / Future Vessel Simulation | CQ-32–33 | xfail (needs instance data) |
-| System Connectivity & Integration | CQ-34–36 | xfail (CQ-36: concept not yet modelled) |
+| Category | CQs | Schema-only (rdflib) | Test-repo mode |
+|----------|-----|----------------------|----------------|
+| Vessel & Fleet Structure | CQ-01–04 | xfail | strict ✓ |
+| Propulsion & Engine Configuration | CQ-05–10 | xfail | strict ✓ |
+| Energy & Fuel Consumption | CQ-11–15 | CQ-13,14 pass; rest xfail | strict ✓ |
+| Efficiency Enhancement Technologies | CQ-16–20 | xfail | strict ✓ |
+| Emissions & Sustainability | CQ-21–24 | xfail | strict ✓ |
+| Energy Storage & Alternative Power | CQ-25–26 | xfail | strict ✓ |
+| Auxiliary Systems & Loads | CQ-27–29 | xfail | strict ✓ |
+| Organisational & Fleet Management | CQ-30–31 | xfail | strict ✓ |
+| Unmanned / Future Vessel Simulation | CQ-32–33 | xfail | strict ✓ |
+| System Connectivity & Integration | CQ-34–35 | xfail | strict ✓ |
+| Digital Twin API (future) | CQ-36 | xfail | xfail (not yet modelled) |
 
 ## Adding a New Competency Question
 

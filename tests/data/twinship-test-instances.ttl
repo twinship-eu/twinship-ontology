@@ -1,0 +1,357 @@
+# TwinShip Ontology — Dummy Test Instances
+#
+# This file contains synthetic, non-confidential instance data for use with
+# the CQ test suite against a dedicated GraphDB test repository.
+#
+# Design:
+#   - Three vessels covering all major vessel types: RoPax, RoRo, and a
+#     futuristic unmanned RoRo with diesel-electric propulsion.
+#   - All identifiers use the test-data namespace (td:) — no real vessel
+#     names, operators, or IMO numbers are used.
+#   - Together these instances cover all 36 competency questions (CQ-01..CQ-36)
+#     except CQ-36 (Digital Twin API interfaces, not yet modelled).
+#
+# Load into GraphDB:
+#   uv run python scripts/load_test_instances.py
+#
+# Coverage map (which vessel covers which CQs):
+#   vessel1 (RoPax) : CQ-01..03, CQ-05..06, CQ-08..12, CQ-15..16, CQ-21..29, CQ-30..31
+#   vessel2 (RoRo)  : CQ-01..03, CQ-05..07, CQ-09, CQ-12, CQ-17..20, CQ-30, CQ-32..33
+#   vessel3 (RoRo-F): CQ-01..03, CQ-05, CQ-07, CQ-09, CQ-20, CQ-25, CQ-30, CQ-32..35
+#   :AMM / :BF      : CQ-13..14 (named individuals in the ontology itself)
+
+@prefix :    <https://twin-ship.eu/twinship#> .
+@prefix td:  <https://twin-ship.eu/twinship/test-data#> .
+@prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# =============================================================================
+# Organisation and Fleet
+# =============================================================================
+
+td:TestOperator a :Organization ;
+    rdfs:label "Test Operator" .
+
+td:TestFleet a :Fleet ;
+    rdfs:label "Test Fleet" ;
+    :ownedBy td:TestOperator .
+
+# =============================================================================
+# Fuel named individuals for test data
+# (HFO, MGO, MDO are not yet defined as named individuals in the ontology;
+#  they are provided here as test instances only.)
+# =============================================================================
+
+td:HFO a :Fuel, owl:NamedIndividual ;
+    rdfs:label "Heavy Fuel Oil (test)" ;
+    :twFuelLHVKJPerKg              40200.0 ;
+    :twFuelSulphurPercentage       2.5 ;
+    :twFuelEmissionFactorCo2InGPerKgFuel  3114.0 ;
+    :twFuelEmissionFactorCH4InGPerKgFuel  0.06 ;
+    :twFuelEmissionFactorN2OInGPerKgFuel  0.15 .
+
+td:MGO a :Fuel, owl:NamedIndividual ;
+    rdfs:label "Marine Gas Oil (test)" ;
+    :twFuelLHVKJPerKg              42700.0 ;
+    :twFuelSulphurPercentage       0.1 ;
+    :twFuelEmissionFactorCo2InGPerKgFuel  3206.0 ;
+    :twFuelEmissionFactorCH4InGPerKgFuel  0.05 ;
+    :twFuelEmissionFactorN2OInGPerKgFuel  0.12 .
+
+# =============================================================================
+# Vessel 1 — RoPax, Mechanical drive, FourStroke main engine
+# Covers: CQ-01..03, 05..06, 08..12, 15..16, 21..29, 30..31
+# =============================================================================
+
+td:Vessel1 a :VesselSystem, :RoPax ;
+    rdfs:label "Vessel 1 (Test RoPax)" ;
+    ido:partOf td:TestFleet ;
+    :twDisplacementMaxInMT         15000.0 ;
+    :twVesselDraftAftMaxInM        6.5 ;
+    :twVesselDraftForMaxInM        6.0 ;
+    :twVesselDraftMidPortMaxInM    6.2 ;
+    :twVesselDraftMidStbdMaxInM    6.2 .
+
+td:Vessel1Config a :MechanicalConfiguration ;
+    rdfs:label "Vessel 1 Propulsion Configuration" ;
+    ido:partOf td:Vessel1 .
+
+td:Vessel1Pms a :Pms ;
+    rdfs:label "Vessel 1 PMS" ;
+    ido:partOf td:Vessel1 .
+
+# Main Engine — FourStroke
+# Explicit :EngineSystem type enables rdflib-based CQ-11 (no OWL inference).
+td:Vessel1MainEngine a :MainEngineSystem, :FourStroke, :DieselEngine, :EngineSystem ;
+    rdfs:label "Vessel 1 Main Engine" ;
+    ido:partOf td:Vessel1 ;
+    :twDieselEnginePowerMaxInKW    12000.0 ;
+    :twDieselEngineSpeedInRevPerMin 500.0 ;
+    :twShaftPowerMaxInKW           11500.0 ;
+    :twShaftTorqueMaxInKnm         220.0 ;
+    :twShaftSpeedMaxInRevPerMin    500.0 ;
+    :twPowerPropulsionTotalInKw    12000.0 ;
+    :twFuelConsumptionRateInMTPerHr 2.8 ;
+    :twFuelConsumptionTotalInMT    6720.0 ;
+    :consume td:HFO .
+
+# Propeller — FPP
+td:Vessel1Propeller a :PropellerSystem, :FPP ;
+    rdfs:label "Vessel 1 Propeller (FPP)" ;
+    ido:partOf td:Vessel1 ;
+    :twPropellerDiameterMm         4800.0 ;
+    :twPropellerPitchDiameterRatio 0.72 .
+
+# Gearbox
+td:Vessel1Gearbox a :GearboxSystem ;
+    rdfs:label "Vessel 1 Gearbox" ;
+    ido:partOf td:Vessel1 ;
+    :twGearboxRatio "5.4:1" .
+
+# Shaft Generator — connected to PMS; uses MGO occasionally
+td:Vessel1ShaftGen a :ShaftGeneratorSystem ;
+    rdfs:label "Vessel 1 Shaft Generator" ;
+    ido:partOf td:Vessel1 ;
+    ido:connectedTo td:Vessel1Pms ;
+    :twShaftGeneratorPowerMaxInKW      1500.0 ;
+    :twShaftGeneratorMGOInUse          "1"^^xsd:integer ;
+    :twShaftGeneratorMGOMassInKgPerHr  85.0 .
+
+# Auxiliary Engine — connected to PMS
+# Explicit :EngineSystem type enables rdflib-based CQ-11 (no OWL inference).
+td:Vessel1AuxEngine a :AuxiliaryEngineSystem, :DieselEngine, :EngineSystem ;
+    rdfs:label "Vessel 1 Auxiliary Engine" ;
+    ido:partOf td:Vessel1 ;
+    ido:connectedTo td:Vessel1Pms ;
+    :twDieselEnginePowerMaxInKW        900.0 ;
+    :twDieselEngineSpeedInRevPerMin    1800.0 ;
+    :twGeneratorPowerMaxInKW           750.0 ;
+    :twGeneratorSpeedInRevPerMin       1800.0 ;
+    :twAuxiliaryFuelRateMassNetKgPerHr 180.0 ;
+    :consume td:MGO .
+
+# Auxiliary Load
+td:Vessel1Auxload a :AUXLOAD ;
+    rdfs:label "Vessel 1 Auxiliary Load" ;
+    ido:partOf td:Vessel1 ;
+    :twAUXLDHotelLoadPowerInKW     600.0 ;
+    :twAUXLDShipServicesPowerInKW  400.0 .
+
+# On-Shore Power
+td:Vessel1OSP a :OSP ;
+    rdfs:label "Vessel 1 On-Shore Power" ;
+    ido:partOf td:Vessel1 ;
+    :twOSPPowerInKWh               500.0 ;
+    :twOSPTimeInHours              10.0 .
+
+# SCR (NOx reduction)
+td:Vessel1SCR a :SCR ;
+    rdfs:label "Vessel 1 SCR" ;
+    ido:partOf td:Vessel1 ;
+    :twSCRNOReductionEfficiency        90.0 ;
+    :twSCRExhaustGasFlowrateInKgPerHr  25000.0 ;
+    :twSCROpTempCentigrade             350.0 ;
+    :twSCRCatalystVolumeInM3           4.5 .
+
+# Efficiency Enhancement — Air Lubrication
+td:Vessel1ALS a :AirLubricationSystem ;
+    rdfs:label "Vessel 1 Air Lubrication System" ;
+    ido:partOf td:Vessel1 ;
+    :twALSPowerInKW                        120.0 ;
+    :twALSPowerReductionEfficiencyPercentage 4.5 .
+
+# Bow Thruster
+td:Vessel1BowThruster a :BowThruster ;
+    rdfs:label "Vessel 1 Bow Thruster" ;
+    ido:partOf td:Vessel1 ;
+    :twBowThrusterPowerMaxInKW     800.0 ;
+    :twBowThrusterEmergencyDOMode  "0"^^xsd:integer ;
+    :consume td:MGO .
+
+# =============================================================================
+# Vessel 2 — RoRo, Mechanical drive, TwoStroke main engine, wind systems
+# Covers: CQ-01..03, 05..07, 09, 12, 17..20, 30, 32..33
+# =============================================================================
+
+td:Vessel2 a :VesselSystem, :RoRo ;
+    rdfs:label "Vessel 2 (Test RoRo)" ;
+    ido:partOf td:TestFleet ;
+    :twDisplacementMaxInMT         18000.0 ;
+    :twVesselDraftAftMaxInM        7.0 ;
+    :twVesselDraftForMaxInM        6.5 ;
+    :twVesselDraftMidPortMaxInM    6.8 ;
+    :twVesselDraftMidStbdMaxInM    6.8 .
+
+td:Vessel2Config a :MechanicalConfiguration ;
+    rdfs:label "Vessel 2 Propulsion Configuration" ;
+    ido:partOf td:Vessel2 .
+
+td:Vessel2Pms a :Pms ;
+    rdfs:label "Vessel 2 PMS" ;
+    ido:partOf td:Vessel2 .
+
+# Main Engine — TwoStroke (low-speed direct drive, no gearbox)
+# Explicit :EngineSystem type enables rdflib-based CQ-11 (no OWL inference).
+td:Vessel2MainEngine a :MainEngineSystem, :TwoStroke, :DieselEngine, :EngineSystem ;
+    rdfs:label "Vessel 2 Main Engine" ;
+    ido:partOf td:Vessel2 ;
+    :twDieselEnginePowerMaxInKW    16000.0 ;
+    :twDieselEngineSpeedInRevPerMin 105.0 ;
+    :twShaftPowerMaxInKW           15500.0 ;
+    :twShaftTorqueMaxInKnm         1450.0 ;
+    :twShaftSpeedMaxInRevPerMin    105.0 ;
+    :twPowerPropulsionTotalInKw    16000.0 ;
+    :twFuelConsumptionRateInMTPerHr 3.2 ;
+    :twFuelConsumptionTotalInMT    7680.0 ;
+    :consume td:HFO .
+
+# Propeller — FPP (large diameter, low-RPM suited for TwoStroke)
+td:Vessel2Propeller a :PropellerSystem, :FPP ;
+    rdfs:label "Vessel 2 Propeller (FPP)" ;
+    ido:partOf td:Vessel2 ;
+    :twPropellerDiameterMm         6200.0 ;
+    :twPropellerPitchDiameterRatio 0.68 .
+
+# Auxiliary Engine — connected to PMS
+# Explicit :EngineSystem type enables rdflib-based CQ-11 (no OWL inference).
+td:Vessel2AuxEngine a :AuxiliaryEngineSystem, :DieselEngine, :EngineSystem ;
+    rdfs:label "Vessel 2 Auxiliary Engine" ;
+    ido:partOf td:Vessel2 ;
+    ido:connectedTo td:Vessel2Pms ;
+    :twDieselEnginePowerMaxInKW        1200.0 ;
+    :twDieselEngineSpeedInRevPerMin    1800.0 ;
+    :twGeneratorPowerMaxInKW           1000.0 ;
+    :twGeneratorSpeedInRevPerMin       1800.0 ;
+    :twAuxiliaryFuelRateMassNetKgPerHr 240.0 ;
+    :consume td:MGO .
+
+# Auxiliary Load
+td:Vessel2Auxload a :AUXLOAD ;
+    rdfs:label "Vessel 2 Auxiliary Load" ;
+    ido:partOf td:Vessel2 ;
+    :twAUXLDHotelLoadPowerInKW     200.0 ;
+    :twAUXLDShipServicesPowerInKW  350.0 .
+
+# Efficiency Enhancements
+td:Vessel2WASP a :WindAssistedPropulsionSystem ;
+    rdfs:label "Vessel 2 Wind Assisted Propulsion" ;
+    ido:partOf td:Vessel2 ;
+    :twWASPPowerInKW                         800.0 ;
+    :twWASPPowerReductionEfficiencyPercentage 6.0 .
+
+td:Vessel2DW a :DynamicWing ;
+    rdfs:label "Vessel 2 Dynamic Wing" ;
+    ido:partOf td:Vessel2 ;
+    :twDWPowerInKW                         400.0 ;
+    :twDWPowerReductionEfficiencyPercentage 3.0 .
+
+td:Vessel2GateRudder a :GateRudder ;
+    rdfs:label "Vessel 2 Gate Rudder" ;
+    ido:partOf td:Vessel2 ;
+    ido:connectedTo td:Vessel2Pms ;
+    :twGRSPowerInKW                             250.0 ;
+    :twGRSPowerReductionEfficiencyPercentage     2.5 .
+
+# =============================================================================
+# Vessel 3 — RoRo Futuristic, Diesel-Electric, GenSet, CPP, ESS, BidirConv
+# Covers: CQ-01..03, 05, 07, 09, 20, 25, 30, 32..35
+# (No EfficiencyEnhancementSystem → returned by CQ-20 as retrofitting candidate)
+# =============================================================================
+
+td:Vessel3 a :VesselSystem, :RoRo ;
+    rdfs:label "Vessel 3 (Test RoRo Futuristic)" ;
+    ido:partOf td:TestFleet ;
+    :twDisplacementMaxInMT         12000.0 ;
+    :twVesselDraftAftMaxInM        5.5 ;
+    :twVesselDraftForMaxInM        5.0 ;
+    :twVesselDraftMidPortMaxInM    5.2 ;
+    :twVesselDraftMidStbdMaxInM    5.2 .
+
+td:Vessel3Config a :DieselElectricConfiguration ;
+    rdfs:label "Vessel 3 Propulsion Configuration" ;
+    ido:partOf td:Vessel3 .
+
+td:Vessel3Pms a :Pms ;
+    rdfs:label "Vessel 3 PMS" ;
+    ido:partOf td:Vessel3 .
+
+# Generator Set — two identical units (diesel-electric primary power source)
+# Explicit :EngineSystem type enables rdflib-based CQ-11 (no OWL inference).
+td:Vessel3GenSet1 a :GenSetSystem, :FourStroke, :DieselEngine, :EngineSystem ;
+    rdfs:label "Vessel 3 GenSet 1" ;
+    ido:partOf td:Vessel3 ;
+    ido:connectedTo td:Vessel3Pms ;
+    :twDieselEnginePowerMaxInKW    3000.0 ;
+    :twDieselEngineSpeedInRevPerMin 750.0 ;
+    :twShaftPowerMaxInKW           2900.0 ;
+    :twShaftTorqueMaxInKnm         37.0 ;
+    :twShaftSpeedMaxInRevPerMin    750.0 ;
+    :twGeneratorPowerMaxInKW       2700.0 ;
+    :twGeneratorSpeedInRevPerMin   750.0 ;
+    :twGeneratorVoltageInV         690.0 ;
+    :twGeneratorFrequency          60.0 ;
+    :twElectricalEfficiencyPercentage 95.0 ;
+    :consume td:MGO .
+
+td:Vessel3GenSet2 a :GenSetSystem, :FourStroke, :DieselEngine, :EngineSystem ;
+    rdfs:label "Vessel 3 GenSet 2" ;
+    ido:partOf td:Vessel3 ;
+    ido:connectedTo td:Vessel3Pms ;
+    :twDieselEnginePowerMaxInKW    3000.0 ;
+    :twDieselEngineSpeedInRevPerMin 750.0 ;
+    :twShaftPowerMaxInKW           2900.0 ;
+    :twShaftTorqueMaxInKnm         37.0 ;
+    :twShaftSpeedMaxInRevPerMin    750.0 ;
+    :twGeneratorPowerMaxInKW       2700.0 ;
+    :twGeneratorSpeedInRevPerMin   750.0 ;
+    :twGeneratorVoltageInV         690.0 ;
+    :twGeneratorFrequency          60.0 ;
+    :twElectricalEfficiencyPercentage 95.0 ;
+    :consume td:MGO .
+
+# Propeller — CPP (controllable pitch, typical for diesel-electric)
+td:Vessel3Propeller a :PropellerSystem, :CPP ;
+    rdfs:label "Vessel 3 Propeller (CPP)" ;
+    ido:partOf td:Vessel3 ;
+    :twPropellerDiameterMm         4200.0 ;
+    :twPropellerPitchDiameterRatio 0.80 ;
+    :twPropellerPitchMaxInPercentage 100.0 .
+
+# Frequency Converter — connected to PMS
+td:Vessel3FreqConverter a :FrequencyConverterSystem ;
+    rdfs:label "Vessel 3 Frequency Converter" ;
+    ido:partOf td:Vessel3 ;
+    ido:connectedTo td:Vessel3Pms ;
+    :twFCVoltageInVolts 690.0 ;
+    :twFCFrequencyInHz  60.0 .
+
+# Energy Storage System (battery) — connected to PMS
+td:Vessel3ESS a :EnergyStorageSystem ;
+    rdfs:label "Vessel 3 Energy Storage System" ;
+    ido:partOf td:Vessel3 ;
+    ido:connectedTo td:Vessel3Pms ;
+    :twESSCapacityInMWh              2.0 ;
+    :twESSCRate                      1.0 ;
+    :twESSDepthOfDischargePercentage 80.0 ;
+    :twESSCycleLife                  3000 ;
+    :twESSWeightInKg                 12000.0 ;
+    :twESSVolumeInM3                 8.0 .
+
+# Bidirectional Converter (DC bus) — connected to PMS
+td:Vessel3BidirConverter a :BidirectionalConverterSystem ;
+    rdfs:label "Vessel 3 Bidirectional Converter" ;
+    ido:partOf td:Vessel3 ;
+    ido:connectedTo td:Vessel3Pms ;
+    :twDCBNominalVoltage 750.0 ;
+    :twDCBMaxVoltage     820.0 ;
+    :twDCBMinVoltage     680.0 ;
+    :twDCBMaxCurrent     2600.0 .
+
+# Auxiliary Load — hotel load is zero (unmanned concept vessel)
+td:Vessel3Auxload a :AUXLOAD ;
+    rdfs:label "Vessel 3 Auxiliary Load" ;
+    ido:partOf td:Vessel3 ;
+    :twAUXLDHotelLoadPowerInKW     0.0 ;
+    :twAUXLDShipServicesPowerInKW  150.0 .

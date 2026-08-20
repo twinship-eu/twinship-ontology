@@ -2,6 +2,10 @@
 #
 # Coverage: Not yet modelled. The ontology covers domain concepts but does not yet define API interface entities. This query returns TwinShipInformationObject instances as a placeholder.
 # Module:   operational-context
+#
+# NOT-YET-MODELLED: This CQ requires an API-interface class that does not yet
+# exist in the ontology. It xfails even in test-repo mode until that feature
+# is implemented.
 
 PREFIX :         <https://twin-ship.eu/twinship#>
 PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
