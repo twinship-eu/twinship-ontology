@@ -76,25 +76,31 @@ Generate Graffoo-style draw.io diagrams from the ontology source for use in pape
 uv run python scripts/generate_drawio.py
 ```
 
-This writes `.drawio` files to `diagrams/` (gitignored — regenerate as needed):
+This writes `.drawio` files to `diagrams/` (gitignored — regenerate as needed), all sized to A4 landscape:
 
-| File | Contents |
-|---|---|
-| `diagrams/overview.drawio` | Module packages with root classes and cross-module links |
-| `diagrams/vessel.drawio` | Full vessel module: class hierarchy, properties, individuals |
-| `diagrams/operational-context.drawio` | Voyage, leg, port, route, profiles, observations |
-| `diagrams/operational-modes.drawio` | States/modes classes and named individuals |
-| `diagrams/weather-conditions.drawio` | Weather/wind/wave/current conditions |
-| `diagrams/predictions.drawio` | ML predictions and MCRO model card structure |
+| File | Style | Contents |
+|---|---|---|
+| `diagrams/modules.drawio` | SSN Fig. 2 | Module dependency graph — boxes and `imports` arrows only |
+| `diagrams/overview.drawio` | SSN Fig. 3 | Classes connected across modules, dashed module boundary boxes, colour-coded by module |
+| `diagrams/vessel.drawio` | Per-module | Most-connected vessel classes: `ido:partOf`/`connectedTo` structure, `consume` links |
+| `diagrams/operational-context.drawio` | Per-module | Voyage, leg, port, route, profiles, observations |
+| `diagrams/operational-modes.drawio` | Per-module | States/modes classes and named individuals |
+| `diagrams/weather-conditions.drawio` | Per-module | Weather/wind/wave/current conditions |
+| `diagrams/predictions.drawio` | Per-module | ML predictions and MCRO model card structure |
 
-Open any `.drawio` file in [draw.io (diagrams.net)](https://www.diagrams.net/) to tune the layout and export to PDF or SVG for publication.
+Open any `.drawio` file in [draw.io (diagrams.net)](https://www.diagrams.net/) to tune the layout, then export to PDF or SVG for publication.
 
 **Graffoo notation used:**
-- Yellow boxes = OWL classes (data properties listed inside)
+- Colour-coded boxes = OWL classes (module colour; data properties listed inside)
 - Dashed hollow-triangle arrows = `rdfs:subClassOf`
-- Solid open-head arrows = object properties
-- Grey boxes = cross-module class references
+- Solid open-head arrows = object properties (dashed = cross-module)
+- Grey boxes = cross-module class references (per-module diagrams)
 - Yellow ellipses = named individuals
+
+**Tuning:** key constants near the top of `scripts/generate_drawio.py`:
+- `MODULE_MAX_CLASSES` — how many classes to show per module diagram
+- `OVERVIEW_GROUP_POS` — spatial positions of module groups in the overview
+- `MANUAL_LINKS` — semantic cross-module links not encoded as OWL restrictions
 
 ### Ontology Statistics
 

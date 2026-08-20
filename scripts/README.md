@@ -118,6 +118,20 @@ These scripts form the main website generation pipeline:
 - **`enhance_webvowl_json.py`** - Post-process WebVOWL JSON to add SKOS and dcterms annotations
 - **`clean_webvowl_json.py`** - Post-process WebVOWL JSON to merge duplicate Literal nodes
 
+### Paper Diagram Generation
+
+- **`generate_drawio.py`** — Generate Graffoo-style draw.io diagrams for ontology papers (A4 landscape, all modules). Produces `diagrams/*.drawio` (gitignored). Includes:
+  - `modules.drawio` — module dependency graph (SSN Figure 2 style)
+  - `overview.drawio` — cross-module class diagram with dashed module boundary boxes (SSN Figure 3 style); only classes connected across modules are shown
+  - Per-module diagrams for `vessel`, `operational-context`, `operational-modes`, `weather-conditions`, `predictions` — connectivity-scored class selection, module colour coding, IDO `partOf`/`connectedTo` structure
+  - Key tuning constants: `MODULE_MAX_CLASSES`, `OVERVIEW_GROUP_POS`, `MANUAL_LINKS`
+  - Also loads `model/external/IDO_20240503.ttl` to correctly detect `ido:partOf`, `ido:connectedTo`, `ido:directlyConnectedTo` restrictions
+
+  ```bash
+  uv run python scripts/generate_drawio.py
+  uv run python scripts/generate_drawio.py --out-dir path/to/diagrams
+  ```
+
 ### Standards Alignment Scripts
 
 - **`align_imo.py`** — **Two-step IMO Compendium alignment workflow** (preferred for systematic alignment).
