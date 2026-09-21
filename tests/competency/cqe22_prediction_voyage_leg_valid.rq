@@ -1,0 +1,19 @@
+# CQE-22 — For which voyage leg is the prediction valid?
+#
+# Coverage: Instance-level. Requires a Prediction and a VoyageLeg individual.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?prediction ?voyageLeg
+WHERE {
+	?prediction a :Prediction ;
+							:isPredictionForVoyageLeg ?voyageLeg .
+	?voyageLeg a :VoyageLeg .
+}
+ORDER BY ?prediction
+

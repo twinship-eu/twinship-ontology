@@ -1,0 +1,23 @@
+# CQE-27 — Which weather conditions were used to generate the prediction?
+#
+# Coverage: Instance-level. Requires a Prediction, an Assumption linked to it, and a WeatherCondition linked to that assumption.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+# NOTE - input for model has to ba added. The current can only 
+# use assumption.
+
+SELECT ?prediction ?assumption ?weatherCondition
+WHERE {
+	?prediction a :Prediction ;
+							:hasAssumption ?assumption .
+	?assumption a :Assumption ;
+							:hasWeatherCondition ?weatherCondition .
+	?weatherCondition a :WeatherCondition .
+}
+ORDER BY ?prediction ?weatherCondition

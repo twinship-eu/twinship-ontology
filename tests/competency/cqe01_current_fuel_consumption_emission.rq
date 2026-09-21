@@ -1,0 +1,32 @@
+# CQE-01 — What are the current fuel consumption and CO₂ emissions of the vessel for the ongoing voyage?
+#
+# Coverage: Requires a Voyage with a FuelConsumptionObservation. Returns the
+# observed fuel mass and, when available, a voyage summary and vessel fuel
+# emission factor; the ontology has no direct CO2-emission result property.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?voyage ?fuelObservation ?fuelConsumedMassInMT
+			 ?fuelSummary ?averageFuelConsumption
+			 ?vessel ?engine ?co2EmissionFactorGPerKgFuel
+WHERE {
+	?voyage a :Voyage ;
+					:hasFuelConsumptionObservation ?fuelObservation .
+	?fuelObservation a :FuelConsumptionObservation ;
+									 :twFuelConsumedMassInMT ?fuelConsumedMassInMT .
+	OPTIONAL {
+		?voyage :hasFuelConsumptionSummary ?fuelSummary .
+		OPTIONAL { ?fuelSummary :twAverageFuelConsumption ?averageFuelConsumption }
+	}
+	OPTIONAL {
+		?vessel :hasVoyage ?voyage .
+		?engine ido:partOf ?vessel .
+		?engine :twFuelEmissionFactorCo2InGPerKgFuel ?co2EmissionFactorGPerKgFuel .
+	}
+}
+ORDER BY ?voyage

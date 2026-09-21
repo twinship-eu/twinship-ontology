@@ -1,0 +1,26 @@
+# CQE-03 — Which weather conditions correlate with speed reduction?
+#
+# Coverage: Requires VoyageLeg individuals with a WeatherCondition and a
+# meanspeed for each VoyageLeg individuals. This returns co-occurring
+# weather and vessel-speed values; the ontology does not define a baseline,
+# calculated correlation, or explicit speed-reduction property.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?voyageLeg ?weatherCondition ?windCondition ?windSpeedInKnots
+       ?meanSpeed 
+WHERE {
+	?voyageLeg a :VoyageLeg ;
+             :hasWeatherCondition ?weatherCondition ;
+             :twMeanSpeed ?meanSpeed .
+	OPTIONAL {
+		?weatherCondition :hasWindCondition ?windCondition .
+		OPTIONAL { ?windCondition :twWindSpeedInKnots ?windSpeedInKnots }
+	}
+}
+ORDER BY ?voyageLeg

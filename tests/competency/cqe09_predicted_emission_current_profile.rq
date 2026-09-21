@@ -1,0 +1,41 @@
+# CQE-09 — What is the predicted CO₂ emission rate (g/hr) for a vessel during a voyage under the current operational conditions?
+#
+# Coverage: Requires a FuelEmissionRateCo2InGPerHourPrediction linked to a
+# Voyage with operational conditions included in the prediction assumtions. 
+# The first iteration of possible assumptions include engine mode, trim / draft
+# configurations, and weather conditions; the prediction result supplies the 
+# predicted numeric value.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+
+SELECT ?vessel ?voyage ?voyageLeg ?prediction
+       ?predictionResult ?predictedEmissionRateGPerHr
+       ?engineMode ?trimMode ?draftMode ?draftTrimMode ?weatherCondition
+WHERE {
+    ?vessel :hasVoyage ?voyage .
+
+    ?voyage a :Voyage ;
+            :hasVoyageLeg ?voyageLeg .
+
+    ?prediction a :FuelEmissionRateCo2InGPerHourPrediction ;
+                :isPredictionForVoyageLeg ?voyageLeg ;
+                :hasPredictionResult ?predictionResult ;
+                :hasAssumption ?assumption .
+
+    ?predictionResult a :PredictionResult ;
+                      :twNumericValue ?predictedEmissionRateGPerHr .
+
+    ?assumption a :Assumption ;
+                :hasEngineMode ?engineMode ;
+                :hasTrimMode ?trimMode ;
+                :hasDraftMode ?draftMode ;
+                :hasDraftTrimMode ?draftTrimMode ;
+                :hasWeatherCondition ?weatherCondition .
+}
+ORDER BY ?vessel ?voyage ?prediction

@@ -1,0 +1,48 @@
+# CQE-12 — What are the emissions per nautical mile for each voyage leg?
+#
+# Coverage: Requires a VoyageLeg with distance and fuel consumption, plus a
+# vessel engine consuming fuel with a CO2 emission factor. Fuel consumption is
+# expressed in MT, so the calculation converts it to kg before applying the
+# factor in g/kg and dividing by the leg distance in nautical miles.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?voyage ?voyageLeg ?fuelConsumption ?legDistanceInNm
+       ?engine ?fuel ?co2EmissionFactorGPerKgFuel
+       ?emissionsPerNauticalMile
+WHERE {
+  ?vessel :hasVoyage ?voyage .
+  ?voyage a :Voyage ;
+          :hasVoyageLeg ?voyageLeg .
+  ?voyageLeg a :VoyageLeg ;
+             :twDistanceInNm ?legDistanceInNm .
+
+  {
+    ?voyageLeg :hasFuelConsumptionObservation ?fuelObs .
+    ?fuelObs a :FuelConsumptionObservation ;
+             :twFuelConsumedMassInMT ?fuelConsumption .
+  }
+  UNION
+  {
+    ?voyageLeg :hasFuelConsumptionSummary ?fuelSummary .
+    ?fuelSummary a :FuelConsumptionSummary ;
+                 :twMeanFuelConsumption ?fuelConsumption .
+  }
+
+  ?engine a :EngineSystem ;
+          ido:partOf ?vesselSystem ;
+          :consume ?fuel .
+  ?vesselSystem ido:partOf ?vessel ;
+                a :VesselSystem .
+  ?fuel a :Fuel ;
+        :twFuelEmissionFactorCo2InGPerKgFuel ?co2EmissionFactorGPerKgFuel .
+
+  BIND((?fuelConsumption * 1000 * ?co2EmissionFactorGPerKgFuel)
+       / ?legDistanceInNm AS ?emissionsPerNauticalMile)
+}
+ORDER BY ?vessel ?voyage ?voyageLeg

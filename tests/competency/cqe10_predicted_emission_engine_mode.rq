@@ -1,0 +1,54 @@
+# CQE-10 — How would the predicted emissions change if change of engine mode?
+#
+# Coverage: Requires two CO2 emission predictions for the same VoyageLeg,
+# each with a distinct Assumption and EngineMode, plus numeric PredictionResult
+# values. The query compares the modeled scenarios; the ontology does not
+# define a counterfactual calculation or an explicit emission delta property.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+
+SELECT ?voyageLeg
+			 ?predictionA ?engineModeA ?emissionRateA
+			 ?predictionB ?engineModeB ?emissionRateB
+WHERE {
+	?predictionA a :FuelEmissionRateCo2InGPerHourPrediction ;
+							 :isPredictionForVoyageLeg ?voyageLeg ;
+							 :hasAssumption ?assumptionA ;
+							 :hasPredictionResult ?resultA .
+	?assumptionA a :Assumption ;
+							:hasEngineMode ?engineModeA ;
+							:hasWeatherCondition ?weatherCondition ;
+							:hasTrimMode ?trimMode ;
+							:hasDraftMode ?draftMode ;
+							:hasDraftTrimMode ?draftTrimMode ;
+							:twMeanSpeed ?meanSpeed .
+
+	?resultA a :PredictionResult ;
+					 :twNumericValue ?emissionRateA .
+
+	?predictionB a :FuelEmissionRateCo2InGPerHourPrediction ;
+							 :isPredictionForVoyageLeg ?voyageLeg ;
+							 :hasAssumption ?assumptionB ;
+							 :hasPredictionResult ?resultB .
+	?assumptionB a :Assumption ;
+							:hasEngineMode ?engineModeB ;
+							:hasWeatherCondition ?weatherCondition ;
+							:hasTrimMode ?trimMode ;
+							:hasDraftMode ?draftMode ;
+							:hasDraftTrimMode ?draftTrimMode ;
+							:twMeanSpeed ?meanSpeed .
+
+	?resultB a :PredictionResult ;
+					 :twNumericValue ?emissionRateB .
+
+	FILTER (?engineModeA != ?engineModeB)
+	FILTER (?predictionA != ?predictionB)
+}
+ORDER BY ?voyageLeg ?predictionA ?predictionB
+

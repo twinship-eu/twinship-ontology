@@ -1,0 +1,27 @@
+# CQE-02 — What is the current fuel consumption rate (MT/hr) and total fuel consumption (MT) for each vessel's Main Engine System and Auxiliary Engine System?
+#
+# Coverage: Requires MainEngineSystem or AuxiliaryEngineSystem individuals
+# with their available fuel-consumption properties. Auxiliary systems expose
+# a rate only; total consumption is optional because no auxiliary total field
+# is defined in the ontology.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?engine ?engineType ?fuelConsumptionRateMTPerHr
+			 ?fuelConsumptionTotalInMT ?auxiliaryFuelRateKgPerHr
+WHERE {
+	VALUES (?engineType ?engineClass) {
+		("main" :MainEngineSystem)
+		("auxiliary" :AuxiliaryEngineSystem)
+	}
+	?engine a ?engineClass .
+	OPTIONAL { ?engine :twFuelConsumptionRateInMTPerHr ?fuelConsumptionRateMTPerHr }
+	OPTIONAL { ?engine :twFuelConsumptionTotalInMT ?fuelConsumptionTotalInMT }
+	OPTIONAL { ?engine :twAuxiliaryFuelRateMassNetKgPerHr ?auxiliaryFuelRateKgPerHr }
+}
+ORDER BY ?engine

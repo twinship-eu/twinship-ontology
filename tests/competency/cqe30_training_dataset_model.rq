@@ -1,0 +1,18 @@
+# CQE-30 — Which dataset was used to train this statistical model?
+#
+# Coverage: Instance-level. Requires a VesselPerformanceModel linked to a TrainingData individual by trainedOnDataset.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?model ?dataset
+WHERE {
+	?model a :VesselPerformanceModel ;
+				 :trainedOnDataset ?dataset .
+	?dataset a :TrainingData .
+}
+ORDER BY ?model ?dataset

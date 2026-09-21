@@ -1,0 +1,21 @@
+# CQE-21 — Which estimation belongs to Voyage?
+#
+# Coverage: Instance-level. Requires a Prediction, a VoyageLeg and a Voyage individual.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?estimation ?voyageLeg ?voyage
+WHERE {
+	?estimation a :Estimation ;
+							:isEstimationForVoyageLeg ?voyageLeg .
+	?voyageLeg a :VoyageLeg .
+	?voyage a :Voyage ;
+					 :hasVoyageLeg ?voyageLeg .
+}
+ORDER BY ?voyage ?voyageLeg
+

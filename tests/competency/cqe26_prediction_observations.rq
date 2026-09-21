@@ -1,0 +1,20 @@
+# CQE-26 — Which current observations were used to generate a given prediction?
+#
+# Coverage: Instance-level. Requires a Prediction, its PredictionProcess, and Observation individuals used by that process.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?prediction ?observation
+WHERE {
+	?prediction a :Prediction ;
+							:wasGeneratedByPredictionProcess ?process .
+	?process a :PredictionProcess ;
+					 :usesObservation ?observation .
+	?observation a :Observation .
+}
+ORDER BY ?prediction ?observation
