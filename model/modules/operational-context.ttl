@@ -53,7 +53,7 @@
         [ a owl:Restriction ; owl:onProperty :twVoyageStartTime             ; owl:someValuesFrom xsd:dateTime             ],
         [ a owl:Restriction ; owl:onProperty :twVoyageEndTime               ; owl:someValuesFrom xsd:dateTime             ],
         [ a owl:Restriction ; owl:onProperty :twDistanceInNm                ; owl:someValuesFrom xsd:decimal              ],
-        [ a owl:Restriction ; owl:onProperty :twMeanSpeed                   ; owl:someValuesFrom xsd:decimal              ],
+        [ a owl:Restriction ; owl:onProperty :twMeanSpeedInKnots            ; owl:someValuesFrom xsd:decimal              ],
         [ a owl:Restriction ; owl:onProperty :twDeparturePortCode           ; owl:someValuesFrom xsd:string               ],
         [ a owl:Restriction ; owl:onProperty :twArrivalPortCode             ; owl:someValuesFrom xsd:string               ] .
 
@@ -63,7 +63,7 @@
     rdfs:subClassOf :TwinShipProcess ,
         [ a owl:Restriction ; owl:onProperty :observedDuringVoyage          ; owl:someValuesFrom :Voyage                    ],
         [ a owl:Restriction ; owl:onProperty :twDistanceInNm                ; owl:someValuesFrom xsd:decimal                ],
-        [ a owl:Restriction ; owl:onProperty :twMeanSpeed                   ; owl:someValuesFrom xsd:decimal                ],
+        [ a owl:Restriction ; owl:onProperty :twMeanSpeedInKnots            ; owl:someValuesFrom xsd:decimal                ],
         [ a owl:Restriction ; owl:onProperty :hasStartWayPoint              ; owl:someValuesFrom :WayPoint                  ],
         [ a owl:Restriction ; owl:onProperty :hasEndWayPoint                ; owl:someValuesFrom :WayPoint                  ],
         [ a owl:Restriction ; owl:onProperty :hasFuelConsumptionObservation ; owl:someValuesFrom :FuelConsumptionObservation ],
@@ -89,7 +89,7 @@
     rdfs:subClassOf :TwinShipInformationObject .
 
 :WayPoint a owl:Class ;
-    rdfs:label "WayPoint" ;
+    rdfs:label "Way Point" ;
     rdfs:comment "A geographical location expressed in latitude and longitude used as start and end point of a voyage leg. Modelled as an information object." ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :twWayPointLatitude               ; owl:someValuesFrom    xsd:decimal         ],
@@ -221,13 +221,13 @@
 
 :hasStartWayPoint a owl:ObjectProperty ;
     rdfs:label "has start waypoint" ;
-    rdfs:comment "Relates a voyage leg to its geographical start location. " ;
+    rdfs:comment "Relates a voyage leg to its geographical start location." ;
     rdfs:range :WayPoint ;
     rdfs:subPropertyOf :twinshipObjectProperties .
 
 :hasEndWayPoint a owl:ObjectProperty ;
     rdfs:label "has end waypoint" ;
-    rdfs:comment "Relates a voyage leg to its geographical end location. " ;
+    rdfs:comment "Relates a voyage leg to its geographical end location." ;
     rdfs:range :WayPoint ;
     rdfs:subPropertyOf :twinshipObjectProperties .
 
@@ -339,13 +339,13 @@
 
 :twDistanceInNm a owl:DatatypeProperty ;
     rdfs:label "Distance in Nm" ;
-    rdfs:comment "A planned or observed distance in decimal Nautic miles (Nm)." ;
+    rdfs:comment "A planned or observed distance in decimal Nautical miles (Nm)." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twMeanSpeed a owl:DatatypeProperty ;
-    rdfs:label "Mean speed" ;
-    rdfs:comment "A planned or observed mean spead over ground (SOG) in decimal knots." ;
+:twMeanSpeedInKnots a owl:DatatypeProperty ;
+    rdfs:label "Mean speed in knots" ;
+    rdfs:comment "A planned or observed mean speed over ground (SOG) in decimal knots." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
@@ -372,7 +372,6 @@
     rdfs:comment "Longitude decimal for a start or end point of a voyage leg." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
-
 
 # #################################################################
 # #
@@ -547,7 +546,13 @@
 :Voyage rdfs:subClassOf
     [ a owl:Restriction ;
       owl:onProperty :hasQuantityTime ;
-      owl:someValuesFrom :TwinShipQuantityTime ] .
+      owl:someValuesFrom :TwinShipQuantityTime ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantitySpeed ;
+      owl:someValuesFrom :TwinShipQuantitySpeed ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityLength ;
+      owl:someValuesFrom :TwinShipQuantityLength ] .
 
 :VoyageLeg rdfs:subClassOf
     [ a owl:Restriction ;
@@ -555,7 +560,10 @@
       owl:someValuesFrom :TwinShipQuantityTime ] ,
     [ a owl:Restriction ;
       owl:onProperty :hasQuantitySpeed ;
-      owl:someValuesFrom :TwinShipQuantitySpeed ] .
+      owl:someValuesFrom :TwinShipQuantitySpeed ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasQuantityLength ;
+      owl:someValuesFrom :TwinShipQuantityLength ] .
 
 :OperationalProfile rdfs:subClassOf
     [ a owl:Restriction ;

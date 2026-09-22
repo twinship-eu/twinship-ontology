@@ -464,6 +464,7 @@ unit:DEG_C a :TwinShipUnitForTemperature .
 quantitykind:Length a :TwinShipQuantityKindForLength .
 unit:M a :TwinShipUnitForLength .
 unit:MilliM a :TwinShipUnitForLength .
+unit:MI_N a :TwinShipUnitForLength .
 
 
 # #################################################################

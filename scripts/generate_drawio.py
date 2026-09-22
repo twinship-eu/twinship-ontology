@@ -9,7 +9,7 @@ Outputs (in --out-dir, default: diagrams/):
   operational-context.drawio
   operational-modes.drawio
   weather-conditions.drawio
-  predictions.drawio
+  statistics.drawio
 
 All diagrams use A4 landscape canvas. Open in draw.io, tune layout, export to PDF/SVG.
 
@@ -38,11 +38,11 @@ MODULES: dict[str, str] = {
     "operational-context":  "model/modules/operational-context.ttl",
     "operational-modes":    "model/modules/operational-modes.ttl",
     "weather-conditions":   "model/modules/weather-conditions.ttl",
-    "predictions":          "model/modules/predictions.ttl",
+    "statistics":           "model/modules/statistics.ttl",
 }
 
 MOD_ORDER = ["vessel", "operational-context", "operational-modes",
-             "weather-conditions", "predictions"]
+             "weather-conditions", "statistics"]
 
 # Import dependencies between domain modules (excluding base, which all import)
 MOD_DEPS: dict[str, list[str]] = {
@@ -50,7 +50,7 @@ MOD_DEPS: dict[str, list[str]] = {
     "operational-modes":    [],
     "weather-conditions":   [],
     "operational-context":  ["operational-modes", "weather-conditions"],
-    "predictions":          ["operational-modes", "operational-context", "weather-conditions"],
+    "statistics":           ["operational-modes", "operational-context", "weather-conditions"],
 }
 
 # Module descriptions shown in the modules diagram
@@ -59,7 +59,7 @@ MOD_DESC: dict[str, str] = {
     "operational-context":  "Voyage, leg, port, route,\nprofiles, observations",
     "operational-modes":    "Operating states,\nengine/draft/trim modes",
     "weather-conditions":   "Weather, wind, wave\nand current conditions",
-    "predictions":          "ML predictions, estimations,\nmodel cards (MCRO)",
+    "statistics":           "ML predictions, estimations,\nmodel cards (MCRO)",
 }
 
 # Maximum number of classes to show in per-module diagrams.
@@ -70,9 +70,27 @@ MODULE_MAX_CLASSES: dict[str, int] = {
     "operational-context":  12,
     "operational-modes":    10,   # only 5 classes — no filtering needed
     "weather-conditions":   10,   # only 4 classes — no filtering needed
-    "predictions":          13,
+    "statistics":           13,
 }
 DEFAULT_MAX_CLASSES = 12
+
+# For modules that declare properties but carry no self-restrictions, load
+# these extra files to discover inbound cross-module restrictions and render
+# their source classes as external boxes with labelled property arrows.
+CROSS_MODULE_CONTEXT: dict[str, list[str]] = {
+    "operational-modes": [
+        "model/modules/operational-context.ttl",
+        "model/modules/statistics.ttl",
+    ],
+}
+
+# Which consumer classes to show in the inbound arrows (None = show all).
+MODULE_INBOUND_FILTER: dict[str, set[str]] = {
+    "operational-modes": {"VoyageLeg", "Voyage", "Assumption"},
+}
+
+# Individuals are hidden by default; set True here to show them in a specific module.
+MODULE_SHOW_INDIVIDUALS: dict[str, bool] = {}
 
 # Semantic links that are important for the overview but not encoded as OWL
 # restrictions (e.g. because the modules don't import each other).
@@ -90,7 +108,7 @@ OVERVIEW_GROUP_POS: dict[str, tuple[int, int]] = {
     "weather-conditions":   (720,  50),
     "vessel":               (30,  310),
     "operational-context":  (400, 270),
-    "predictions":          (640, 460),
+    "statistics":           (640, 460),
 }
 
 # ---------------------------------------------------------------------------
@@ -107,7 +125,7 @@ MOD_CLR: dict[str, tuple[str, str]] = {   # (fill, stroke)
     "operational-context":  ("#D5E8D4", "#82B366"),
     "operational-modes":    ("#FFE6CC", "#D6B656"),
     "weather-conditions":   ("#E1D5E7", "#9673A6"),
-    "predictions":          ("#FFF2CC", "#B85450"),
+    "statistics":           ("#FFF2CC", "#B85450"),
 }
 
 # ---------------------------------------------------------------------------
@@ -137,7 +155,8 @@ MARGIN      = 30    # canvas margin
 class ModuleData:
     def __init__(self) -> None:
         self.classes:            set[URIRef]                       = set()
-        self.subclass_pairs:     list[tuple[URIRef, URIRef]]       = []  # (child, parent)
+        self.subclass_pairs:     list[tuple[URIRef, URIRef]]       = []  # (child, parent) same-module
+        self.ext_subclass_pairs: list[tuple[URIRef, URIRef]]       = []  # (child, ext_parent)
         self.obj_props:          list[tuple[str, URIRef, URIRef]]  = []  # (name, src, tgt)
         self.data_props_by_cls:  dict[URIRef, list[tuple[str,str]]] = defaultdict(list)
         self.individuals:        list[tuple[URIRef, URIRef]]       = []  # (ind, class)
@@ -171,6 +190,8 @@ def parse_module(path: str,
             continue
         if child in tw_classes and parent in tw_classes:
             md.subclass_pairs.append((child, parent))
+        elif child in tw_classes and str(parent).startswith(TW_NS):
+            md.ext_subclass_pairs.append((child, parent))
 
     # Merge locally-declared properties with the global registry so that
     # cross-module restrictions (where the property lives in an imported
@@ -513,7 +534,7 @@ def generate_modules_diagram(out_path: Path) -> None:
         "operational-modes":  (310, 220),
         "weather-conditions": (700, 220),
         "operational-context":(450, 380),
-        "predictions":        (450, 540),
+        "statistics":         (450, 540),
     }
 
     cell_ids: dict[str, str] = {}
@@ -752,14 +773,48 @@ def generate_module_diagram(
             add_subclass_edge(root, _uid("sub"),
                               cell_ids[child], cell_ids[parent])
 
-    # External classes: only truly cross-module targets, not same-module
-    # classes that were simply filtered out by select_central_classes.
+    # External classes: cross-module obj-prop targets
     ext_classes: set[URIRef] = {
         tgt for _, src, tgt in shown_obj
         if src in cell_ids
         and tgt not in cell_ids
         and cls_to_mod.get(tgt, mod_name) != mod_name
     }
+    # External TW superclasses (e.g. TwinShipQuality from twinship-base)
+    ext_classes |= {parent for child, parent in md.ext_subclass_pairs if child in shown}
+
+    # Inbound cross-module restrictions: other modules that reference this
+    # module's classes as owl:someValuesFrom range values.
+    inbound_triples: list[tuple[str, URIRef, URIRef]] = []
+    inbound_filter = MODULE_INBOUND_FILTER.get(mod_name)
+    seen_inbound: set[tuple[str, str, str]] = set()
+    for ctx_path in CROSS_MODULE_CONTEXT.get(mod_name, []):
+        ctx_p = Path(ctx_path)
+        if not ctx_p.exists():
+            continue
+        ctx_g = Graph()
+        ctx_g.parse(str(ctx_p), format="turtle")
+        for cls in ctx_g.subjects(RDF.type, OWL.Class):
+            if not str(cls).startswith(TW_NS) or isinstance(cls, BNode):
+                continue
+            if cls in md.classes:
+                continue
+            if inbound_filter and _local(cls) not in inbound_filter:
+                continue
+            for restr in ctx_g.objects(cls, RDFS.subClassOf):
+                if not isinstance(restr, BNode):
+                    continue
+                on_prop  = ctx_g.value(restr, OWL.onProperty)
+                val_from = (ctx_g.value(restr, OWL.someValuesFrom)
+                            or ctx_g.value(restr, OWL.allValuesFrom))
+                if not (on_prop and val_from) or val_from not in md.classes:
+                    continue
+                key = (_local(on_prop), str(cls), str(val_from))
+                if key not in seen_inbound:
+                    seen_inbound.add(key)
+                    inbound_triples.append((_local(on_prop), cls, val_from))
+    ext_classes |= {src for _, src, _ in inbound_triples if src not in cell_ids}
+
     max_x = (
         max((x + w for x, y, w, h in positions.values()), default=0)
         + CONT_PAD + 80
@@ -768,7 +823,7 @@ def generate_module_diagram(
     for ext_cls in sorted(ext_classes, key=_local):
         cid = _uid("ext")
         ext_ids[ext_cls] = cid
-        origin = cls_to_mod.get(ext_cls, "?")
+        origin = cls_to_mod.get(ext_cls, "base")
         label  = f"{_local(ext_cls)}\n({origin})"
         w      = _cls_width(_local(ext_cls))
         add_class_box(root, cid, label,
@@ -785,8 +840,21 @@ def generate_module_diagram(
                          src_cid, tgt_cid,
                          cross_module=(tgt_cls not in cell_ids))
 
-    # Named individuals — wrapped within A4 width, linked to their class
-    if md.individuals:
+    # Subclass edges to external TW superclasses
+    for child, parent in md.ext_subclass_pairs:
+        if child in cell_ids and parent in ext_ids:
+            add_subclass_edge(root, _uid("sub"), cell_ids[child], ext_ids[parent])
+
+    # Inbound cross-module property arrows (dashed, from external consumers)
+    for prop_name, src_cls, tgt_cls in inbound_triples:
+        src_cid = ext_ids.get(src_cls)
+        tgt_cid = cell_ids.get(tgt_cls)
+        if src_cid and tgt_cid:
+            add_obj_edge(root, _uid("prop"), prop_name,
+                         src_cid, tgt_cid, cross_module=True)
+
+    # Named individuals — hidden by default; opt-in via MODULE_SHOW_INDIVIDUALS
+    if md.individuals and MODULE_SHOW_INDIVIDUALS.get(mod_name, False):
         bottom_y = (
             max((y + h for x, y, w, h in positions.values()), default=0)
             + CONT_PAD + LEVEL_GAP

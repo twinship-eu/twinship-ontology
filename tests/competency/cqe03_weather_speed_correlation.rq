@@ -17,7 +17,7 @@ SELECT ?voyageLeg ?weatherCondition ?windCondition ?windSpeedInKnots
 WHERE {
 	?voyageLeg a :VoyageLeg ;
              :hasWeatherCondition ?weatherCondition ;
-             :twMeanSpeed ?meanSpeed .
+             :twMeanSpeedInKnots ?meanSpeed .
 	OPTIONAL {
 		?weatherCondition :hasWindCondition ?windCondition .
 		OPTIONAL { ?windCondition :twWindSpeedInKnots ?windSpeedInKnots }

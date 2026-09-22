@@ -3,6 +3,7 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 
@@ -18,9 +19,9 @@
     dcterms:description "Ontology module defining categorical operational states and modes used to classify vessel operation. Covers operating states, engine modes, draft modes, trim modes, and combined draft–trim modes, together with their controlled individuals and related object properties."@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-05-21"^^xsd:date ;
-    dcterms:modified "2026-05-21"^^xsd:date ;
+    dcterms:modified "2026-08-26"^^xsd:date ;
     pav:createdOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
+    pav:lastUpdateOn "2026-08-26T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.0.4" ;
     rdfs:comment "Operational modes module for TwinShip ontology. Imports only twinship-base. All mode and state classes extend TwinShipQuality. Object properties are subproperties of hasQuality. This module is the canonical location for all categorical mode/state concepts in TwinShip." ;
     owl:imports <https://twin-ship.eu/twinship/base> ;
@@ -62,6 +63,12 @@
     rdfs:label "Draft\u2013Trim Mode" ;
     rdfs:comment "A combined categorical mode describing both the vessel draft and trim condition. Extends TwinShipQuality." ;
     rdfs:subClassOf :TwinShipQuality .
+
+# No individual can simultaneously belong to two different mode/state classes.
+:OperatingState owl:disjointWith :EngineMode, :DraftMode, :TrimMode, :DraftTrimMode .
+:EngineMode     owl:disjointWith :DraftMode, :TrimMode, :DraftTrimMode .
+:DraftMode      owl:disjointWith :TrimMode, :DraftTrimMode .
+:TrimMode       owl:disjointWith :DraftTrimMode .
 
 # #################################################################
 # #
@@ -105,27 +112,40 @@
 # #
 # #################################################################
 
-:CruiseState a :OperatingState ;
+:CruiseState a owl:NamedIndividual, :OperatingState ;
     rdfs:label "Cruise" ;
+    skos:altLabel "At sea"@en, "Sea passage"@en ;
+    dcterms:description "Operating state for a vessel underway in the open sea at service speed. Corresponds to the 'at sea' voyage phase in IMO SEEMP Part II and CII voyage state classification." ;
+    dcterms:source <https://www.imo.org/> ;
     rdfs:comment "Vessel operating state corresponding to cruise operation at sea." .
 
-:PortState a :OperatingState ;
+:PortState a owl:NamedIndividual, :OperatingState ;
     rdfs:label "Port" ;
+    skos:altLabel "In port"@en, "In harbour"@en ;
+    dcterms:description "Operating state for a vessel moored at berth, anchored, or otherwise stationary in port. Corresponds to the 'in port' voyage phase in IMO SEEMP Part II and CII voyage state classification." ;
+    dcterms:source <https://www.imo.org/> ;
     rdfs:comment "Vessel operating state corresponding to port stay or port operation." .
 
-:MaintenanceLayupState a :OperatingState ;
+:MaintenanceLayupState a owl:NamedIndividual, :OperatingState ;
     rdfs:label "Maintenance / Lay-up" ;
+    skos:altLabel "Laid up"@en ;
+    dcterms:description "Operating state for a vessel out of regular service for scheduled maintenance, dry-docking, or lay-up. Not separately categorised in IMO CII reporting; typically excluded from CII calculation periods." ;
     rdfs:comment "Vessel operating state corresponding to maintenance period or lay-up." .
 
-:ManeuveringState a :OperatingState ;
+:ManeuveringState a owl:NamedIndividual, :OperatingState ;
     rdfs:label "Maneuvering" ;
+    skos:altLabel "Manoeuvring"@en ;
+    dcterms:description "Operating state for a vessel navigating at reduced speed during port approach, departure, canal transit, or similar constrained-waterway operations. Corresponds to the 'manoeuvring' voyage phase in IMO SEEMP Part II." ;
+    dcterms:source <https://www.imo.org/> ;
     rdfs:comment "Vessel operating state corresponding to manoeuvring operation (e.g., port approach, departure, canal transit)." .
 
-:DriftState a :OperatingState ;
+:DriftState a owl:NamedIndividual, :OperatingState ;
     rdfs:label "Drift" ;
+    skos:altLabel "Drifting"@en, "Waiting at anchor"@en ;
+    dcterms:description "Operating state for a vessel with engines stopped or at minimum power, drifting or holding position without purposeful navigation." ;
     rdfs:comment "Vessel operating state corresponding to drifting or non-propulsive movement." .
 
-:UnknownOperatingState a :OperatingState ;
+:UnknownOperatingState a owl:NamedIndividual, :OperatingState ;
     rdfs:label "Unknown Operating State" ;
     rdfs:comment "Unknown or unclassified operating state." .
 
@@ -135,19 +155,22 @@
 # #
 # #################################################################
 
-:EvenKeel a :DraftTrimMode ;
+:EvenKeel a owl:NamedIndividual, :DraftTrimMode ;
     rdfs:label "Even Keel" ;
+    skos:altLabel "On even keel"@en ;
     rdfs:comment "Draft\u2013trim mode where fore and aft draft are approximately equal (trim \u2248 0)." .
 
-:SternTrim a :DraftTrimMode ;
+:SternTrim a owl:NamedIndividual, :DraftTrimMode ;
     rdfs:label "Stern Trim" ;
+    skos:altLabel "Trimmed by the stern"@en ;
     rdfs:comment "Draft\u2013trim mode where stern/aft draft is greater than bow/fore draft (positive trim)." .
 
-:BowTrim a :DraftTrimMode ;
+:BowTrim a owl:NamedIndividual, :DraftTrimMode ;
     rdfs:label "Bow Trim" ;
+    skos:altLabel "Trimmed by the head"@en ;
     rdfs:comment "Draft\u2013trim mode where bow/fore draft is greater than stern/aft draft (negative trim)." .
 
-:OptimalTrim a :DraftTrimMode ;
+:OptimalTrim a owl:NamedIndividual, :DraftTrimMode ;
     rdfs:label "Optimal Trim" ;
     rdfs:comment "Draft\u2013trim mode selected or recommended to minimise hull resistance or fuel consumption under given operating conditions." .
 
@@ -157,14 +180,62 @@
 # #
 # #################################################################
 
-:BallastDraft a :DraftMode ;
+:BallastDraft a owl:NamedIndividual, :DraftMode ;
     rdfs:label "Ballast" ;
+    skos:altLabel "In ballast"@en ;
+    dcterms:description "Draft condition where the vessel carries no commercial cargo and ballast water is taken on to maintain stability and propeller immersion." ;
     rdfs:comment "Draft mode where the vessel is operating without cargo (ballast condition), riding high in the water." .
 
-:LadenDraft a :DraftMode ;
+:LadenDraft a owl:NamedIndividual, :DraftMode ;
     rdfs:label "Laden" ;
+    skos:altLabel "Fully laden"@en, "In cargo"@en ;
+    dcterms:description "Draft condition where the vessel is loaded at or near its designed maximum cargo capacity." ;
     rdfs:comment "Draft mode where the vessel is operating at or near full cargo load (laden condition), riding low in the water." .
 
-:PartLoadDraft a :DraftMode ;
+:PartLoadDraft a owl:NamedIndividual, :DraftMode ;
     rdfs:label "Part Load" ;
+    skos:altLabel "Partial load"@en ;
+    dcterms:description "Draft condition where the vessel carries a partial cargo load, between the ballast and fully laden draft conditions." ;
     rdfs:comment "Draft mode where the vessel is operating with a partial cargo load, between ballast and full laden conditions." .
+
+# #################################################################
+# #
+# #    Individuals — Trim Mode
+# #
+# #################################################################
+
+:TrimEvenKeel a owl:NamedIndividual, :TrimMode ;
+    rdfs:label "Even Keel" ;
+    skos:altLabel "On even keel"@en ;
+    rdfs:comment "Trim condition where the vessel's longitudinal trim is approximately zero (fore and aft draft equal)." .
+
+:TrimStern a owl:NamedIndividual, :TrimMode ;
+    rdfs:label "Stern Trim" ;
+    skos:altLabel "Trimmed by the stern"@en ;
+    rdfs:comment "Trim condition where aft draft exceeds fore draft (positive trim), independent of the overall draft condition." .
+
+:TrimBow a owl:NamedIndividual, :TrimMode ;
+    rdfs:label "Bow Trim" ;
+    skos:altLabel "Trimmed by the head"@en ;
+    rdfs:comment "Trim condition where fore draft exceeds aft draft (negative trim), independent of the overall draft condition." .
+
+# #################################################################
+# #
+# #    Closed-world disjointness for controlled-vocabulary individuals
+# #
+# #################################################################
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers (
+        :CruiseState :PortState :MaintenanceLayupState
+        :ManeuveringState :DriftState :UnknownOperatingState
+    ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :BallastDraft :LadenDraft :PartLoadDraft ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :TrimEvenKeel :TrimStern :TrimBow ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :EvenKeel :SternTrim :BowTrim :OptimalTrim ) .

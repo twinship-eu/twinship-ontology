@@ -27,7 +27,7 @@ WHERE {
 							:hasTrimMode ?trimMode ;
 							:hasDraftMode ?draftMode ;
 							:hasDraftTrimMode ?draftTrimMode ;
-							:twMeanSpeed ?meanSpeed .
+							:twMeanSpeedInKnots ?meanSpeed .
 
 	?resultA a :PredictionResult ;
 					 :twNumericValue ?emissionRateA .
@@ -42,7 +42,7 @@ WHERE {
 							:hasTrimMode ?trimMode ;
 							:hasDraftMode ?draftMode ;
 							:hasDraftTrimMode ?draftTrimMode ;
-							:twMeanSpeed ?meanSpeed .
+							:twMeanSpeedInKnots ?meanSpeed .
 
 	?resultB a :PredictionResult ;
 					 :twNumericValue ?emissionRateB .

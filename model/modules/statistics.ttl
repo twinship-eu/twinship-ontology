@@ -10,15 +10,15 @@
 @prefix pav: <http://purl.org/pav/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
-<https://twin-ship.eu/twinship/predictions> a owl:Ontology ;
-    rdfs:label "TwinShip Predictions Module" ;
-    owl:versionIRI <https://twin-ship.eu/twinship/predictions/0.0.2> ;
-    dcterms:title "TwinShip Predictions Module"@en ;
-    dcterms:description "This module defines TwinShip-native prediction concepts for vessel operational analysis. The module does not import VesselAI or DUL. "@en ;
+<https://twin-ship.eu/twinship/statistics> a owl:Ontology ;
+    rdfs:label "TwinShip Statistics Module" ;
+    owl:versionIRI <https://twin-ship.eu/twinship/statistics/0.0.4> ;
+    dcterms:title "TwinShip Statistics Module"@en ;
+    dcterms:description "This module defines TwinShip-native estimation, prediction, and statistical model concepts for vessel operational analysis. The module does not import VesselAI or DUL. "@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-06-22"^^xsd:date ;
-    dcterms:modified "2026-08-14"^^xsd:date ;
-    owl:versionInfo "0.0.2" ;
+    dcterms:modified "2026-09-22"^^xsd:date ;
+    owl:versionInfo "0.0.4" ;
     owl:imports <https://twin-ship.eu/twinship/base>,
         <https://twin-ship.eu/twinship/operational-modes>,
         <https://twin-ship.eu/twinship/operational-context>,
@@ -111,7 +111,7 @@
             [ a owl:Restriction ; owl:onProperty :hasTrimMode           ; owl:someValuesFrom :TrimMode          ] ,
             [ a owl:Restriction ; owl:onProperty :hasDraftMode          ; owl:someValuesFrom :DraftMode         ] ,
             [ a owl:Restriction ; owl:onProperty :hasDraftTrimMode      ; owl:someValuesFrom :DraftTrimMode     ] ,
-            [ a owl:Restriction ; owl:onProperty :twMeanSpeed           ; owl:someValuesFrom xsd:decimal        ] .
+            [ a owl:Restriction ; owl:onProperty :twMeanSpeedInKnots    ; owl:someValuesFrom xsd:decimal        ] .
         
 :FeatureContribution a owl:Class ;
     rdfs:label "Feature Contribution"@en ;
