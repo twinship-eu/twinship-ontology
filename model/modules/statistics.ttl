@@ -37,6 +37,7 @@
 # 
 # NEED TO ADD:
 # :twModelParameter     : Represents coefficients, mean, standard deviation, bounds, breakpoints, etc., doesnt this fit in to Model card parameter "Parameter"
+# Look over if these classes should exist since they don't have CQ and are nisch to certain model: twLowerBoundValue, twUpperBoundValue, twConfidenceLevelValue
 # #################################################################
 # #
 # #    Classes — Information / Statistical Object Classes
@@ -53,7 +54,6 @@
         [ a owl:Restriction ; owl:onProperty :hasPerformanceDeviation   ; owl:someValuesFrom :PerformanceDeviation ],
         [ a owl:Restriction ; owl:onProperty :hasModelCard              ; owl:someValuesFrom :ModelCard ] .
 
-
 :VesselPerformanceModel a owl:Class ;
     rdfs:label "Vessel Performance Model"@en ;
     rdfs:comment "A parameterized statistical model or algorithm artifact. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
@@ -61,7 +61,6 @@
         [ a owl:Restriction ; owl:onProperty :trainedOnDataset          ; owl:someValuesFrom :Dataset       ],
         [ a owl:Restriction ; owl:onProperty :hasDocumentationSummary   ; owl:someValuesFrom rdfs:Literal   ],
         [ a owl:Restriction ; owl:onProperty :hasModelCard              ; owl:someValuesFrom :ModelCard     ] .
-
 
 # Has feature such as FC, Power, EmissionCO2, ...
 :Prediction a owl:Class ;
@@ -75,12 +74,24 @@
         [ a owl:Restriction ; owl:onProperty :hasAssumption                     ; owl:someValuesFrom :Assumption         ] ,
         [ a owl:Restriction ; owl:onProperty :hasFeatureContribution            ; owl:someValuesFrom :FeatureContribution ] .
 
+:FuelConsumptionRateMTPerHrPrediction a owl:Class ;
+    rdfs:label "Fuel Consumption Rate Prediction"@en ;
+    rdfs:comment "A model output forecasting fuel consumption rate in MT per hour. Subclass of Prediction in TwinShip ontology. "@en ;
+    rdfs:subClassOf :Prediction .
 
-# Add subclasses of prediction: predictedFCForVoyage, predictedFCForVoyageLeg, predictedEmissionForVoyage, predictedEmissionForVoyageLeg  
-# Need to add Speed as operational-context, mean for each voyageleg?
+:FuelConsumptionTotalInMTPrediction a owl:Class ;
+    rdfs:label "Fuel Consumption Total Prediction"@en ;
+    rdfs:comment "A model output forecasting total fuel consumption in MT. Subclass of Prediction in TwinShip ontology. "@en ;
+    rdfs:subClassOf :Prediction .
+
+# Not sure if this should be a relevant prediction or if the prediction is FuelConsumptionTotalInMTPrediction * twFuelEmissionFactorCo2InGPerKgFuel and therefore be an estimation instead of a fuel in kg prediction?
+:FuelEmissionRateCo2InGPerHourPrediction a owl:Class ;
+    rdfs:label "Fuel Emission Rate CO2 Prediction"@en ;
+    rdfs:comment "A model output forecasting fuel emission rate for CO2 in grams per hour. Subclass of Prediction in TwinShip ontology. "@en ;
+    rdfs:subClassOf :Prediction .
 
 :PredictionResult a owl:Class ;
-    rdfs:label "Prediction"@en ;
+    rdfs:label "Prediction Result"@en ;
     rdfs:comment "Contains the result from a prediction. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :twNumericValue           ; owl:someValuesFrom xsd:decimal    ]  ,
@@ -88,11 +99,9 @@
         [ a owl:Restriction ; owl:onProperty :twLowerBoundValue        ; owl:someValuesFrom xsd:decimal    ]  ,
         [ a owl:Restriction ; owl:onProperty :twUpperBoundValue        ; owl:someValuesFrom xsd:decimal    ]  .
 
-
-# Speedbin is not the same as mean speed etc. So might have to be changed.
 # JIT / Early arrivals not added yet.
-# Engine operational mode not added yet.
-# Trimmode has no individuals so maybe just have drafttrimmode?
+# Engine operational mode = engine mode.
+# Trimmode has no individuals so maybe just have drafttrimmode? Needs modification from core ontology.
 :Assumption a owl:Class ;
     rdfs:label "Assumption"@en ;
     rdfs:comment "Contains the operational modes or operational context assumed for a prediction. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
@@ -102,9 +111,8 @@
             [ a owl:Restriction ; owl:onProperty :hasTrimMode           ; owl:someValuesFrom :TrimMode          ] ,
             [ a owl:Restriction ; owl:onProperty :hasDraftMode          ; owl:someValuesFrom :DraftMode         ] ,
             [ a owl:Restriction ; owl:onProperty :hasDraftTrimMode      ; owl:someValuesFrom :DraftTrimMode     ] ,
-            [ a owl:Restriction ; owl:onProperty :hasSpeedBin           ; owl:someValuesFrom :SpeedBin          ] .
+            [ a owl:Restriction ; owl:onProperty :twMeanSpeed           ; owl:someValuesFrom xsd:decimal        ] .
         
-
 :FeatureContribution a owl:Class ;
     rdfs:label "Feature Contribution"@en ;
     rdfs:comment "The feature contribution for a prediction. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
@@ -112,7 +120,6 @@
         [ a owl:Restriction ; owl:onProperty  :contributedFeature           ; owl:someValuesFrom :ObservableQuality ]  ,
         [ a owl:Restriction ; owl:onProperty  :twContributionValue          ; owl:someValuesFrom xsd:decimal        ]  ,
         [ a owl:Restriction ; owl:onProperty  :twContributionMethod         ; owl:someValuesFrom xsd:string         ] .
-
 
 :Estimation a owl:Class ;
     rdfs:label "Estimation"@en ;
@@ -123,7 +130,6 @@
         [ a owl:Restriction ; owl:onProperty :hasPerformanceStatistics          ; owl:someValuesFrom :VesselPerformanceStatistics    ] ,
         [ a owl:Restriction ; owl:onProperty :twNumericValue                    ; owl:someValuesFrom xsd:decimal        ] ,
         [ a owl:Restriction ; owl:onProperty :isEstimationForVoyageLeg          ; owl:someValuesFrom :VoyageLeg         ] .
-
 
 # #################################################################
 # #
@@ -139,7 +145,6 @@
     dcterms:source <http://www.w3.org/ns/sosa/ObservableProperty> ;
     rdfs:subClassOf :TwinShipQuality .
         #[ a owl:Restriction ; owl:onProperty :isObservedBy ; owl:someValuesFrom :Sensor ] .
-    
 
 :ObservationResult a owl:Class ;
     rdfs:label "Observable Result"@en ;
@@ -150,7 +155,6 @@
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :twNumericValue           ; owl:someValuesFrom xsd:decimal    ]  .
     
-
 # #################################################################
 # #
 # #    Classes — Process / Context Classes
@@ -166,7 +170,6 @@
         [ a owl:Restriction ; owl:onProperty :twObservedQuality         ; owl:someValuesFrom :ObservableQuality ],
         [ a owl:Restriction ; owl:onProperty :twObservationResultTime   ; owl:someValuesFrom xsd:dateTime       ],
         [ a owl:Restriction ; owl:onProperty :hasObservationResult      ; owl:someValuesFrom :ObservationResult ] .
-    
 
 :PredictionProcess a owl:Class ;
     rdfs:label "Prediction Process"@en ;
@@ -178,7 +181,6 @@
         [ a owl:Restriction ; owl:onProperty :twExecutionTime           ; owl:someValuesFrom xsd:dateTime   ],
         [ a owl:Restriction ; owl:onProperty :hasPrediction             ; owl:someValuesFrom :Prediction    ] .
 
-
 :EstimationProcess a owl:Class ;
     rdfs:label "Estimation Process"@en ;
     rdfs:comment "The process of executing an estimation. Extends TwinShipProcess in the IDO-aligned TwinShip ontology. "@en ;
@@ -187,7 +189,6 @@
         [ a owl:Restriction ; owl:onProperty :hasPerformanceStatistics  ; owl:someValuesFrom :VesselPerformanceStatistics    ] ,
         [ a owl:Restriction ; owl:onProperty :twExecutionTime   ; owl:someValuesFrom xsd:dateTime   ],
         [ a owl:Restriction ; owl:onProperty :hasEstimation     ; owl:someValuesFrom :Estimation    ] .
-
 
 # #################################################################
 # #
@@ -208,7 +209,6 @@
         [ a owl:Restriction ; owl:onProperty :hasPart           ; owl:someValuesFrom :ModelParameterSection ] ,
         [ a owl:Restriction ; owl:onProperty :hasPart           ; owl:someValuesFrom :ResultSection         ] .
     
- 
 :ModelDetailSection a owl:Class ;
     rdfs:label "Model Detail Section"@en ;
     rdfs:comment "Contains basic information about the model. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
@@ -220,7 +220,6 @@
         [ a owl:Restriction ; owl:onProperty :hasVersion    ; owl:someValuesFrom :VersionNumber ] ,
         [ a owl:Restriction ; owl:onProperty :hasPart       ; owl:someValuesFrom :ModelArchitectureInformationSection ] .
 
-
 :VersionNumber a owl:Class ;
     rdfs:label "Version Number"@en ;
     rdfs:comment "Contains a set of characters indicating the version of the model. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
@@ -229,7 +228,6 @@
     dcterms:description " A version number is an information content entity which is a sequence of characters borne by part of each of a class of manufactured products or its packaging and indicates its order within a set of other products having the same name." ;
     dcterms:source <http://purl.obolibrary.org/obo/IAO_0000129> ;
     rdfs:subClassOf :TwinShipInformationObject .
-
 
 :ModelArchitectureInformationSection a owl:Class ;
     rdfs:label "Model Architecture Information Section"@en ;
@@ -240,7 +238,6 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000019> ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :hasAlgorithm ; owl:someValuesFrom xsd:string ] .
-
 
 :ConsiderationInformationSection a owl:Class ;
     rdfs:label "Consideration Information Section"@en ;
@@ -255,7 +252,6 @@
         [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :OutOfScopeUseCaseInformationSection ] ,       
         [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :LimitationInformationSection ] .
 
-
 :IntendedUseCaseInformationSection a owl:Class ;
     rdfs:label "Intended Use Case Information Section"@en ;
     rdfs:comment "Contains factors, assumptions and use cases about the model such e.g. 'Prediction of main-engine fuel-consumption rate and CO₂ emissions for open-sea voyage legs under normal and specific engine mode.'. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
@@ -265,7 +261,6 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000029> ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :hasDocumentationSummary ; owl:someValuesFrom rdfs:Literal ] .       
-
 
 :OutOfScopeUseCaseInformationSection a owl:Class ;
     rdfs:label "Out of Scope Use Case Section Information"@en ;
@@ -278,7 +273,6 @@
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :hasDocumentationSummary ; owl:someValuesFrom rdfs:Literal ] .
 
-
 :LimitationInformationSection a owl:Class ;
     rdfs:label "Limitation Information Section"@en ;
     rdfs:comment "Document limits such as missing weather data, or unreliable trim sensor data."@en ;
@@ -288,7 +282,6 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000017> ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :hasDocumentationSummary ; owl:someValuesFrom rdfs:Literal ] .
-
 
 :ModelParameterSection a owl:Class ;
     rdfs:label "Model Parameter Section"@en ;
@@ -303,7 +296,6 @@
         [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :ModelArchitectureInformationSection ] ,       
         [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :OutputFormatInformationSection ] .
 
-
 :InputFormatInformationSection a owl:Class ;
     rdfs:label "Input Format Information Section"@en ;
     rdfs:comment "Documents required input variables and possible timestamp requirements."@en ;
@@ -314,7 +306,6 @@
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :hasDocumentationSummary ; owl:someValuesFrom rdfs:Literal ] .
 
-
 :OutputFormatInformationSection a owl:Class ;
     rdfs:label "Output Format Information Section"@en ;
     rdfs:comment "Documents the model output."@en ;
@@ -324,7 +315,6 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000024> ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :hasDocumentationSummary ; owl:someValuesFrom rdfs:Literal ] .
-
 
 :ResultSection a owl:Class ;
     rdfs:label "Result Section"@en ;
@@ -337,7 +327,6 @@
         [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :DatasetInformationSection   ] ,
         [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :PerformanceMetricSection    ] .
 
-
 :PerformanceMetricSection a owl:Class ;
     rdfs:label "Performance Metric Information Section"@en ;
     rdfs:comment "Contains model-level uncertainty and validation metrics. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
@@ -349,7 +338,6 @@
         [ a owl:Restriction ; owl:onProperty :hasConfidenceIntervalValue    ; owl:someValuesFrom xsd:decimal ] ,
         [ a owl:Restriction ; owl:onProperty :hasMetricValue                ; owl:someValuesFrom xsd:decimal ] ,
         [ a owl:Restriction ; owl:onProperty :hasEvaluationSlice            ; owl:someValuesFrom rdfs:Literal ] .
-
 
 # #################################################################
 # #
@@ -366,7 +354,6 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000006> ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :describesDataset ; owl:someValuesFrom :Dataset ] .
-
 
 :EvaluationDataInformation a owl:Class ;
     rdfs:label "Evaluation Data Information"@en ;
@@ -395,24 +382,20 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000037> ;
     rdfs:subClassOf :DatasetInformationSection .
 
-
 :Dataset a owl:Class ;
     rdfs:label "Dataset"@en ;
     rdfs:comment "Contains the dataset used for the model. Extends TwinShipInformationObject in the IDO-aligned TwinShip ontology. "@en ;
     rdfs:subClassOf :TwinShipInformationObject .
-
 
 :EvaluationData a owl:Class ;
     rdfs:label "Evaluation Dataset"@en ;
     rdfs:comment "Contains the evaluation dataset used for the model. Extends Dataset class in the IDO-aligned TwinShip ontology. "@en ;
     rdfs:subClassOf :Dataset .
 
-
 :TrainingData a owl:Class ;
     rdfs:label "Training Dataset "@en ;
     rdfs:comment "Contains the training dataset used for the model. Extends Dataset class in the IDO-aligned TwinShip ontology. "@en ;
     rdfs:subClassOf :Dataset .
-
 
 #################################################################
 #
@@ -429,7 +412,6 @@
     rdfs:range :ObservationResult ;
     rdfs:subPropertyOf :hasInformationObject .
 
-
 :twObservedQuality a owl:ObjectProperty ;
     rdfs:label "observed quality"@en ;
     rdfs:comment "Relates an observation to the quality observed by the sensor."@en ;
@@ -439,13 +421,11 @@
     rdfs:range :TwinShipQuality ;
     rdfs:subPropertyOf :hasQuality .
 
-
 :predictsFeature a owl:ObjectProperty ;
     rdfs:label "predicts quality"@en ;
     rdfs:comment "Relates a prediction to the feature predicted by the prediction process."@en ;
     rdfs:range :TwinShipInformationObject ;
     rdfs:subPropertyOf :hasInformationObject .
-
 
 :isPredictionForVoyageLeg a owl:ObjectProperty ;
     rdfs:label "is prediction for voyage leg"@en ;
@@ -453,13 +433,11 @@
     rdfs:range :VoyageLeg ;
     rdfs:subPropertyOf :hasProcess .
 
-
 :estimatesFeature a owl:ObjectProperty ;
     rdfs:label "estimates quality"@en ;
     rdfs:comment "Relates an estimation to the feature estimated."@en ;
     rdfs:range :TwinShipInformationObject ;
     rdfs:subPropertyOf :hasInformationObject .
-
 
 :isEstimationForVoyageLeg a owl:ObjectProperty ;
     rdfs:label "is estimation for voyage leg"@en ;
@@ -467,20 +445,17 @@
     rdfs:range :VoyageLeg ;
     rdfs:subPropertyOf :hasProcess .
 
-
 :hasPrediction a owl:ObjectProperty ;
     rdfs:label "has prediction"@en ;
     rdfs:comment "Relates a prediction process to a prediction result."@en ;
     rdfs:range :Prediction ;
     rdfs:subPropertyOf :hasProcess .
 
-
 :hasEstimation a owl:ObjectProperty ;
     rdfs:label "has estimation"@en ;
     rdfs:comment "Relates a estimation process to a estimation result."@en ;
     rdfs:range :Estimation ;
     rdfs:subPropertyOf :hasProcess .
-
 
 :wasGeneratedByPredictionProcess a owl:ObjectProperty ;
     rdfs:label "was generated by prediction process"@en ;
@@ -489,7 +464,6 @@
     owl:inverseOf :hasPrediction  ;
     rdfs:subPropertyOf :hasProcess .
 
-
 :wasGeneratedByEstimationProcess a owl:ObjectProperty ;
     rdfs:label "was generated by"@en ;
     rdfs:comment "Relates estimation to the estimation process it was generated by. Invers of 'has estimation'."@en ;
@@ -497,13 +471,11 @@
     owl:inverseOf :hasEstimation  ;
     rdfs:subPropertyOf :hasProcess .
 
-
 :hasFeatureContribution a owl:ObjectProperty ;
     rdfs:label "has feature contribution"@en ;
     rdfs:comment "Relates a prediction with how features contributed to it."@en ;
     rdfs:range :FeatureContribution ;
     rdfs:subPropertyOf :hasInformationObject .
-
 
 :contributedFeature a owl:ObjectProperty ;
     rdfs:label "contributed feature"@en ;
@@ -511,13 +483,11 @@
     rdfs:range :ObservableQuality ;
     rdfs:subPropertyOf :hasInformationObject .
 
-
 :usesObservation a owl:ObjectProperty ;
     rdfs:label "uses observation"@en ;
     rdfs:comment "Relationship between an entity and the observation used for a process."@en ;
     rdfs:range :Observation ;
     rdfs:subPropertyOf :hasInformationObject .
-
 
 :trainedOnDataset a owl:ObjectProperty ;
     rdfs:label "trained on dataset"@en ;
@@ -525,13 +495,11 @@
     rdfs:range :TrainingData ;
     rdfs:subPropertyOf :hasInformationObject .
 
-
 :hasAssumption a owl:ObjectProperty ;
     rdfs:label "has assumption"@en ;
     rdfs:comment "Relates the assumptions used for a prediction."@en ;
     rdfs:range :Assumption ;
     rdfs:subPropertyOf :hasInformationObject .
-
 
 :hasPredictionResult a owl:ObjectProperty ;
     rdfs:label "has prediction value"@en ;
@@ -539,20 +507,18 @@
     rdfs:range :PredictionResult ;
     rdfs:subPropertyOf :hasInformationObject .
 
-
 :hasPerformanceModel a owl:ObjectProperty ;
     rdfs:label "has performance model"@en ;
     rdfs:comment "Relates a prediction or estimation to the Performance Model used."@en ;
     rdfs:range :VesselPerformanceModel ;
     rdfs:subPropertyOf :hasInformationObject . 
 
-
 :hasPerformanceStatistics a owl:ObjectProperty ;
     rdfs:label "has performance statistics"@en ;
     rdfs:comment "Relates a prediction or estimation to the Performance Model used."@en ;
     rdfs:range :VesselPerformanceStatistics ;
     rdfs:subPropertyOf :hasInformationObject . 
-    
+  
 
 #################################################################
 #
@@ -566,7 +532,6 @@
     owl:inverseOf :documentsModel  ;
     rdfs:subPropertyOf :hasInformationObject .
 
-
 :documentsModel a owl:ObjectProperty ;
     rdfs:label "documents model"@en ;
     rdfs:comment "Relates a model to its documentation collected in a model card."@en ;
@@ -575,7 +540,6 @@
                 ]  ;
     owl:inverseOf :hasModelCard  ;
     rdfs:subPropertyOf :hasInformationObject .
-
 
 :hasVersion a owl:ObjectProperty ;
     rdfs:label "has version"@en ;
@@ -587,13 +551,11 @@
     rdfs:range :VersionNumber ;
     rdfs:subPropertyOf :hasInformationObject .
 
-
 :describesDataset a owl:ObjectProperty ;
     rdfs:label "describes dataset"@en ;
     rdfs:comment "Relates the dataset documentation section to its dataset."@en ;
     rdfs:range :Dataset ;
     rdfs:subPropertyOf :hasInformationObject .
-
 
 # #################################################################
 # #
@@ -611,7 +573,6 @@
     rdfs:range xsd:string ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-
 :hasConfidenceIntervalValue a owl:DatatypeProperty ;
     rdfs:label "has confidence interval value"@en ;
     rdfs:comment "Contains the confidence interval value to a model performance metric."@en ;
@@ -621,7 +582,6 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000042> ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
-
 
 :hasMetricValue a owl:DatatypeProperty ;
     rdfs:label "has metric value"@en ;
@@ -633,7 +593,6 @@
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-
 :hasEvaluationSlice a owl:DatatypeProperty ;
     rdfs:label "has evaluation slice"@en ;
     rdfs:comment "Contains data partitioning for the evaluation model such as e.g. “main engine”, “auxiliary engine”, “Beaufort ≥ 6”."@en ;
@@ -644,7 +603,6 @@
     rdfs:range rdfs:Literal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-
 :hasDocumentationSummary a owl:DatatypeProperty ;
     rdfs:label "has documentation summary"@en ;
     rdfs:comment "Contains a summary of a model entities”."@en ;
@@ -654,7 +612,6 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000048> ;
     rdfs:range rdfs:Literal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
-
 
 # #################################################################
 # #
@@ -671,13 +628,11 @@
     rdfs:range xsd:dateTime ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-
 :twExecutionTime a owl:DatatypeProperty ;
     rdfs:label "has execution process time"@en ;
     rdfs:comment "The time when the execution process was completed."@en ;
     rdfs:range xsd:dateTime ;
     rdfs:subPropertyOf :TwinShipDataProperties .
-
 
 :twNumericValue a owl:DatatypeProperty ;
     rdfs:label "has numeric value"@en ;
@@ -685,13 +640,11 @@
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-
 :twLowerBoundValue a owl:DatatypeProperty ;
     rdfs:label "has lower bound value"@en ;
     rdfs:comment "The lowerbound for a numberic result of a prediction."@en ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
-
 
 :twUpperBoundValue a owl:DatatypeProperty ;
     rdfs:label "has upper bound value"@en ;
@@ -699,20 +652,17 @@
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-
 :twConfidenceLevelValue a owl:DatatypeProperty ;
     rdfs:label "has confidence level value"@en ;
     rdfs:comment "The confidence level value for a numberic result of a prediction."@en ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-
 :twContributionValue a owl:DatatypeProperty ;
     rdfs:label "has contribution value"@en ;
     rdfs:comment "Contains the value a feature quality has contributed to a prediction."@en ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
-
 
 :twContributionMethod  a owl:DatatypeProperty ;
     rdfs:label "has feature contribution method"@en ;

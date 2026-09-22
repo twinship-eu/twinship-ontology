@@ -1,0 +1,24 @@
+# CQE-07 — What is the estimated fuel consumption for Voyage?
+#
+# Coverage: Requires an Estimation with a numeric value linked to a VoyageLeg;
+# the voyage is resolved through that leg. The estimated feature is returned
+# when present because the ontology does not require it to be fuel-specific.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?voyage ?voyageLeg ?estimation ?estimatedFuelConsumption ?feature
+WHERE {
+	?estimation a :Estimation ;
+							:isEstimationForVoyageLeg ?voyageLeg ;
+							:twNumericValue ?estimatedFuelConsumption .
+	?voyageLeg a :VoyageLeg .
+	?voyage a :Voyage ;
+					:hasVoyageLeg ?voyageLeg .
+	OPTIONAL { ?estimation :estimatesFeature ?feature }
+}
+ORDER BY ?voyage ?voyageLeg

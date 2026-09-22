@@ -1,0 +1,31 @@
+# CQE-08 — What is the predicted fuel consumption rate (MT/hr) and total fuel consumption (MT) for each vessel's Main Engine System and Auxiliary Engine System?
+#
+# Coverage: Requires Prediction individuals typed as fuel-consumption-rate or
+# fuel-consumption-total predictions, linked to VoyageLegs and their Voyage.
+# The vessel and engine systems are resolved through the voyage; predictions
+# are not directly linked to a particular engine system in the ontology.
+# Module:   statistics
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?vessel ?engine ?prediction ?voyage ?voyageLeg
+			 ?fuelRateMTPerHr ?fuelTotalInMT
+WHERE {
+	?prediction a :Prediction ;
+							:isPredictionForVoyageLeg ?voyageLeg .
+	?voyage a :Voyage ;
+					:hasVoyageLeg ?voyageLeg .
+	?vessel :hasVoyage ?voyage .
+	?engine ido:partOf ?vessel .
+	VALUES ?engineClass { :MainEngineSystem :AuxiliaryEngineSystem }
+	?engine a ?engineClass .
+	OPTIONAL { ?prediction :twFuelConsumptionRateInMTPerHr ?fuelRateMTPerHr }
+	OPTIONAL { ?prediction :twFuelConsumptionTotalInMT ?fuelTotalInMT }
+	FILTER (BOUND(?fuelRateMTPerHr) || BOUND(?fuelTotalInMT))
+}
+ORDER BY ?vessel ?engine ?prediction
+
