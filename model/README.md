@@ -106,7 +106,7 @@ build/                          # Auto-generated build artifacts (gitignored)
 5. **modules/operational-modes.ttl** — Canonical module for categorical modes and states
    - Operating states: `OperatingState` with individuals `CruiseState`, `PortState`, `MaintenanceLayupState`, `ManeuveringState`, `DriftState`, `UnknownOperatingState`
    - Engine modes: `EngineMode`
-   - Draft modes: `DraftMode` with individuals `BallastDraft`, `LadenDraft`, `PartLoadDraft`; `TrimMode`; `DraftTrimMode` with individuals `EvenKeel`, `SternTrim`, `BowTrim`, `OptimalTrim`
+   - Draft modes: `DraftMode` with individuals `DraftMode1`-`3`; `TrimMode` with individuals `TrimMode1`-`3`; `DraftTrimMode` composed from `hasDraftMode`/`hasTrimMode` (qualified cardinality 1 each), no fixed enumerated individuals (populated per vessel/fleet, same pattern as `SpeedBin`)
    - Object properties: `hasOperatingState`, `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`
    - All mode/state classes extend `TwinShipQuality`
    - IRI: `https://twin-ship.eu/twinship/operational-modes`
@@ -317,7 +317,7 @@ Properties without a matching standard need no `skos:notation` / `skos:altLabel`
 
 | Sub-pattern | Convention | Examples |
 |---|---|---|
-| Descriptive names | PascalCase | `:CruiseState`, `:EvenKeel`, `:SternTrim`, `:OptimalTrim` |
+| Descriptive names | PascalCase | `:CruiseState`, `:DraftMode1`, `:TrimMode1` |
 | Industry abbreviations | ALL-CAPS | `:AMM`, `:BF`, `:CPP`, `:FPP` |
 
 ### Ontology IRIs

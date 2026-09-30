@@ -74,7 +74,8 @@ ORDER BY ?voyage
 # Query 5 — List all DraftTrimMode individuals
 # (operational-modes module)
 # ============================================================
-# Expected: EvenKeel, SternTrim, BowTrim, OptimalTrim
+# Expected: none in the shared ontology; individuals are created
+# per vessel/fleet instance data (same pattern as SpeedBin).
 
 # SELECT ?mode ?label ?comment
 # WHERE {
@@ -203,7 +204,8 @@ ORDER BY ?voyage
 # ============================================================
 # Query 4 — List all DraftTrimMode individuals
 # ============================================================
-# Expected: EvenKeel, SternTrim, BowTrim, OptimalTrim
+# Expected: none in the shared ontology; individuals are created
+# per vessel/fleet instance data (same pattern as SpeedBin).
 
 # SELECT ?mode ?label ?comment
 # WHERE {
