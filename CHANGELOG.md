@@ -25,6 +25,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Renamed `SpeedBin` to `VesselSpeedBin`; revised description to note SOG/STW divergence under weather/current influence
 - Added `SpeedReference` class (`SOG`, `STW` individuals) and `hasSpeedReference` object property to `operational-modes.ttl`; applied as an optional qualifier restriction on `VesselSpeedBin`
 - Added `twFuelCostInUsdPerMT` datatype property and restriction to `Fuel` (`vessel.ttl`)
+- Documented a limitation on `EngineSpeedBin`: assumes mechanically-coupled propulsion
+  (direct-drive/geared); may not apply to diesel-electric/hybrid vessels (e.g. the futuristic
+  vessel), where engine (genset) speed is decoupled from propeller speed by the electrical
+  system. Modeling this case is deferred pending domain expert input.
 - Added named individuals to `EngineMode` (`EngineMode1`-`4`) as ordinal, vessel/fleet-specific placeholders, following the same pattern as `DraftMode`/`TrimMode`
 - Added `EngineSpeedBin` class (`EngineSpeedBin1`-`4` individuals) and `hasEngineSpeedBin` object property to `operational-modes.ttl`, representing ordinal engine speed (RPM) regions from the engine-propeller combinator diagram; numeric RPM ranges deferred pending combinator diagram data
 - Expanded `model/README.md` with corrected architecture diagram (import DAG), naming conventions reference, and design pattern documentation
