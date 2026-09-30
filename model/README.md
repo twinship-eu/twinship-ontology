@@ -260,7 +260,7 @@ All data properties use the **`tw` prefix** (two-character lowercase abbreviatio
 | `:twVoyageDurationHours` | `xsd:decimal` | Unit embedded in name |
 | `:twWindSpeedInKnots` | `xsd:decimal` | Unit suffix `InKnots` |
 | `:twVoyageIdentifier` | `xsd:string` | No unit suffix (string identifier) |
-| `:twVoyageStartTime` | `xsd:dateTime` | No unit suffix (temporal) |
+| `:twVoyageEstimatedStartTime` | `xsd:dateTime` | No unit suffix (temporal) |
 | `:twRecordCount` | `xsd:integer` | No unit suffix (dimensionless count) |
 
 **Unit suffix conventions** (from `vessel.ttl`):

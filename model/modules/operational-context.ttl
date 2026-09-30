@@ -50,8 +50,10 @@
         [ a owl:Restriction ; owl:onProperty :hasDraftMode                  ; owl:someValuesFrom :DraftMode                ],
         [ a owl:Restriction ; owl:onProperty :twVoyageIdentifier            ; owl:someValuesFrom xsd:string               ],
         [ a owl:Restriction ; owl:onProperty :twVoyageDurationHours         ; owl:someValuesFrom xsd:decimal              ],
-        [ a owl:Restriction ; owl:onProperty :twVoyageStartTime             ; owl:someValuesFrom xsd:dateTime             ],
-        [ a owl:Restriction ; owl:onProperty :twVoyageEndTime               ; owl:someValuesFrom xsd:dateTime             ],
+        [ a owl:Restriction ; owl:onProperty :twVoyageEstimatedStartTime     ; owl:someValuesFrom xsd:dateTime             ],
+        [ a owl:Restriction ; owl:onProperty :twVoyageActualStartTime        ; owl:someValuesFrom xsd:dateTime             ],
+        [ a owl:Restriction ; owl:onProperty :twVoyageEstimatedEndTime       ; owl:someValuesFrom xsd:dateTime             ],
+        [ a owl:Restriction ; owl:onProperty :twVoyageActualEndTime          ; owl:someValuesFrom xsd:dateTime             ],
         [ a owl:Restriction ; owl:onProperty :twDistanceInNm                ; owl:someValuesFrom xsd:decimal              ],
         [ a owl:Restriction ; owl:onProperty :twMeanSpeedInKnots            ; owl:someValuesFrom xsd:decimal              ],
         [ a owl:Restriction ; owl:onProperty :twDeparturePortCode           ; owl:someValuesFrom xsd:string               ],
@@ -93,7 +95,8 @@
     rdfs:comment "A geographical location expressed in latitude and longitude used as start and end point of a voyage leg. Modelled as an information object." ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :twWayPointLatitude               ; owl:someValuesFrom    xsd:decimal         ],
-        [ a owl:Restriction ; owl:onProperty :twWayPointLongitude              ; owl:someValuesFrom    xsd:decimal         ] .
+        [ a owl:Restriction ; owl:onProperty :twWayPointLongitude              ; owl:someValuesFrom    xsd:decimal         ],
+        [ a owl:Restriction ; owl:onProperty :twWayPointTimestamp              ; owl:someValuesFrom    xsd:dateTime        ] .
 
 # #################################################################
 # #
@@ -326,15 +329,27 @@
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twVoyageStartTime a owl:DatatypeProperty ;
-    rdfs:label "Voyage start time" ;
-    rdfs:comment "UTC date-time at which a voyage started." ;
+:twVoyageEstimatedStartTime a owl:DatatypeProperty ;
+    rdfs:label "Voyage estimated start time" ;
+    rdfs:comment "UTC date-time at which a voyage is estimated to start (analogous to ETD, Estimated Time of Departure). Distinct from the actual start time." ;
     rdfs:range xsd:dateTime ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:twVoyageEndTime a owl:DatatypeProperty ;
-    rdfs:label "Voyage end time" ;
-    rdfs:comment "UTC date-time at which a voyage ended." ;
+:twVoyageActualStartTime a owl:DatatypeProperty ;
+    rdfs:label "Voyage actual start time" ;
+    rdfs:comment "UTC date-time at which a voyage actually started (analogous to ATD, Actual Time of Departure)." ;
+    rdfs:range xsd:dateTime ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twVoyageEstimatedEndTime a owl:DatatypeProperty ;
+    rdfs:label "Voyage estimated end time" ;
+    rdfs:comment "UTC date-time at which a voyage is estimated to end (analogous to ETA, Estimated Time of Arrival). Distinct from the actual end time." ;
+    rdfs:range xsd:dateTime ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twVoyageActualEndTime a owl:DatatypeProperty ;
+    rdfs:label "Voyage actual end time" ;
+    rdfs:comment "UTC date-time at which a voyage actually ended (analogous to ATA, Actual Time of Arrival)." ;
     rdfs:range xsd:dateTime ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
@@ -372,6 +387,12 @@
     rdfs:label "WayPoint longitude" ;
     rdfs:comment "Longitude decimal for a start or end point of a voyage leg." ;
     rdfs:range xsd:decimal ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twWayPointTimestamp a owl:DatatypeProperty ;
+    rdfs:label "WayPoint timestamp" ;
+    rdfs:comment "UTC date-time associated with a waypoint (e.g., estimated or actual time of passing that point)." ;
+    rdfs:range xsd:dateTime ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
 # #################################################################

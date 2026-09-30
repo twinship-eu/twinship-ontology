@@ -31,6 +31,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   system. Modeling this case is deferred pending domain expert input.
 - Added named individuals to `EngineMode` (`EngineMode1`-`4`) as ordinal, vessel/fleet-specific placeholders, following the same pattern as `DraftMode`/`TrimMode`
 - Added `EngineSpeedBin` class (`EngineSpeedBin1`-`4` individuals) and `hasEngineSpeedBin` object property to `operational-modes.ttl`, representing ordinal engine speed (RPM) regions from the engine-propeller combinator diagram; numeric RPM ranges deferred pending combinator diagram data
+- Replaced ambiguous `twVoyageStartTime`/`twVoyageEndTime` with `twVoyageEstimatedStartTime`/`twVoyageActualStartTime` and `twVoyageEstimatedEndTime`/`twVoyageActualEndTime` (Estimated/Actual pattern, per DynaPort D2.3 ETD/ATD, ETA/ATA terminology)
+- Added `twWayPointTimestamp` datatype property and restriction to `WayPoint`
 - Expanded `model/README.md` with corrected architecture diagram (import DAG), naming conventions reference, and design pattern documentation
 - Updated `queries/weather-conditions-validation.rq` to reflect renamed properties
 
