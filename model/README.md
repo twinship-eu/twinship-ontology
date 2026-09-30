@@ -105,7 +105,7 @@ build/                          # Auto-generated build artifacts (gitignored)
 
 5. **modules/operational-modes.ttl** — Canonical module for categorical modes and states
    - Operating states: `OperatingState` with individuals `CruiseState`, `PortState`, `MaintenanceLayupState`, `ManeuveringState`, `DriftState`, `UnknownOperatingState`
-   - Engine modes: `EngineMode`
+   - Engine modes: `EngineMode` with individuals `EngineMode1`-`4` (ordinal, vessel/fleet-specific placeholders); `EngineSpeedBin` with individuals `EngineSpeedBin1`-`4` (ordinal RPM regions, numeric ranges not yet defined), linked via `hasEngineSpeedBin`
    - Draft modes: `DraftMode` with individuals `DraftMode1`-`3`; `TrimMode` with individuals `TrimMode1`-`3`; `DraftTrimMode` composed from `hasDraftMode`/`hasTrimMode` (qualified cardinality 1 each), no fixed enumerated individuals (populated per vessel/fleet, same pattern as `VesselSpeedBin`)
    - Speed reference: `SpeedReference` with individuals `SOG`, `STW`; `hasSpeedReference` optionally qualifies `VesselSpeedBin` instances
    - Object properties: `hasOperatingState`, `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`

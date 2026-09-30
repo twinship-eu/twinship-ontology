@@ -40,7 +40,13 @@
 
 :EngineMode a owl:Class ;
     rdfs:label "Engine Mode" ;
-    rdfs:comment "A quality or mode describing the categorical operational mode of an engine system (e.g., full-power, eco, standby)." ;
+    rdfs:comment "A categorical, ordinal engine operating mode used to classify vessel operation. Individuals are numbered placeholders (e.g. EngineMode1, EngineMode2, ...); index order increases monotonically with engine load/power, but the exact physical engine state associated with each index is vessel- or fleet-specific and not standardized. Additional individuals may be added as needed." ;
+    rdfs:subClassOf :TwinShipQuality ,
+        [ a owl:Restriction ; owl:onProperty :hasEngineSpeedBin ; owl:someValuesFrom :EngineSpeedBin ] .
+
+:EngineSpeedBin a owl:Class ;
+    rdfs:label "Engine Speed Bin" ;
+    rdfs:comment "A categorical, ordinal engine speed (RPM) operating region, corresponding to a region of the engine-propeller combinator diagram. Individuals are numbered placeholders (e.g. EngineSpeedBin1, EngineSpeedBin2, ...); index order increases monotonically with engine/shaft speed. For a direct-drive fixed-pitch-propeller vessel, engine speed equals propeller speed directly; for geared or controllable-pitch installations the relationship depends on gearbox ratio and/or pitch setting. Numeric RPM ranges are not defined in this module and are vessel- or engine-specific; additional individuals may be added as needed." ;
     rdfs:subClassOf :TwinShipQuality .
 
 # #################################################################
@@ -72,6 +78,8 @@
 :DraftMode      owl:disjointWith :TrimMode, :DraftTrimMode, :SpeedReference .
 :TrimMode       owl:disjointWith :DraftTrimMode, :SpeedReference .
 :DraftTrimMode  owl:disjointWith :SpeedReference .
+
+:EngineSpeedBin owl:disjointWith :OperatingState, :EngineMode, :DraftMode, :TrimMode, :DraftTrimMode, :SpeedReference .
 
 # #################################################################
 # #
@@ -126,6 +134,12 @@
     rdfs:range :SpeedReference ;
     rdfs:subPropertyOf :hasQuality .
 
+:hasEngineSpeedBin a owl:ObjectProperty ;
+    rdfs:label "has engine speed bin" ;
+    rdfs:comment "Relates an engine mode, engine system, or voyage segment to its categorical engine speed (RPM) operating region." ;
+    rdfs:range :EngineSpeedBin ;
+    rdfs:subPropertyOf :hasQuality .
+
 # #################################################################
 # #
 # #    Individuals — Operating State
@@ -168,6 +182,50 @@
 :UnknownOperatingState a owl:NamedIndividual, :OperatingState ;
     rdfs:label "Unknown Operating State" ;
     rdfs:comment "Unknown or unclassified operating state." .
+
+# #################################################################
+# #
+# #    Individuals — Engine Mode
+# #
+# #################################################################
+
+:EngineMode1 a owl:NamedIndividual, :EngineMode ;
+    rdfs:label "Engine Mode 1" ;
+    rdfs:comment "Ordinal engine mode index 1 (lowest power/load). May represent different named engine configurations depending on vessel or fleet convention (e.g. analogous to standby or idle)." .
+
+:EngineMode2 a owl:NamedIndividual, :EngineMode ;
+    rdfs:label "Engine Mode 2" ;
+    rdfs:comment "Ordinal engine mode index 2 (low-intermediate power/load). May represent different named engine configurations depending on vessel or fleet convention (e.g. analogous to eco or slow-steaming)." .
+
+:EngineMode3 a owl:NamedIndividual, :EngineMode ;
+    rdfs:label "Engine Mode 3" ;
+    rdfs:comment "Ordinal engine mode index 3 (intermediate-high power/load). May represent different named engine configurations depending on vessel or fleet convention (e.g. analogous to cruise)." .
+
+:EngineMode4 a owl:NamedIndividual, :EngineMode ;
+    rdfs:label "Engine Mode 4" ;
+    rdfs:comment "Ordinal engine mode index 4 (highest power/load). May represent different named engine configurations depending on vessel or fleet convention (e.g. analogous to full power / MCR)." .
+
+# #################################################################
+# #
+# #    Individuals — Engine Speed Bin
+# #
+# #################################################################
+
+:EngineSpeedBin1 a owl:NamedIndividual, :EngineSpeedBin ;
+    rdfs:label "Engine Speed Bin 1" ;
+    rdfs:comment "Ordinal engine speed (RPM) region index 1 (lowest speed). Numeric range not yet defined; to be derived from the engine-propeller combinator diagram for a given vessel/engine." .
+
+:EngineSpeedBin2 a owl:NamedIndividual, :EngineSpeedBin ;
+    rdfs:label "Engine Speed Bin 2" ;
+    rdfs:comment "Ordinal engine speed (RPM) region index 2 (low-intermediate speed). Numeric range not yet defined; to be derived from the engine-propeller combinator diagram for a given vessel/engine." .
+
+:EngineSpeedBin3 a owl:NamedIndividual, :EngineSpeedBin ;
+    rdfs:label "Engine Speed Bin 3" ;
+    rdfs:comment "Ordinal engine speed (RPM) region index 3 (intermediate-high speed). Numeric range not yet defined; to be derived from the engine-propeller combinator diagram for a given vessel/engine." .
+
+:EngineSpeedBin4 a owl:NamedIndividual, :EngineSpeedBin ;
+    rdfs:label "Engine Speed Bin 4" ;
+    rdfs:comment "Ordinal engine speed (RPM) region index 4 (highest speed). Numeric range not yet defined; to be derived from the engine-propeller combinator diagram for a given vessel/engine." .
 
 # #################################################################
 # #
@@ -243,6 +301,12 @@
         :CruiseState :PortState :MaintenanceLayupState
         :ManeuveringState :DriftState :UnknownOperatingState
     ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :EngineMode1 :EngineMode2 :EngineMode3 :EngineMode4 ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :EngineSpeedBin1 :EngineSpeedBin2 :EngineSpeedBin3 :EngineSpeedBin4 ) .
 
 [] a owl:AllDifferent ;
     owl:distinctMembers ( :DraftMode1 :DraftMode2 :DraftMode3 ) .
