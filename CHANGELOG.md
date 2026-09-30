@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added named individuals to `DraftMode` (`DraftMode1`-`3`) and `TrimMode` (`TrimMode1`-`3`) as ordinal, vessel/fleet-specific placeholders; `DraftTrimMode` is now a composed class (`hasDraftMode` + `hasTrimMode`, qualified cardinality 1 each) with no fixed enumerated individuals, following the same instantiation pattern as `VesselSpeedBin`
 - Renamed `SpeedBin` to `VesselSpeedBin`; revised description to note SOG/STW divergence under weather/current influence
 - Added `SpeedReference` class (`SOG`, `STW` individuals) and `hasSpeedReference` object property to `operational-modes.ttl`; applied as an optional qualifier restriction on `VesselSpeedBin`
+- Added `twFuelCostInUsdPerMT` datatype property and restriction to `Fuel` (`vessel.ttl`)
 - Expanded `model/README.md` with corrected architecture diagram (import DAG), naming conventions reference, and design pattern documentation
 - Updated `queries/weather-conditions-validation.rq` to reflect renamed properties
 

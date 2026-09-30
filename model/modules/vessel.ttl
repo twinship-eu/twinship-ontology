@@ -19,7 +19,7 @@
 <https://twin-ship.eu/twinship/vessel> a owl:Ontology ;
     rdfs:label "TwinShip Vessel Module" ;
     pav:createdOn "2026-02-05T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-03-03T00:00:00+00:00"^^xsd:dateTime ;
+    pav:lastUpdateOn "2026-09-30T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.0.4" ;
     rdfs:comment "Vessel module for TwinShip ontology. Combines engine and hull concepts. Defines vessel types, hull-related properties, and all engine-related classes, properties, and individuals including propulsion systems, auxiliary power generation, propellers, gearboxes, shaft generators, boilers, and fuel types. Extends twinship-base foundation classes." ;
     owl:imports <https://twin-ship.eu/twinship/base> ;
@@ -199,6 +199,9 @@
     rdfs:label "Fuel" ;
     rdfs:comment "Fuel type (e.g., HFO, MGO, MDO). Defined as individuals to allow engines and components to reference specific fuel types via the consume property." ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :twFuelCostInUsdPerMT ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
             owl:onProperty :twFuelDensityGrav15DegCKgPerLitre ;
             owl:someValuesFrom xsd:double ],
         [ a owl:Restriction ;
@@ -1217,6 +1220,12 @@
     skos:altLabel "Fuel bunker pumping rate" ;
     dcterms:description "The maximum pumping rate of the fuel being supplied by the bunker barge. Measurement is cubic meters per hour, or metric tonne per hour. (Numeric field, integer)." ;
     dcterms:source <https://www.imo.org/> ;
+    rdfs:range xsd:double ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
+:twFuelCostInUsdPerMT a owl:DatatypeProperty ;
+    rdfs:label "Fuel cost in USD per MT" ;
+    rdfs:comment "Bunker price of a fuel type, in US dollars per metric ton, as of the time it was recorded. Prices vary by port, supplier, and date; this represents a single reference value, not a fixed cost." ;
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
