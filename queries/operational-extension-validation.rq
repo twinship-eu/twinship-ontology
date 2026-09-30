@@ -75,7 +75,7 @@ ORDER BY ?voyage
 # (operational-modes module)
 # ============================================================
 # Expected: none in the shared ontology; individuals are created
-# per vessel/fleet instance data (same pattern as SpeedBin).
+# per vessel/fleet instance data (same pattern as VesselSpeedBin).
 
 # SELECT ?mode ?label ?comment
 # WHERE {
@@ -139,7 +139,7 @@ ORDER BY ?voyage
 #     :OperatingState :EngineMode
 #     :DraftMode :TrimMode :DraftTrimMode
 #     :FuelConsumptionObservation
-#     :OperationalProfile :SpeedBin :FrequencyDistribution
+#     :OperationalProfile :VesselSpeedBin :FrequencyDistribution
 #     :FuelConsumptionSummary :FuelConsumptionEstimate
 #     :FuelConsumptionGapAnalysis :PerformanceDeviation
 #     :LoadingCondition :LoadingPreset :DraftCondition :TrimCondition
@@ -205,7 +205,7 @@ ORDER BY ?voyage
 # Query 4 — List all DraftTrimMode individuals
 # ============================================================
 # Expected: none in the shared ontology; individuals are created
-# per vessel/fleet instance data (same pattern as SpeedBin).
+# per vessel/fleet instance data (same pattern as VesselSpeedBin).
 
 # SELECT ?mode ?label ?comment
 # WHERE {
@@ -251,7 +251,7 @@ ORDER BY ?voyage
 #   VALUES ?class {
 #     :Voyage :VoyageLeg :Route :Port
 #     :OperatingState :EngineMode :FuelConsumptionObservation
-#     :OperationalProfile :SpeedBin :FrequencyDistribution
+#     :OperationalProfile :VesselSpeedBin :FrequencyDistribution
 #     :FuelConsumptionSummary :FuelConsumptionEstimate
 #     :FuelConsumptionGapAnalysis :PerformanceDeviation
 #     :LoadingCondition :LoadingPreset :DraftCondition :TrimCondition

@@ -19,9 +19,9 @@
     dcterms:description "Ontology module for vessel operational context: voyages, voyage legs, routes, ports, fuel-consumption observations and summaries, operational profiles, speed bins, and frequency distributions. Extends twinship-base and imports operational-modes for cross-module range constraints."@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-05-21"^^xsd:date ;
-    dcterms:modified "2026-05-21"^^xsd:date ;
+    dcterms:modified "2026-09-30"^^xsd:date ;
     pav:createdOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
+    pav:lastUpdateOn "2026-09-30T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.0.4" ;
     rdfs:comment "Operational context module for TwinShip ontology. Imports twinship-base and twinship-operational-modes. The import of operational-modes enables range constraints on properties that reference OperatingState (e.g. summarisesOperatingState). No circular imports are introduced: operational-modes imports only base, and operational-context imports base + operational-modes." ;
     owl:imports <https://twin-ship.eu/twinship/base>,
@@ -121,7 +121,7 @@
     rdfs:label "Operational Profile" ;
     rdfs:comment "A derived or statistical representation of vessel operation, typically described by frequencies or durations over operating states, modes, and speed bins." ;
     rdfs:subClassOf :TwinShipInformationObject ,
-        [ a owl:Restriction ; owl:onProperty :hasSpeedBin               ; owl:someValuesFrom :SpeedBin              ],
+        [ a owl:Restriction ; owl:onProperty :hasSpeedBin               ; owl:someValuesFrom :VesselSpeedBin        ],
         [ a owl:Restriction ; owl:onProperty :hasFrequencyDistribution  ; owl:someValuesFrom :FrequencyDistribution ],
         [ a owl:Restriction ; owl:onProperty :hasFuelConsumptionSummary ; owl:someValuesFrom :FuelConsumptionSummary ],
         [ a owl:Restriction ; owl:onProperty :summarisesVoyage          ; owl:someValuesFrom :Voyage                ],
@@ -129,14 +129,15 @@
         [ a owl:Restriction ; owl:onProperty :twRecordCount             ; owl:someValuesFrom xsd:integer            ],
         [ a owl:Restriction ; owl:onProperty :twSamplingIntervalMinutes ; owl:someValuesFrom xsd:decimal            ] .
 
-:SpeedBin a owl:Class ;
-    rdfs:label "Speed Bin" ;
-    rdfs:comment "A speed interval used to group vessel observations for statistical analysis." ;
+:VesselSpeedBin a owl:Class ;
+    rdfs:label "Vessel Speed Bin" ;
+    rdfs:comment "A vessel speed interval used to group observations for statistical analysis. Vessel speed in knots may be measured as speed over ground (SOG) or speed through water (STW); these can diverge under the influence of current and weather conditions. The reference frame for a given bin or value may be declared via hasSpeedReference; where not declared, it is unspecified." ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :twSpeedBinLowerBoundInKnots ; owl:someValuesFrom xsd:decimal ],
         [ a owl:Restriction ; owl:onProperty :twSpeedBinUpperBoundInKnots ; owl:someValuesFrom xsd:decimal ],
         [ a owl:Restriction ; owl:onProperty :twSpeedValueInKnots         ; owl:someValuesFrom xsd:decimal ],
-        [ a owl:Restriction ; owl:onProperty :twStateFrequency     ; owl:someValuesFrom xsd:decimal ] .
+        [ a owl:Restriction ; owl:onProperty :twStateFrequency     ; owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ; owl:onProperty :hasSpeedReference    ; owl:someValuesFrom :SpeedReference ] .
 
 :FrequencyDistribution a owl:Class ;
     rdfs:label "Frequency Distribution" ;
@@ -245,8 +246,8 @@
 
 :hasSpeedBin a owl:ObjectProperty ;
     rdfs:label "has speed bin" ;
-    rdfs:comment "Relates an operational profile or observation to a speed bin." ;
-    rdfs:range :SpeedBin ;
+    rdfs:comment "Relates an operational profile or observation to a vessel speed bin." ;
+    rdfs:range :VesselSpeedBin ;
     rdfs:subPropertyOf :hasInformationObject .
 
 :hasFrequencyDistribution a owl:ObjectProperty ;
@@ -573,7 +574,7 @@
       owl:onProperty :hasQuantityRatio ;
       owl:someValuesFrom :TwinShipQuantityRatio ] .
 
-:SpeedBin rdfs:subClassOf
+:VesselSpeedBin rdfs:subClassOf
     [ a owl:Restriction ;
       owl:onProperty :hasQuantitySpeed ;
       owl:someValuesFrom :TwinShipQuantitySpeed ] .

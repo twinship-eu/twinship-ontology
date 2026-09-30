@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - `operational-modes.ttl` module: categorical operating states and modes (`OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`) with named individuals (`CruiseState`, `PortState`, `ManeuveringState`, `DriftState`, `DraftMode1`-`3`, `TrimMode1`-`3`, etc.)
-- `operational-context.ttl` module: voyage, port, and operational profile concepts (`Voyage`, `VoyageLeg`, `Route`, `Port`, `OperationalProfile`, `SpeedBin`, `FrequencyDistribution`, `FuelConsumptionObservation`, `FuelConsumptionSummary`, `FuelConsumptionEstimate`, `FuelConsumptionGapAnalysis`, `PerformanceDeviation`)
+- `operational-context.ttl` module: voyage, port, and operational profile concepts (`Voyage`, `VoyageLeg`, `Route`, `Port`, `OperationalProfile`, `VesselSpeedBin`, `FrequencyDistribution`, `FuelConsumptionObservation`, `FuelConsumptionSummary`, `FuelConsumptionEstimate`, `FuelConsumptionGapAnalysis`, `PerformanceDeviation`)
 - Naming conventions documented in `CLAUDE.md` and `model/README.md` (data property `tw` prefix, `"twinship <name>"` label pattern, unit suffix conventions)
 - VesselAI full reuse audit (`docs/ontology/vesselai-full-reuse-audit.txt`)
 - MIT license
@@ -21,7 +21,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added OWL `owl:someValuesFrom` restrictions to all classes in `weather-conditions.ttl` and `operational-context.ttl`, aligning with the design pattern established in `vessel.ttl`
 - Added missing subject-side OWL restrictions for `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`, `hasWeatherCondition` on `Voyage`/`VoyageLeg`
 - Added `owl:imports <weather-conditions>` to `operational-context.ttl` (required for `hasWeatherCondition some WeatherCondition` restriction on `VoyageLeg`)
-- Added named individuals to `DraftMode` (`DraftMode1`-`3`) and `TrimMode` (`TrimMode1`-`3`) as ordinal, vessel/fleet-specific placeholders; `DraftTrimMode` is now a composed class (`hasDraftMode` + `hasTrimMode`, qualified cardinality 1 each) with no fixed enumerated individuals, following the same instantiation pattern as `SpeedBin`
+- Added named individuals to `DraftMode` (`DraftMode1`-`3`) and `TrimMode` (`TrimMode1`-`3`) as ordinal, vessel/fleet-specific placeholders; `DraftTrimMode` is now a composed class (`hasDraftMode` + `hasTrimMode`, qualified cardinality 1 each) with no fixed enumerated individuals, following the same instantiation pattern as `VesselSpeedBin`
+- Renamed `SpeedBin` to `VesselSpeedBin`; revised description to note SOG/STW divergence under weather/current influence
+- Added `SpeedReference` class (`SOG`, `STW` individuals) and `hasSpeedReference` object property to `operational-modes.ttl`; applied as an optional qualifier restriction on `VesselSpeedBin`
 - Expanded `model/README.md` with corrected architecture diagram (import DAG), naming conventions reference, and design pattern documentation
 - Updated `queries/weather-conditions-validation.rq` to reflect renamed properties
 

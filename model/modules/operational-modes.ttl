@@ -16,7 +16,7 @@
 <https://twin-ship.eu/twinship/operational-modes> a owl:Ontology ;
     rdfs:label "TwinShip Operational Modes Module" ;
     dcterms:title "TwinShip Operational Modes Module"@en ;
-    dcterms:description "Ontology module defining categorical operational states and modes used to classify vessel operation. Covers operating states, engine modes, draft modes, trim modes, and combined draft–trim modes, together with their controlled individuals and related object properties."@en ;
+    dcterms:description "Ontology module defining categorical operational states and modes used to classify vessel operation. Covers operating states, engine modes, draft modes, trim modes, combined draft\u2013trim modes, and speed reference frames, together with their controlled individuals and related object properties."@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-05-21"^^xsd:date ;
     dcterms:modified "2026-09-30"^^xsd:date ;
@@ -61,16 +61,28 @@
 
 :DraftTrimMode a owl:Class ;
     rdfs:label "Draft\u2013Trim Mode" ;
-    rdfs:comment "A combined categorical mode representing a specific pairing of a DraftMode and a TrimMode, linked via hasDraftMode and hasTrimMode. No fixed vocabulary of combinations is defined in this module; individuals are created only for the draft\u2013trim pairings actually observed for a given vessel or fleet, following the same instantiation pattern as SpeedBin (structure defined here, population left to instance data). Historically named combinations such as 'even keel', 'stern trim', 'bow trim', or 'optimal trim' are examples of the kind of individuals that may be created; additional individuals may be added as needed." ;
+    rdfs:comment "A combined categorical mode representing a specific pairing of a DraftMode and a TrimMode, linked via hasDraftMode and hasTrimMode. No fixed vocabulary of combinations is defined in this module; individuals are created only for the draft\u2013trim pairings actually observed for a given vessel or fleet, following the same instantiation pattern as VesselSpeedBin (structure defined here, population left to instance data). Historically named combinations such as 'even keel', 'stern trim', 'bow trim', or 'optimal trim' are examples of the kind of individuals that may be created; additional individuals may be added as needed." ;
     rdfs:subClassOf :TwinShipQuality ,
         [ a owl:Restriction ; owl:onProperty :hasDraftMode ; owl:onClass :DraftMode ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] ,
         [ a owl:Restriction ; owl:onProperty :hasTrimMode  ; owl:onClass :TrimMode  ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] .
 
 # No individual can simultaneously belong to two different mode/state classes.
-:OperatingState owl:disjointWith :EngineMode, :DraftMode, :TrimMode, :DraftTrimMode .
-:EngineMode     owl:disjointWith :DraftMode, :TrimMode, :DraftTrimMode .
-:DraftMode      owl:disjointWith :TrimMode, :DraftTrimMode .
-:TrimMode       owl:disjointWith :DraftTrimMode .
+:OperatingState owl:disjointWith :EngineMode, :DraftMode, :TrimMode, :DraftTrimMode, :SpeedReference .
+:EngineMode     owl:disjointWith :DraftMode, :TrimMode, :DraftTrimMode, :SpeedReference .
+:DraftMode      owl:disjointWith :TrimMode, :DraftTrimMode, :SpeedReference .
+:TrimMode       owl:disjointWith :DraftTrimMode, :SpeedReference .
+:DraftTrimMode  owl:disjointWith :SpeedReference .
+
+# #################################################################
+# #
+# #    Classes — Speed Reference
+# #
+# #################################################################
+
+:SpeedReference a owl:Class ;
+    rdfs:label "Speed Reference" ;
+    rdfs:comment "A categorical qualifier indicating the physical reference frame a vessel speed-in-knots value is measured against: speed over ground (SOG) or speed through water (STW). Used to disambiguate speed values and bins where the reference frame is not otherwise specified." ;
+    rdfs:subClassOf :TwinShipQuality .
 
 # #################################################################
 # #
@@ -106,6 +118,12 @@
     rdfs:label "has draft\u2013trim mode" ;
     rdfs:comment "Relates a vessel or voyage segment to a combined categorical draft\u2013trim mode." ;
     rdfs:range :DraftTrimMode ;
+    rdfs:subPropertyOf :hasQuality .
+
+:hasSpeedReference a owl:ObjectProperty ;
+    rdfs:label "has speed reference" ;
+    rdfs:comment "Relates a speed value, bin, or observation to the reference frame (SOG or STW) against which it was measured." ;
+    rdfs:range :SpeedReference ;
     rdfs:subPropertyOf :hasQuality .
 
 # #################################################################
@@ -200,6 +218,22 @@
 
 # #################################################################
 # #
+# #    Individuals — Speed Reference
+# #
+# #################################################################
+
+:SOG a owl:NamedIndividual, :SpeedReference ;
+    rdfs:label "SOG" ;
+    skos:altLabel "Speed Over Ground"@en ;
+    rdfs:comment "Vessel speed measured relative to the ground/seabed (typically GPS-derived); includes the effect of current and tide." .
+
+:STW a owl:NamedIndividual, :SpeedReference ;
+    rdfs:label "STW" ;
+    skos:altLabel "Speed Through Water"@en ;
+    rdfs:comment "Vessel speed measured relative to the surrounding water mass (e.g. via speed log); excludes the effect of current, though still influenced by wind and wave conditions." .
+
+# #################################################################
+# #
 # #    Closed-world disjointness for controlled-vocabulary individuals
 # #
 # #################################################################
@@ -215,3 +249,6 @@
 
 [] a owl:AllDifferent ;
     owl:distinctMembers ( :TrimMode1 :TrimMode2 :TrimMode3 ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :SOG :STW ) .

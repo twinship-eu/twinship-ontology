@@ -106,7 +106,8 @@ build/                          # Auto-generated build artifacts (gitignored)
 5. **modules/operational-modes.ttl** — Canonical module for categorical modes and states
    - Operating states: `OperatingState` with individuals `CruiseState`, `PortState`, `MaintenanceLayupState`, `ManeuveringState`, `DriftState`, `UnknownOperatingState`
    - Engine modes: `EngineMode`
-   - Draft modes: `DraftMode` with individuals `DraftMode1`-`3`; `TrimMode` with individuals `TrimMode1`-`3`; `DraftTrimMode` composed from `hasDraftMode`/`hasTrimMode` (qualified cardinality 1 each), no fixed enumerated individuals (populated per vessel/fleet, same pattern as `SpeedBin`)
+   - Draft modes: `DraftMode` with individuals `DraftMode1`-`3`; `TrimMode` with individuals `TrimMode1`-`3`; `DraftTrimMode` composed from `hasDraftMode`/`hasTrimMode` (qualified cardinality 1 each), no fixed enumerated individuals (populated per vessel/fleet, same pattern as `VesselSpeedBin`)
+   - Speed reference: `SpeedReference` with individuals `SOG`, `STW`; `hasSpeedReference` optionally qualifies `VesselSpeedBin` instances
    - Object properties: `hasOperatingState`, `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`
    - All mode/state classes extend `TwinShipQuality`
    - IRI: `https://twin-ship.eu/twinship/operational-modes`
@@ -114,7 +115,7 @@ build/                          # Auto-generated build artifacts (gitignored)
 
 6. **modules/operational-context.ttl** — Canonical module for operational context and voyage data
    - Process classes: `Voyage`, `VoyageLeg` (extend `TwinShipProcess`); `Route`, `Port` (extend `TwinShipInformationObject`)
-   - Statistical/profile classes: `OperationalProfile`, `SpeedBin`, `FrequencyDistribution`, `FuelConsumptionSummary`, `FuelConsumptionEstimate`, `FuelConsumptionGapAnalysis`, `PerformanceDeviation`
+   - Statistical/profile classes: `OperationalProfile`, `VesselSpeedBin`, `FrequencyDistribution`, `FuelConsumptionSummary`, `FuelConsumptionEstimate`, `FuelConsumptionGapAnalysis`, `PerformanceDeviation`
    - Observation class: `FuelConsumptionObservation` (extends `TwinShipQuality`)
    - Object properties: voyage structure, profile/statistics, fuel, context links
    - Data properties: voyage times/IDs, state statistics, engine observations, speed bins, fuel consumption

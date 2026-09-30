@@ -842,7 +842,7 @@ Useful for TwinShip? Limited.
 
 TwinShip already covers?
   - TwinShipInformationObject for information artefacts
-  - OperationalProfile, SpeedBin, FrequencyDistribution,
+  - OperationalProfile, VesselSpeedBin, FrequencyDistribution,
     FuelConsumptionSummary natively in operational-context.ttl
 
 Recommendation: Ignore for direct reuse. Reference with rdfs:seeAlso
@@ -1011,7 +1011,7 @@ Port                   VesselAI:Port            Same label; different
                                                 VAI: dul:PhysicalPlace
                                                 rdfs:seeAlso safe
 OperationalProfile     (none)                   Not in VesselAI
-SpeedBin               (none)                   Not in VesselAI
+VesselSpeedBin         (none)                   Not in VesselAI
 FrequencyDistribution  (none)                   Not in VesselAI
 FuelConsumptionObs.    (none directly)          VesselAI has no
                                                 observation class
@@ -1584,7 +1584,7 @@ IRI prefix for VAI terms: http://www.vesselAI-project.eu/ontology#
   :DraftMode                   (none)                    none     -
   Not in VesselAI
 
-  :SpeedBin                    (none)                    none     -
+  :VesselSpeedBin              (none)                    none     -
   Not in VesselAI
 
   :OperationalProfile          (none)                    none     -
