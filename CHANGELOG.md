@@ -33,12 +33,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added `EngineSpeedBin` class (`EngineSpeedBin1`-`4` individuals) and `hasEngineSpeedBin` object property to `operational-modes.ttl`, representing ordinal engine speed (RPM) regions from the engine-propeller combinator diagram; numeric RPM ranges deferred pending combinator diagram data
 - Replaced ambiguous `twVoyageStartTime`/`twVoyageEndTime` with `twVoyageEstimatedStartTime`/`twVoyageActualStartTime` and `twVoyageEstimatedEndTime`/`twVoyageActualEndTime` (Estimated/Actual pattern, per DynaPort D2.3 ETD/ATD, ETA/ATA terminology)
 - Added `twWayPointTimestamp` datatype property and restriction to `WayPoint`
-- `vessel.ttl` now imports `operational-context.ttl` (transitively `operational-modes`,
-  `weather-conditions`); added missing `VesselSystem` restrictions for `hasVoyage`,
-  `hasOperationalProfile`, `hasFuelConsumptionObservation`, `hasOperatingState`, `hasDraftMode`,
-  `hasTrimMode`, `hasDraftTrimMode` — properties whose own comments already described them as
-  applying to a vessel, but were never declared as `VesselSystem` restrictions since no module
-  previously imported `vessel.ttl`
+- Added `twinship-core` as a node in the `modules.drawio` diagram (single entry point for the
+  complete ontology, with import edges to `twinship-base` and all 5 domain modules); documented
+  the "core stays minimal" principle in `model/README.md` — consumers needing a different subset
+  should write their own small aggregate file rather than requesting an official package tier
+- Explored then reverted having `vessel.ttl` import `operational-context.ttl` to add missing
+  `VesselSystem` restrictions (`hasVoyage`, `hasOperatingState`, etc.). Reverted to keep `vessel.ttl`
+  a lightweight `twinship-base`-only leaf module for modular/partial-ontology use; the gap (no
+  formal restriction linking `VesselSystem` to `Voyage`/`OperatingState`/etc.) is reinstated as a
+  known limitation
 - Expanded `model/README.md` with corrected architecture diagram (import DAG), naming conventions reference, and design pattern documentation
 - Updated `queries/weather-conditions-validation.rq` to reflect renamed properties
 

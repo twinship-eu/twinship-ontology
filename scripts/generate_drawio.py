@@ -46,7 +46,7 @@ MOD_ORDER = ["vessel", "operational-context", "operational-modes",
 
 # Import dependencies between domain modules (excluding base, which all import)
 MOD_DEPS: dict[str, list[str]] = {
-    "vessel":               ["operational-context"],
+    "vessel":               [],
     "operational-modes":    [],
     "weather-conditions":   [],
     "operational-context":  ["operational-modes", "weather-conditions"],
@@ -119,6 +119,7 @@ CLR_CLASS    = "#FFFF88"   # yellow — OWL class (default, overridden in overvi
 CLR_EXTERNAL = "#F5F5F5"   # grey   — class from another module
 CLR_INDIV    = "#FFFF88"   # yellow — named individual (ellipse)
 CLR_BASE     = "#E8E8E8"   # light grey — twinship-base box in modules diagram
+CLR_CORE     = "#D4D4D4"   # darker grey — twinship-core box in modules diagram (entry point)
 
 MOD_CLR: dict[str, tuple[str, str]] = {   # (fill, stroke)
     "vessel":               ("#DAE8FC", "#6C8EBF"),
@@ -535,6 +536,7 @@ def generate_modules_diagram(out_path: Path) -> None:
         "weather-conditions": (700, 220),
         "operational-context":(450, 380),
         "statistics":         (450, 540),
+        "twinship-core":      (A4_W // 2 - BASE_W // 2, 690),
     }
 
     cell_ids: dict[str, str] = {}
@@ -553,6 +555,21 @@ def generate_modules_diagram(out_path: Path) -> None:
                                "<font style='font-size:10px;'>IDO · QUDT · PAV</font>",
                          style=style, vertex="1", parent="1")
     _geo(cell, bx, by, BASE_W, MOD_H)
+
+    # Core box (special styling) - single entry point for the complete ontology
+    cx, cy = positions["twinship-core"]
+    cid = "mod_core"
+    cell_ids["twinship-core"] = cid
+    style = (
+        f"rounded=1;whiteSpace=wrap;fillColor={CLR_CORE};strokeColor=#333333;"
+        "fontStyle=1;fontSize=13;html=1;"
+    )
+    cell = ET.SubElement(root, "mxCell",
+                         id=cid,
+                         value="<b>twinship-core</b><br/>"
+                               "<font style='font-size:10px;'>Complete ontology - single entry point</font>",
+                         style=style, vertex="1", parent="1")
+    _geo(cell, cx, cy, BASE_W, MOD_H)
 
     # Domain module boxes
     for mod_name in MOD_ORDER:
@@ -587,6 +604,15 @@ def generate_modules_diagram(out_path: Path) -> None:
                 add_obj_edge(root, _uid("dep"), "imports",
                              cell_ids[mod_name], cell_ids[dep],
                              cross_module=True)
+
+    # Core imports: base + all domain modules (single entry point for the complete ontology)
+    add_obj_edge(root, _uid("core"), "imports",
+                 cell_ids["twinship-core"], cell_ids["twinship-base"],
+                 cross_module=True)
+    for mod_name in MOD_ORDER:
+        add_obj_edge(root, _uid("core"), "imports",
+                     cell_ids["twinship-core"], cell_ids[mod_name],
+                     cross_module=True)
 
     write_drawio(mxfile, out_path)
 
