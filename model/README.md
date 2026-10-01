@@ -122,7 +122,16 @@ build/                          # Auto-generated build artifacts (gitignored)
    - IRI: `https://twin-ship.eu/twinship/operational-context`
    - Imports: `twinship-base`, `operational-modes`, `weather-conditions`
 
-7. **twinship-qudt-vocabulary.ttl** — QUDT quantity and unit family classes (Nexus advanced pattern)
+7. **modules/statistics.ttl** — TwinShip-native estimation, prediction, and statistical model concepts
+   - Statistical classes: `VesselPerformanceStatistics`, `VesselPerformanceModel`
+   - Prediction/estimation: `Prediction`, `PredictionProcess`, `PredictionResult`, `Estimation`, `EstimationProcess`, `Assumption`, `FeatureContribution`
+   - Observation: `Observation`, `ObservableQuality`, `ObservationResult` (aligned to the W3C SOSA vocabulary)
+   - Model Card documentation classes (aligned to the OBO Model Card Report Ontology, MCRO): `ModelCard`, `ModelDetailSection`, `ConsiderationInformationSection`, `ModelParameterSection`, `ResultSection`, `DatasetInformationSection`, `TrainingData`, `EvaluationData`, and related sections
+   - Does **not** import VesselAI or DUL
+   - IRI: `https://twin-ship.eu/twinship/statistics`
+   - Imports: `twinship-base`, `operational-modes`, `operational-context`, `weather-conditions`
+
+8. **twinship-qudt-vocabulary.ttl** — QUDT quantity and unit family classes (Nexus advanced pattern)
    - Adds **22 quantity kind families** (Power, Energy, RotationalVelocity, Speed, Mass, MassFlowRate, MassDensity, MassRatio, SpecificEnergy, Temperature, Length, Angle, Pressure, VolumeFlowRate, Volume, Torque, Force, ElectricPotential, ElectricCurrent, Frequency, Time, DimensionlessRatio)
    - Per family: `TwinShipQuantityKindFor[X]`, `TwinShipUnitFor[X]`, `TwinShipQuantityValue[X]`, `TwinShipQuantity[X]` classes
    - Per family: `hasQuantity[X]` object property (`rdfs:subPropertyOf qudt:hasQuantity`)
