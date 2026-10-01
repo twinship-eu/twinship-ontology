@@ -93,7 +93,8 @@ build/                          # Auto-generated build artifacts (gitignored)
    - Equipment: `Maneuvering`, `EmergencyEquipment`
    - Fuel: `Fuel` class + named individuals `:AMM` (Ammonia), `:BF` (Bio-fuel)
    - 130+ engine and vessel properties
-   - Imports: `twinship-base`
+   - `VesselSystem` restrictions for `hasVoyage`, `hasOperationalProfile`, `hasFuelConsumptionObservation`, `hasOperatingState`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`
+   - Imports: `twinship-base`, `operational-context` (transitively `operational-modes`, `weather-conditions`)
 
 4. **modules/weather-conditions.ttl** — TwinShip-native weather and wind condition module
    - Classes: `WeatherCondition` (subClassOf `TwinShipQuality`), `WindCondition` (subClassOf `WeatherCondition`)

@@ -46,7 +46,7 @@ MOD_ORDER = ["vessel", "operational-context", "operational-modes",
 
 # Import dependencies between domain modules (excluding base, which all import)
 MOD_DEPS: dict[str, list[str]] = {
-    "vessel":               [],
+    "vessel":               ["operational-context"],
     "operational-modes":    [],
     "weather-conditions":   [],
     "operational-context":  ["operational-modes", "weather-conditions"],

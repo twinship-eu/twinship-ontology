@@ -19,10 +19,11 @@
 <https://twin-ship.eu/twinship/vessel> a owl:Ontology ;
     rdfs:label "TwinShip Vessel Module" ;
     pav:createdOn "2026-02-05T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-09-30T00:00:00+00:00"^^xsd:dateTime ;
+    pav:lastUpdateOn "2026-10-01T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.0.4" ;
-    rdfs:comment "Vessel module for TwinShip ontology. Combines engine and hull concepts. Defines vessel types, hull-related properties, and all engine-related classes, properties, and individuals including propulsion systems, auxiliary power generation, propellers, gearboxes, shaft generators, boilers, and fuel types. Extends twinship-base foundation classes." ;
-    owl:imports <https://twin-ship.eu/twinship/base> ;
+    rdfs:comment "Vessel module for TwinShip ontology. Combines engine and hull concepts. Defines vessel types, hull-related properties, and all engine-related classes, properties, and individuals including propulsion systems, auxiliary power generation, propellers, gearboxes, shaft generators, boilers, and fuel types. Extends twinship-base foundation classes. Imports operational-context (and transitively operational-modes, weather-conditions) to declare VesselSystem restrictions for voyage/state/profile properties whose domain is a vessel." ;
+    owl:imports <https://twin-ship.eu/twinship/base>,
+        <https://twin-ship.eu/twinship/operational-context> ;
     owl:versionIRI <https://twin-ship.eu/twinship/vessel/0.0.4> .
 
 # #################################################################
@@ -52,6 +53,27 @@
         [ a owl:Restriction ;
             owl:onProperty :twVesselDraftMidStbdMaxInM ;
             owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasVoyage ;
+            owl:someValuesFrom :Voyage ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasOperationalProfile ;
+            owl:someValuesFrom :OperationalProfile ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasFuelConsumptionObservation ;
+            owl:someValuesFrom :FuelConsumptionObservation ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasOperatingState ;
+            owl:someValuesFrom :OperatingState ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasDraftMode ;
+            owl:someValuesFrom :DraftMode ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasTrimMode ;
+            owl:someValuesFrom :TrimMode ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasDraftTrimMode ;
+            owl:someValuesFrom :DraftTrimMode ],
         :TwinShipInanimatePhysicalObject .
 
 :RoPax a owl:Class ;
