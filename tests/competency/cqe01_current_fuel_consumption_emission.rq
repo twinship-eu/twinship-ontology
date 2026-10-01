@@ -20,10 +20,6 @@ WHERE {
 	?fuelObservation a :FuelConsumptionObservation ;
 									 :twFuelConsumedMassInMT ?fuelConsumedMassInMT .
 	OPTIONAL {
-		?voyage :hasFuelConsumptionSummary ?fuelSummary .
-		OPTIONAL { ?fuelSummary :twAverageFuelConsumption ?averageFuelConsumption }
-	}
-	OPTIONAL {
 		?vessel :hasVoyage ?voyage .
 		?engine ido:partOf ?vessel .
 		?engine :twFuelEmissionFactorCo2InGPerKgFuel ?co2EmissionFactorGPerKgFuel .

@@ -80,6 +80,10 @@ Instance data files must **not** be committed to the repository — keep them un
 | Organisational & Fleet Management | CQ-30–31 | xfail (needs instance data) |
 | Unmanned / Future Vessel Simulation | CQ-32–33 | xfail (needs instance data) |
 | System Connectivity & Integration | CQ-34–36 | xfail (CQ-36: concept not yet modelled) |
+| Current State and Observations | CQE–01–02 | xfail (needs instance data) |
+| Estimation, Prediction and Forecasting | CQE–09–10 | xfail (needs instance data) |
+| Observation and Prediction Provenance | CQE–20–22 <br>CQE–26–28 <br>CQE–30–31 | xfail (needs instance data) |
+
 
 ## Adding a New Competency Question
 
