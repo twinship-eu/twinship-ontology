@@ -78,6 +78,7 @@ build/                          # Auto-generated build artifacts (gitignored)
 2. **twinship-core.ttl** (15 lines) - **Complete Aggregate**
    - Minimal file that imports `twinship-base` + all domain modules
    - Provides the complete TwinShip ontology
+   - Intentionally kept minimal (no package tiers/variants); write your own small aggregate for a custom subset
    - **Import this for the full ontology**
 
 ### Domain Modules
@@ -154,6 +155,8 @@ build/                          # Auto-generated build artifacts (gitignored)
 <http://example.org/myOntology> a owl:Ontology ;
     owl:imports <https://twin-ship.eu/twinship/core> .  # Gets everything
 ```
+
+**Design principle:** `twinship-core.ttl` is intentionally kept minimal — a pure aggregate with no classes or properties of its own, just an `owl:imports` list. It is not meant to be extended with package tiers or variants. If `core` imports more than a given use case needs (e.g. you only want vessel structure, not the full operational/statistics stack), write your own small aggregate file importing exactly `twinship-base` plus the modules you need, following the "For Modular Development" pattern below, rather than requesting a new official subset be added here.
 
 ### For Modular Development
 
