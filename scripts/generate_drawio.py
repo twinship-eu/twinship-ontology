@@ -580,12 +580,13 @@ def generate_modules_diagram(out_path: Path) -> None:
                      cell_ids[mod_name], cell_ids["twinship-base"],
                      cross_module=True)
 
-    # Cross-module import arrows between domain modules
+    # Cross-module import arrows between domain modules (same dashed style as above)
     for mod_name, deps in MOD_DEPS.items():
         for dep in deps:
             if mod_name in cell_ids and dep in cell_ids:
                 add_obj_edge(root, _uid("dep"), "imports",
-                             cell_ids[mod_name], cell_ids[dep])
+                             cell_ids[mod_name], cell_ids[dep],
+                             cross_module=True)
 
     write_drawio(mxfile, out_path)
 
