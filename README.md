@@ -86,7 +86,7 @@ This writes `.drawio` files to `diagrams/` (gitignored — regenerate as needed)
 | `diagrams/operational-context.drawio` | Per-module | Voyage, leg, port, route, profiles, observations |
 | `diagrams/operational-modes.drawio` | Per-module | States/modes classes and named individuals |
 | `diagrams/weather-conditions.drawio` | Per-module | Weather/wind/wave/current conditions |
-| `diagrams/predictions.drawio` | Per-module | ML predictions and MCRO model card structure |
+| `diagrams/statistics.drawio` | Per-module | ML predictions, estimations, model cards (MCRO) |
 
 Open any `.drawio` file in [draw.io (diagrams.net)](https://www.diagrams.net/) to tune the layout, then export to PDF or SVG for publication.
 
