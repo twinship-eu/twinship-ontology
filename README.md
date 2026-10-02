@@ -90,7 +90,7 @@ Competency questions are validated as SPARQL tests against the merged ontology u
 
 ```bash
 # Build the merged ontology first
-uv run python scripts/merge_modules.py --auto
+mkdir -p build && uv run python scripts/merge_modules.py --catalog model/catalog-v001.xml model/twinship-core.ttl build/twinship-core-complete.ttl
 
 # Run all competency question tests
 uv run pytest tests/ -v

@@ -83,7 +83,7 @@ Reason:
 
 Every class must declare `rdfs:subClassOf` restrictions for characteristic object and data properties.
 
-Use `owl:someValuesFrom` for both object and datatype properties.
+Use `owl:someValuesFrom` for both object and datatype properties. Use `owl:onClass` + `owl:qualifiedCardinality` instead only where exactly one value is semantically required (e.g. `DraftTrimMode.hasDraftMode`, `VesselSpeedBin.hasSpeedReference`).
 
 Example:
 
@@ -98,6 +98,43 @@ Example:
 ```
 
 Restrictions are required because the visualization pipeline derives property domains from them.
+
+---
+
+## QUDT Quantity and Unit Pattern
+
+TwinShip uses QUDT as the preferred approach for quantities and units, following an advanced pattern with per-quantity-kind families (described below).
+
+The QUDT vocabulary file is `model/twinship-qudt-vocabulary.ttl`, imported by `twinship-base.ttl` (and therefore available to all domain modules automatically). It adds **22 quantity kind families**, each comprising:
+
+```turtle
+# Per quantity kind X:
+:TwinShipQuantityKindFor[X] rdfs:subClassOf qudt:QuantityKind .
+:TwinShipUnitFor[X]         rdfs:subClassOf qudt:Unit .
+:TwinShipQuantityValue[X]   rdfs:subClassOf qudt:QuantityValue .
+:TwinShipQuantity[X]        rdfs:subClassOf qudt:Quantity ,
+    [ owl:onProperty qudt:hasQuantityKind ; owl:allValuesFrom :TwinShipQuantityKindFor[X] ] ,
+    [ owl:onProperty qudt:quantityValue   ; owl:allValuesFrom :TwinShipQuantityValue[X]   ] .
+
+:hasQuantity[X] rdfs:subPropertyOf qudt:hasQuantity ;
+    rdfs:range :TwinShipQuantity[X] .
+
+# Type the QUDT named individuals as family members:
+quantitykind:[X] a :TwinShipQuantityKindFor[X] .
+unit:[Y]         a :TwinShipUnitFor[X] .
+
+# Domain class restriction:
+:MyClass rdfs:subClassOf
+    [ owl:onProperty :hasQuantity[X] ; owl:someValuesFrom :TwinShipQuantity[X] ] .
+```
+
+**Coexistence with XSD data properties** (explicit policy):
+
+The existing `tw`-prefixed `owl:DatatypeProperty` declarations with `rdfs:range xsd:double` / `xsd:decimal` are **retained unchanged**. They serve as the pragmatic SPARQL query layer. The QUDT object properties provide semantic grounding and unit disambiguation. Both layers must be maintained.
+
+Rule: when adding a new numeric data property:
+1. Add the `hasQuantity[X]` family definition (4 classes + 1 property + QUDT individual type assertions) to `twinship-qudt-vocabulary.ttl`.
+2. Add the `owl:someValuesFrom` restriction to the owning class in the module that defines it (`vessel.ttl`, `operational-context.ttl`, `weather-conditions.ttl`, or `operational-modes.ttl` for `EngineMode`).
 
 ---
 
@@ -137,6 +174,8 @@ Common unit suffixes:
 - `InMT`
 - `InDegC`
 - `InRevPerMin`
+- `InKnots`
+- `InMWh`
 - `KgPerHr`
 - `KJPerKg`
 
@@ -184,6 +223,7 @@ Committed source:
 - `model/`
 - `model/modules/`
 - `model/external/`
+- `examples/README.md` only — dataset `.ttl` files under `examples/` are gitignored until published
 
 Generated or transient:
 - `build/` — generated, do not edit
@@ -217,14 +257,17 @@ See:
 Keep concepts in the correct module.
 
 - `operational-modes.ttl`  
-  States/modes and named individuals:
-  `OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`
+  Categorical states/modes: `OperatingState`, `EngineMode`, `EngineSpeedBin`, `DraftMode`, `TrimMode`, `DraftTrimMode`, `SpeedReference`.
+  Named individuals only for universal vocabularies (`OperatingState` states, `SOG`/`STW`). Do not define vessel-/engine-specific individuals (`EngineMode`, `EngineSpeedBin`, `DraftMode`, `TrimMode`) in shared modules — they are instantiated per vessel in instance data outside the shared modules.
 
 - `operational-context.ttl`  
   Voyage, leg, port, route, profiles, observations, summaries
 
 - `weather-conditions.ttl`  
   Weather/wind conditions and wind data properties
+
+- `statistics.ttl`  
+  Estimation, prediction, assumption, and statistical model (model card) concepts
 
 - `vessel.ttl`  
   Vessel systems, engines, propulsion, fuel, gearbox
@@ -287,7 +330,7 @@ Never manually edit generated files in:
 3. Add class restrictions for characteristic properties.
 4. Update `model/catalog-v001.xml` when adding modules.
 5. Add new module imports to `model/twinship-core.ttl`.
-6. Do not combine `--auto` with explicit output paths.
+6. Do not combine `--auto` with explicit output paths. `--auto` writes `<input>-complete.ttl` next to the input file (not into `build/`); for tests use the explicit `build/` command below.
 7. `strip_for_webvowl.py` uses `sys.argv`, not `argparse`.
 8. Edit landing page HTML inside `generate_website.sh`.
 9. **UTF-8 encoding — three layers; do not remove any:**
@@ -295,6 +338,36 @@ Never manually edit generated files in:
    - All Python file I/O uses explicit `encoding='utf-8'` — never use bare `open(path)`.
    - WIDOCO Java is invoked with `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8`.
 10. **Version synchronization** — all version numbers must stay in sync (currently `0.0.4`) across ontology files and project metadata.
+
+---
+
+## Testing Competency Questions
+
+CQ tests run in two modes — select based on what you need:
+
+**Schema-only (default):** validates ontology structure against the merged TTL.
+```bash
+mkdir -p build && uv run python scripts/merge_modules.py --catalog model/catalog-v001.xml model/twinship-core.ttl build/twinship-core-complete.ttl
+uv run pytest tests/ -v
+```
+Most CQs will `xfail` (no instance data). Add `# STRICT` to a `.rq` file to make it a hard failure.
+
+**Live GraphDB (instance data):** queries all vessel repositories in a running GraphDB instance.
+```bash
+KEYCLOAK_CLIENT_ID=<your-client-id> \
+KEYCLOAK_CLIENT_SECRET=<your-client-secret> \
+uv run pytest tests/ \
+  --graphdb-url http://localhost:7200 \
+  --graphdb-repos <repo1>,<repo2>,<repo3>,<repo4> \
+  -v
+```
+
+GraphDB is provided by the [`twinship-data-pipeline`](https://github.com/twinship-eu/twinship-data-pipeline) stack (`docker-compose up`) and must be reachable at `--graphdb-url`. Credentials and repository IDs come from that deployment — **do not commit them**. A single-repo strict mode (`--graphdb-test-repo`, synthetic data from `scripts/load_test_instances.py`) also exists. See `tests/README.md` for full options.
+
+Privacy rules for tests:
+- No operator names, vessel names, or instance identifiers in committed test files.
+- `--graphdb-repos` defaults to generic placeholders (`vessel-roro`, etc.) — always override at runtime.
+- Credentials are passed only via environment variables, never stored in files.
 
 ---
 
