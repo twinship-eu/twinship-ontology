@@ -22,7 +22,7 @@ The human-readable catalogue of competency questions (natural language, status, 
 The merged ontology must exist before running tests:
 
 ```bash
-uv run python scripts/merge_modules.py --auto
+mkdir -p build && uv run python scripts/merge_modules.py --catalog model/catalog-v001.xml model/twinship-core.ttl build/twinship-core-complete.ttl
 ```
 
 This writes `build/twinship-core-complete.ttl`, which `conftest.py` loads as the test graph.

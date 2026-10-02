@@ -519,7 +519,8 @@ def graph(request: pytest.FixtureRequest):
     if not ONTOLOGY_PATH.exists():
         pytest.skip(
             f"Merged ontology not found at {ONTOLOGY_PATH}. "
-            "Run 'uv run python scripts/merge_modules.py --auto' first."
+            "Run 'mkdir -p build && uv run python scripts/merge_modules.py --catalog "
+            "model/catalog-v001.xml model/twinship-core.ttl build/twinship-core-complete.ttl' first."
         )
     g = ConjunctiveGraph()
     g.parse(str(ONTOLOGY_PATH), format="turtle")

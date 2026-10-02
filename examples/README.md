@@ -31,7 +31,10 @@ related components, linked via `ido:connectedTo`/`ido:partOf`.
   (private repo) — a temporary stopgap generator, not the project's long-term
   data onboarding solution (that's `twinship-data-pipeline`, to be updated to
   support the full ontology extensions).
-- **Scope/limitations**: static component/mechanical specs only — predates this
-  project's operational/time-series ontology extensions (EngineMode,
-  EngineSpeedBin, DraftMode, TrimMode, VesselSpeedBin, SpeedReference, voyage
-  timestamps, etc.).
+- **Scope/limitations**: static component/mechanical specs only — the
+  spreadsheet predates this project's operational/time-series ontology
+  extensions (VesselSpeedBin, SpeedReference, voyage timestamps, etc.). The
+  generator repo adds hand-authored placeholder individuals for EngineMode
+  (per genset), EngineSpeedBin, DraftMode and TrimMode via its `merge_graph.py`
+  step; all their numeric values are zero placeholders pending the statistical
+  model output, so treat them as structure demonstration only.

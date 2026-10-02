@@ -85,8 +85,8 @@ build/                          # Auto-generated build artifacts (gitignored)
 
 3. **modules/vessel.ttl** (≈1960 lines)
    - Vessel types: `VesselSystem`, `RoRo`, `RoPax`, `Tanker`
-   - Hull properties: displacement, draft (aft, fore, mid port/starboard), depth of water
-   - Engine systems: `EngineSystem`, `MainEngineSystem`, `AuxiliaryEngineSystem`
+   - Hull properties: displacement, draft (aft, fore, mid port/starboard), depth of water; observed draft, trim and displacement (`twBowDraftInM`, `twSternDraftInM`, `twTrimInM`, `twDisplacementInMT`, ...)
+   - Engine systems: `EngineSystem` (with `twEngineModeCount`), `MainEngineSystem`, `AuxiliaryEngineSystem`
    - Engine types: `DieselEngine`, `FourStroke`, `TwoStroke`, `Boiler`
    - Propulsion: `PropellerSystem`, `CPP`, `FPP`
    - Transmission: `GearboxSystem`, `DirectDrive`, `Reduction`, `TISO`
@@ -106,9 +106,9 @@ build/                          # Auto-generated build artifacts (gitignored)
 
 5. **modules/operational-modes.ttl** — Canonical module for categorical modes and states
    - Operating states: `OperatingState` with individuals `CruiseState`, `PortState`, `MaintenanceLayupState`, `ManeuveringState`, `DriftState`, `UnknownOperatingState`
-   - Engine modes: `EngineMode` with individuals `EngineMode1`-`4` (ordinal, vessel/fleet-specific placeholders); `EngineSpeedBin` with individuals `EngineSpeedBin1`-`4` (ordinal RPM regions, numeric ranges not yet defined), linked via `hasEngineSpeedBin`
-   - Draft modes: `DraftMode` with individuals `DraftMode1`-`3`; `TrimMode` with individuals `TrimMode1`-`3`; `DraftTrimMode` composed from `hasDraftMode`/`hasTrimMode` (qualified cardinality 1 each), no fixed enumerated individuals (populated per vessel/fleet, same pattern as `VesselSpeedBin`)
-   - Speed reference: `SpeedReference` with individuals `SOG`, `STW`; `hasSpeedReference` optionally qualifies `VesselSpeedBin` instances
+   - Engine modes: `EngineMode` (no individuals in this module — vessel-/engine-specific, instantiated per engine in instance data; engine declares its roster via `hasEngineMode` and count via `twEngineModeCount`). Each mode carries kW bounds (`twEngineModeLowerBoundInKW`, `twEngineModeLowerBoundVariationInKW`, `twEngineModeUpperBoundInKW`) and optional engine RPM bounds (`twEngineModeLowerBoundInRevPerMin`, `twEngineModeUpperBoundInRevPerMin`); the bounds are the contract and model-internal parameters (e.g. mean/deviation) are not stored. `EngineSpeedBin` (no individuals in this module — vessel-/engine-specific, instantiated per vessel/engine in instance data), linked via `hasEngineSpeedBin`
+   - Draft modes: `DraftMode`, `TrimMode` (no individuals in this module — vessel-/fleet-specific, instantiated in instance data); `DraftTrimMode` composed from `hasDraftMode`/`hasTrimMode` (qualified cardinality 1 each), no fixed enumerated individuals (populated per vessel/fleet, same pattern as `VesselSpeedBin`)
+   - Speed reference: `SpeedReference` with individuals `SOG`, `STW`; `hasSpeedReference` is required (exactly one) on every `VesselSpeedBin` instance
    - Object properties: `hasOperatingState`, `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`
    - All mode/state classes extend `TwinShipQuality`
    - IRI: `https://twin-ship.eu/twinship/operational-modes`
@@ -182,7 +182,7 @@ TwinShip uses **OWL restriction-based modelling**: property usage on classes is 
 
 ### QUDT Quantities and Units
 
-TwinShip follows the **Nexus advanced pattern** (see `model/external/nexus/model/nexus-core-advanced.ttl`) for representing quantities and units via QUDT. The vocabulary file `model/twinship-qudt-vocabulary.ttl` provides:
+TwinShip follows the **Nexus advanced pattern** (see `model/nexus-core-advanced.ttl` in the sibling `Nexus-main` repository; not vendored here) for representing quantities and units via QUDT. The vocabulary file `model/twinship-qudt-vocabulary.ttl` provides:
 
 - 22 quantity kind families, each with `TwinShipQuantityKindFor[X]`, `TwinShipUnitFor[X]`, `TwinShipQuantityValue[X]`, `TwinShipQuantity[X]` classes
 - `hasQuantity[X]` object properties (`rdfs:subPropertyOf qudt:hasQuantity`) for each family
@@ -230,7 +230,7 @@ To generate visualization and documentation from the source ontology:
 ./scripts/generate_website.sh --verbose
 
 # Individual steps
-uv run python scripts/merge_modules.py --auto model/twinship-core.ttl
+uv run python scripts/merge_modules.py --catalog model/catalog-v001.xml model/twinship-core.ttl build/twinship-core-complete.ttl
 uv run python scripts/generate_viz_ontology.py --auto build/twinship-core-complete.ttl
 ```
 
@@ -330,7 +330,7 @@ Properties without a matching standard need no `skos:notation` / `skos:altLabel`
 
 | Sub-pattern | Convention | Examples |
 |---|---|---|
-| Descriptive names | PascalCase | `:CruiseState`, `:DraftMode1`, `:TrimMode1` |
+| Descriptive names | PascalCase | `:CruiseState`, `:ManeuveringState`, `:UnknownOperatingState` |
 | Industry abbreviations | ALL-CAPS | `:AMM`, `:BF`, `:CPP`, `:FPP` |
 
 ### Ontology IRIs

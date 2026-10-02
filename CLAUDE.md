@@ -83,7 +83,7 @@ Reason:
 
 Every class must declare `rdfs:subClassOf` restrictions for characteristic object and data properties.
 
-Use `owl:someValuesFrom` for both object and datatype properties.
+Use `owl:someValuesFrom` for both object and datatype properties. Use `owl:onClass` + `owl:qualifiedCardinality` instead only where exactly one value is semantically required (e.g. `DraftTrimMode.hasDraftMode`, `VesselSpeedBin.hasSpeedReference`).
 
 Example:
 
@@ -103,7 +103,7 @@ Restrictions are required because the visualization pipeline derives property do
 
 ## QUDT Quantity and Unit Pattern
 
-TwinShip uses QUDT as the preferred approach for quantities and units, following the **Nexus advanced pattern** (see `model/external/nexus/model/nexus-core-advanced.ttl`).
+TwinShip uses QUDT as the preferred approach for quantities and units, following an advanced pattern with per-quantity-kind families (described below).
 
 The QUDT vocabulary file is `model/twinship-qudt-vocabulary.ttl`, imported by `twinship-base.ttl` (and therefore available to all domain modules automatically). It adds **22 quantity kind families**, each comprising:
 
@@ -134,7 +134,7 @@ The existing `tw`-prefixed `owl:DatatypeProperty` declarations with `rdfs:range 
 
 Rule: when adding a new numeric data property:
 1. Add the `hasQuantity[X]` family definition (4 classes + 1 property + QUDT individual type assertions) to `twinship-qudt-vocabulary.ttl`.
-2. Add the `owl:someValuesFrom` restriction to the owning class in the relevant domain module (`vessel.ttl`, `operational-context.ttl`, or `weather-conditions.ttl`).
+2. Add the `owl:someValuesFrom` restriction to the owning class in the module that defines it (`vessel.ttl`, `operational-context.ttl`, `weather-conditions.ttl`, or `operational-modes.ttl` for `EngineMode`).
 
 ---
 
@@ -174,6 +174,8 @@ Common unit suffixes:
 - `InMT`
 - `InDegC`
 - `InRevPerMin`
+- `InKnots`
+- `InMWh`
 - `KgPerHr`
 - `KJPerKg`
 
@@ -221,6 +223,7 @@ Committed source:
 - `model/`
 - `model/modules/`
 - `model/external/`
+- `examples/README.md` only — dataset `.ttl` files under `examples/` are gitignored until published
 
 Generated or transient:
 - `build/` — generated, do not edit
@@ -255,14 +258,17 @@ See:
 Keep concepts in the correct module.
 
 - `operational-modes.ttl`  
-  States/modes and named individuals:
-  `OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`
+  Categorical states/modes: `OperatingState`, `EngineMode`, `EngineSpeedBin`, `DraftMode`, `TrimMode`, `DraftTrimMode`, `SpeedReference`.
+  Named individuals only for universal vocabularies (`OperatingState` states, `SOG`/`STW`). Do not define vessel-/engine-specific individuals (`EngineMode`, `EngineSpeedBin`, `DraftMode`, `TrimMode`) in shared modules — they are instantiated per vessel in instance data outside the shared modules.
 
 - `operational-context.ttl`  
   Voyage, leg, port, route, profiles, observations, summaries
 
 - `weather-conditions.ttl`  
   Weather/wind conditions and wind data properties
+
+- `statistics.ttl`  
+  Estimation, prediction, assumption, and statistical model (model card) concepts
 
 - `vessel.ttl`  
   Vessel systems, engines, propulsion, fuel, gearbox. Includes QUDT `owl:someValuesFrom` restrictions for all vessel-domain classes.
@@ -329,7 +335,7 @@ Never manually edit generated files in:
 3. Add class restrictions for characteristic properties.
 4. Update `model/catalog-v001.xml` when adding modules.
 5. Add new module imports to `model/twinship-core.ttl`.
-6. Do not combine `--auto` with explicit output paths.
+6. Do not combine `--auto` with explicit output paths. `--auto` writes `<input>-complete.ttl` next to the input file (not into `build/`); for tests use the explicit `build/` command below.
 7. `strip_for_webvowl.py` uses `sys.argv`, not `argparse`.
 8. Edit landing page HTML inside `generate_website.sh`.
 9. **UTF-8 encoding — three layers; do not remove any:**
@@ -346,7 +352,7 @@ CQ tests run in two modes — select based on what you need:
 
 **Schema-only (default):** validates ontology structure against the merged TTL.
 ```bash
-uv run python scripts/merge_modules.py --auto
+mkdir -p build && uv run python scripts/merge_modules.py --catalog model/catalog-v001.xml model/twinship-core.ttl build/twinship-core-complete.ttl
 uv run pytest tests/ -v
 ```
 Most CQs will `xfail` (no instance data). Add `# STRICT` to a `.rq` file to make it a hard failure.
@@ -361,7 +367,7 @@ uv run pytest tests/ \
   -v
 ```
 
-GraphDB is provided by the `twinship-data-pipeline` stack (`docker-compose up`). Credentials and repository IDs come from that deployment — **do not commit them**. See `tests/README.md` for full options.
+GraphDB is provided by the [`twinship-data-pipeline`](https://github.com/twinship-eu/twinship-data-pipeline) stack (`docker-compose up`) and must be reachable at `--graphdb-url`. Credentials and repository IDs come from that deployment — **do not commit them**. A single-repo strict mode (`--graphdb-test-repo`, synthetic data from `scripts/load_test_instances.py`) also exists. See `tests/README.md` for full options.
 
 Privacy rules for tests:
 - No operator names, vessel names, or instance identifiers in committed test files.
