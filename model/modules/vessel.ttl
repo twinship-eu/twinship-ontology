@@ -183,6 +183,9 @@
         [ a owl:Restriction ;
             owl:onProperty ido:partOf ;
             owl:someValuesFrom :VesselSystem ],
+        [ a owl:Restriction ;
+            owl:onProperty :twEngineModeCount ;
+            owl:someValuesFrom xsd:integer ],
         :TwinShipInanimatePhysicalObject .
 
 :FPP a owl:Class ;
@@ -1197,6 +1200,12 @@
     rdfs:range xsd:double ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
+:twEngineModeCount a owl:DatatypeProperty ;
+    rdfs:label "Engine mode count" ;
+    rdfs:comment "Number of distinct EngineMode (see operational-modes module) individuals valid for this engine system. Declared per engine, independent of vessel; ranges for each mode are derived separately by a statistical model and populated as instance data." ;
+    rdfs:range xsd:integer ;
+    rdfs:subPropertyOf :TwinShipDataProperties .
+
 :twFlowrateMaxInKgPerHr a owl:DatatypeProperty ;
     rdfs:label "Flowrate max in kg per hr" ;
     rdfs:comment "Maximum flow rate in kilograms per hour. Value -1 indicates unknown." ;
@@ -1905,49 +1914,50 @@
 # #
 # #    Data Properties — Loading and Draft Conditions
 # #
-# #    NOTE: Properties with prefix tw (e.g. twVesselDraftAftMaxInM,
-# #    twDisplacementMaxInMT) represent vessel design limits.
-# #    The properties below represent observed/operational values.
+# #    All properties below are tw-prefixed per project naming convention.
+# #    twVesselDraftAftMaxInM, twDisplacementMaxInMT, etc. (defined
+# #    elsewhere) represent vessel design limits; the properties below
+# #    represent observed/operational values.
 # #
 # #################################################################
 
-:displacementTonnes a owl:DatatypeProperty ;
-    rdfs:label "Displacement tonnes" ;
+:twDisplacementInMT a owl:DatatypeProperty ;
+    rdfs:label "Displacement in MT" ;
     rdfs:comment "Observed vessel displacement in metric tonnes at time of measurement or for a given loading condition." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:bowDraftValue a owl:DatatypeProperty ;
-    rdfs:label "Bow draft value" ;
+:twBowDraftInM a owl:DatatypeProperty ;
+    rdfs:label "Bow draft in M" ;
     rdfs:comment "Observed vessel draft at the bow, in metres." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:sternDraftValue a owl:DatatypeProperty ;
-    rdfs:label "Stern draft value" ;
+:twSternDraftInM a owl:DatatypeProperty ;
+    rdfs:label "Stern draft in M" ;
     rdfs:comment "Observed vessel draft at the stern, in metres." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:aftDraftValue a owl:DatatypeProperty ;
-    rdfs:label "Aft draft value" ;
-    rdfs:comment "Observed vessel draft at the aft, in metres. Equivalent to sternDraftValue; use both for compatibility with different dataset conventions." ;
+:twAftDraftInM a owl:DatatypeProperty ;
+    rdfs:label "Aft draft in M" ;
+    rdfs:comment "Observed vessel draft at the aft, in metres. Equivalent to twSternDraftInM; use both for compatibility with different dataset conventions." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:foreDraftValue a owl:DatatypeProperty ;
-    rdfs:label "Fore draft value" ;
-    rdfs:comment "Observed vessel draft at the fore, in metres. Equivalent to bowDraftValue; use both for compatibility with different dataset conventions." ;
+:twForeDraftInM a owl:DatatypeProperty ;
+    rdfs:label "Fore draft in M" ;
+    rdfs:comment "Observed vessel draft at the fore, in metres. Equivalent to twBowDraftInM; use both for compatibility with different dataset conventions." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:trimValue a owl:DatatypeProperty ;
-    rdfs:label "Trim value" ;
+:twTrimInM a owl:DatatypeProperty ;
+    rdfs:label "Trim in M" ;
     rdfs:comment "Calculated trim of the vessel in metres (aft draft minus fore draft). Positive values indicate stern trim; negative values indicate bow trim." ;
     rdfs:range xsd:decimal ;
     rdfs:subPropertyOf :TwinShipDataProperties .
 
-:loadingConditionLogged a owl:DatatypeProperty ;
+:twLoadingConditionLogged a owl:DatatypeProperty ;
     rdfs:label "Loading condition logged" ;
     rdfs:comment "Boolean flag indicating whether a loading condition was explicitly logged for this vessel state, voyage, or voyage leg." ;
     rdfs:range xsd:boolean ;

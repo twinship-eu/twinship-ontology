@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- `operational-modes.ttl` module: categorical operating states and modes (`OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`) with named individuals (`CruiseState`, `PortState`, `ManeuveringState`, `DriftState`, `DraftMode1`-`3`, `TrimMode1`-`3`, etc.)
+- `operational-modes.ttl` module: categorical operating states and modes (`OperatingState`, `EngineMode`, `DraftMode`, `TrimMode`, `DraftTrimMode`) with named individuals (`CruiseState`, `PortState`, `ManeuveringState`, `DriftState`, etc.)
 - `operational-context.ttl` module: voyage, port, and operational profile concepts (`Voyage`, `VoyageLeg`, `Route`, `Port`, `OperationalProfile`, `VesselSpeedBin`, `FrequencyDistribution`, `FuelConsumptionObservation`, `FuelConsumptionSummary`, `FuelConsumptionEstimate`, `FuelConsumptionGapAnalysis`, `PerformanceDeviation`)
 - Naming conventions documented in `CLAUDE.md` and `model/README.md` (data property `tw` prefix, `"twinship <name>"` label pattern, unit suffix conventions)
 - VesselAI full reuse audit (`docs/ontology/vesselai-full-reuse-audit.txt`)
@@ -15,22 +15,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Ontology statistics
 
 ### Changed
+- Added `EngineMode` kW range properties (`twEngineModeLowerBoundInKW`, `twEngineModeLowerBoundVariationInKW`, `twEngineModeUpperBoundInKW`) and `twEngineModeCount` on `EngineSystem`; `EngineMode` individuals are instantiated per engine in instance data, and an engine's roster is declared via `hasEngineMode`
+- Renamed observed draft/loading properties in `vessel.ttl` to the `tw` + unit-suffix convention (`displacementTonnes` → `twDisplacementInMT`, `bowDraftValue` → `twBowDraftInM`, `sternDraftValue` → `twSternDraftInM`, `aftDraftValue` → `twAftDraftInM`, `foreDraftValue` → `twForeDraftInM`, `trimValue` → `twTrimInM`)
+- Added optional `twEngineModeLowerBoundInRevPerMin` / `twEngineModeUpperBoundInRevPerMin` to `EngineMode` (engine RPM bounds for modes the statistical model bins on engine speed); model-internal mean/deviation are not stored on the mode. `EngineMode` comment now notes that a model re-fit should mint new individuals. Also added QUDT `hasQuantityPower` / `hasQuantityRotationalVelocity` restrictions on `EngineMode` (covering both the kW and RPM bounds).
+- Tightened `VesselSpeedBin`'s `hasSpeedReference` restriction from `someValuesFrom` to `owl:onClass :SpeedReference ; owl:qualifiedCardinality "1"` (exactly one of SOG/STW required), now that both reference frames are populated side by side in real data; same pattern as `DraftTrimMode`'s `hasDraftMode`/`hasTrimMode` restrictions.
+- Removed the `EngineSpeedBin1`-`4`, `DraftMode1`-`3`, `TrimMode1`-`3` named individuals (and their `owl:AllDifferent` blocks) from `operational-modes.ttl` — their meaning is vessel-/engine-specific, not shared across vessel types, same reasoning already applied to `EngineMode`. Futuristic vessel demonstrator placeholders now live in `twinship-futuristic-vessel/data/futuristic-vessel-individuals.ttl`, pending merge into `examples/futuristic-vessel.ttl`.
 - Removed VesselAI import from `twinship-base.ttl` (DUL/DOLCE upper ontology incompatible with IDO; VesselAI files retained under `model/external/vesselai/` for reference only)
 - Renamed all data properties in `weather-conditions.ttl` and `operational-context.ttl` to `tw` prefix convention (28 properties; e.g. `:windSpeed` → `:twWindSpeed`, `:voyageIdentifier` → `:twVoyageIdentifier`)
 - Updated `rdfs:label` annotations to `"twinship <name>"` pattern throughout extension modules
 - Added OWL `owl:someValuesFrom` restrictions to all classes in `weather-conditions.ttl` and `operational-context.ttl`, aligning with the design pattern established in `vessel.ttl`
 - Added missing subject-side OWL restrictions for `hasEngineMode`, `hasDraftMode`, `hasTrimMode`, `hasDraftTrimMode`, `hasWeatherCondition` on `Voyage`/`VoyageLeg`
 - Added `owl:imports <weather-conditions>` to `operational-context.ttl` (required for `hasWeatherCondition some WeatherCondition` restriction on `VoyageLeg`)
-- Added named individuals to `DraftMode` (`DraftMode1`-`3`) and `TrimMode` (`TrimMode1`-`3`) as ordinal, vessel/fleet-specific placeholders; `DraftTrimMode` is now a composed class (`hasDraftMode` + `hasTrimMode`, qualified cardinality 1 each) with no fixed enumerated individuals, following the same instantiation pattern as `VesselSpeedBin`
+- `DraftTrimMode` is now a composed class (`hasDraftMode` + `hasTrimMode`, qualified cardinality 1 each) with no fixed enumerated individuals, following the same instantiation pattern as `VesselSpeedBin`
 - Renamed `SpeedBin` to `VesselSpeedBin`; revised description to note SOG/STW divergence under weather/current influence
-- Added `SpeedReference` class (`SOG`, `STW` individuals) and `hasSpeedReference` object property to `operational-modes.ttl`; applied as an optional qualifier restriction on `VesselSpeedBin`
+- Added `SpeedReference` class (`SOG`, `STW` individuals) and `hasSpeedReference` object property to `operational-modes.ttl`; applied as a qualifier restriction on `VesselSpeedBin` (made required, exactly one, see above)
 - Added `twFuelCostInUsdPerMT` datatype property and restriction to `Fuel` (`vessel.ttl`)
 - Documented a limitation on `EngineSpeedBin`: assumes mechanically-coupled propulsion
   (direct-drive/geared); may not apply to diesel-electric/hybrid vessels (e.g. the futuristic
   vessel), where engine (genset) speed is decoupled from propeller speed by the electrical
   system. Modeling this case is deferred pending domain expert input.
-- Added named individuals to `EngineMode` (`EngineMode1`-`4`) as ordinal, vessel/fleet-specific placeholders, following the same pattern as `DraftMode`/`TrimMode`
-- Added `EngineSpeedBin` class (`EngineSpeedBin1`-`4` individuals) and `hasEngineSpeedBin` object property to `operational-modes.ttl`, representing ordinal engine speed (RPM) regions from the engine-propeller combinator diagram; numeric RPM ranges deferred pending combinator diagram data
+- Added `EngineSpeedBin` class and `hasEngineSpeedBin` object property to `operational-modes.ttl`, representing ordinal engine speed (RPM) regions from the engine-propeller combinator diagram; no individuals defined in the shared module, numeric RPM ranges deferred pending combinator diagram data
 - Replaced ambiguous `twVoyageStartTime`/`twVoyageEndTime` with `twVoyageEstimatedStartTime`/`twVoyageActualStartTime` and `twVoyageEstimatedEndTime`/`twVoyageActualEndTime` (Estimated/Actual pattern, per DynaPort D2.3 ETD/ATD, ETA/ATA terminology)
 - Added `twWayPointTimestamp` datatype property and restriction to `WayPoint`
 - Added `twinship-core` as a node in the `modules.drawio` diagram (single entry point for the

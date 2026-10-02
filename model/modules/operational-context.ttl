@@ -19,9 +19,9 @@
     dcterms:description "Ontology module for vessel operational context: voyages, voyage legs, routes, ports, fuel-consumption observations and summaries, operational profiles, speed bins, and frequency distributions. Extends twinship-base and imports operational-modes for cross-module range constraints."@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-05-21"^^xsd:date ;
-    dcterms:modified "2026-09-30"^^xsd:date ;
+    dcterms:modified "2026-10-02"^^xsd:date ;
     pav:createdOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-09-30T00:00:00+00:00"^^xsd:dateTime ;
+    pav:lastUpdateOn "2026-10-02T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.0.4" ;
     rdfs:comment "Operational context module for TwinShip ontology. Imports twinship-base and twinship-operational-modes. The import of operational-modes enables range constraints on properties that reference OperatingState (e.g. summarisesOperatingState). No circular imports are introduced: operational-modes imports only base, and operational-context imports base + operational-modes." ;
     owl:imports <https://twin-ship.eu/twinship/base>,
@@ -134,13 +134,13 @@
 
 :VesselSpeedBin a owl:Class ;
     rdfs:label "Vessel Speed Bin" ;
-    rdfs:comment "A vessel speed interval used to group observations for statistical analysis. Vessel speed in knots may be measured as speed over ground (SOG) or speed through water (STW); these can diverge under the influence of current and weather conditions. The reference frame for a given bin or value may be declared via hasSpeedReference; where not declared, it is unspecified." ;
+    rdfs:comment "A vessel speed interval used to group observations for statistical analysis. Vessel speed in knots may be measured as speed over ground (SOG) or speed through water (STW); these can diverge under the influence of current and weather conditions. Exactly one reference frame must be declared via hasSpeedReference, so that SOG-binned and STW-binned observations are never ambiguous or silently mixed." ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :twSpeedBinLowerBoundInKnots ; owl:someValuesFrom xsd:decimal ],
         [ a owl:Restriction ; owl:onProperty :twSpeedBinUpperBoundInKnots ; owl:someValuesFrom xsd:decimal ],
         [ a owl:Restriction ; owl:onProperty :twSpeedValueInKnots         ; owl:someValuesFrom xsd:decimal ],
         [ a owl:Restriction ; owl:onProperty :twStateFrequency     ; owl:someValuesFrom xsd:decimal ],
-        [ a owl:Restriction ; owl:onProperty :hasSpeedReference    ; owl:someValuesFrom :SpeedReference ] .
+        [ a owl:Restriction ; owl:onProperty :hasSpeedReference ; owl:onClass :SpeedReference ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] .
 
 :FrequencyDistribution a owl:Class ;
     rdfs:label "Frequency Distribution" ;
