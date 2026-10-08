@@ -31,6 +31,7 @@ TWINSHIP_NAMESPACES = [
     "https://twin-ship.eu/twinship/weather-conditions",
     "https://twin-ship.eu/twinship/operational-modes",
     "https://twin-ship.eu/twinship/operational-context",
+    "https://twin-ship.eu/twinship/statistics",
     "https://twin-ship.eu/twinship#",  # Hash URI namespace
 ]
 
