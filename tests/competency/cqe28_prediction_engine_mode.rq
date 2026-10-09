@@ -1,6 +1,6 @@
-# CQE-27 — Which weather conditions were used to generate the prediction?
+# CQE-28 — Which engine operational mode was assumed for the predicted voyage?
 #
-# Coverage: Instance-level. Requires a Prediction, an Assumption linked to it, and a WeatherCondition linked to that assumption.
+# Coverage: Instance-level. Requires a Prediction, an Assumption linked to it, and a EngineMode linked to that assumption.
 # Module:   statistics
 
 PREFIX :         <https://twin-ship.eu/twinship#>
@@ -10,12 +10,12 @@ PREFIX owl:      <http://www.w3.org/2002/07/owl#>
 PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
 
 
-SELECT ?prediction ?assumption ?weatherCondition
+SELECT ?prediction ?assumption ?engineMode
 WHERE {
 	?prediction a :Prediction ;
 							:hasAssumption ?assumption .
 	?assumption a :Assumption ;
-							:hasWeatherCondition ?weatherCondition .
-	?weatherCondition a :WeatherCondition .
+							:hasEngineMode ?engineMode .
+	?engineMode a :EngineMode .
 }
-ORDER BY ?prediction ?weatherCondition
+ORDER BY ?prediction ?engineMode

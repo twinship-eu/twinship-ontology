@@ -188,6 +188,9 @@ No changes to the `.rq` query files are required.
 | Unmanned / Future Vessel Simulation | CQ-32–33 | xfail | strict ✓ |
 | System Connectivity & Integration | CQ-34–35 | xfail | strict ✓ |
 | Digital Twin API (future) | CQ-36 | xfail | xfail (not yet modelled) |
+| Current State and Observations | CQE-01–02 | xfail | n/a |
+| Estimation, Prediction and Forecasting | CQE-09–10 | xfail | n/a |
+| Observation and Prediction Provenance | CQE-20–22, CQE-26–28, CQE-30–31 | xfail | n/a |
 
 ## Adding a New Competency Question
 
