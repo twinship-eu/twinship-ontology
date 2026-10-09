@@ -128,6 +128,7 @@ build/                          # Auto-generated build artifacts (gitignored)
    - Prediction/estimation: `Prediction`, `PredictionProcess`, `PredictionResult`, `Estimation`, `EstimationProcess`, `Assumption`, `FeatureContribution`
    - Observation: `Observation`, `ObservableQuality`, `ObservationResult` (aligned to the W3C SOSA vocabulary)
    - Model Card documentation classes (aligned to the OBO Model Card Report Ontology, MCRO): `ModelCard`, `ModelDetailSection`, `ConsiderationInformationSection`, `ModelParameterSection`, `ResultSection`, `DatasetInformationSection`, `TrainingData`, `EvaluationData`, and related sections
+   - Model Card data properties (`tw` convention): `twAlgorithm`, `twConfidenceIntervalValue`, `twMetricValue`, `twEvaluationSlice`, `twDocumentationSummary`
    - Does **not** import VesselAI or DUL
    - IRI: `https://twin-ship.eu/twinship/statistics`
    - Imports: `twinship-base`, `operational-modes`, `operational-context`, `weather-conditions`

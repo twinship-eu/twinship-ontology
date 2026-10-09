@@ -1,3 +1,6 @@
+# VS code workspaces
+*.code-workspace
+
 # Vessel-specific instance data (kept local, never committed)
 # Use data/* (not data/) so that !data/README.md negation works in git
 data/*
@@ -17,9 +20,6 @@ prompts/
 
 # Paper-related discussions (may contain sensitive vessel data)
 papers/
-
-# VS code workspaces
-*.code-workspace
 
 # Python virtual environments and cache
 .venv/

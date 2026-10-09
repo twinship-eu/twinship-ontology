@@ -2,7 +2,7 @@
 
 > **Version:** 0.0.4  
 > **Ontology last updated:** 2026-03-03  
-> **Statistics generated:** 2026-10-02  
+> **Statistics generated:** 2026-10-09  
 > **Source:** `build/twinship-core-complete-docs-viz.ttl`
 
 ## Summary
@@ -11,7 +11,7 @@
 | ------------------- | ----- | --------------------- |
 | Classes             | 212   | TwinShipInformationObject<br>Voyage<br>TwinShipInanimatePhysicalObject<br>VoyageLeg<br>MainEngineSystem<br>Fuel<br>PropellerSystem<br>ShaftGeneratorSystem<br>GenSetSystem<br>EngineSystem |
 | Object properties   | 88    | hasInformationObject<br>twinshipObjectProperties<br>hasQuality<br>hasProcess<br>hasWeatherCondition<br>connectedTo<br>documentsModel<br>hasComponent<br>hasEstimation<br>hasLoadingCondition |
-| Data properties     | 237   | twMeanSpeedInKnots<br>twNumericValue<br>twDieselEnginePowerMaxInKW<br>twDieselEngineSpeedInRevPerMin<br>twDistanceInNm<br>twEMPowerInMWh<br>twEngineLoadPercentage<br>twEngineSpeedInRevPerMin<br>twEstimatedMeanFuelConsumption<br>twExecutionTime |
+| Data properties     | 237   | twDocumentationSummary<br>twMeanSpeedInKnots<br>twNumericValue<br>twDieselEnginePowerMaxInKW<br>twDieselEngineSpeedInRevPerMin<br>twDistanceInNm<br>twEMPowerInMWh<br>twEngineLoadPercentage<br>twEngineSpeedInRevPerMin<br>twEstimatedMeanFuelConsumption |
 | Imported ontologies | 5     | IDO (LIS14)<br>PAV<br>QUDT QuantityKind<br>QUDT Unit<br>qudt-vocabulary |
 
 ## Object Properties

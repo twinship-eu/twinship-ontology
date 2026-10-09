@@ -13,8 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - VesselAI full reuse audit (`docs/ontology/vesselai-full-reuse-audit.txt`)
 - MIT license
 - Ontology statistics
+- `statistics.ttl` module (estimation, prediction, statistical models, and Model Card documentation aligned to MCRO) with competency question tests `CQE-01`–`CQE-31` (incl. `cqe28_prediction_engine_mode.rq`)
 
 ### Changed
+- `statistics.ttl`: renamed Model Card data properties to the `tw` convention (`hasAlgorithm` → `twAlgorithm`, `hasConfidenceIntervalValue` → `twConfidenceIntervalValue`, `hasMetricValue` → `twMetricValue`, `hasEvaluationSlice` → `twEvaluationSlice`, `hasDocumentationSummary` → `twDocumentationSummary`); datatype ranges changed from `rdfs:Literal` to `xsd:string`; `documentsModel` range and restriction now use `owl:unionOf` / `owl:someValuesFrom`
 - Added `EngineMode` kW range properties (`twEngineModeLowerBoundInKW`, `twEngineModeLowerBoundVariationInKW`, `twEngineModeUpperBoundInKW`) and `twEngineModeCount` on `EngineSystem`; `EngineMode` individuals are instantiated per engine in instance data, and an engine's roster is declared via `hasEngineMode`
 - Renamed observed draft/loading properties in `vessel.ttl` to the `tw` + unit-suffix convention (`displacementTonnes` → `twDisplacementInMT`, `bowDraftValue` → `twBowDraftInM`, `sternDraftValue` → `twSternDraftInM`, `aftDraftValue` → `twAftDraftInM`, `foreDraftValue` → `twForeDraftInM`, `trimValue` → `twTrimInM`)
 - Added optional `twEngineModeLowerBoundInRevPerMin` / `twEngineModeUpperBoundInRevPerMin` to `EngineMode` (engine RPM bounds for modes the statistical model bins on engine speed); model-internal mean/deviation are not stored on the mode. `EngineMode` comment now notes that a model re-fit should mint new individuals. Also added QUDT `hasQuantityPower` / `hasQuantityRotationalVelocity` restrictions on `EngineMode` (covering both the kW and RPM bounds).
