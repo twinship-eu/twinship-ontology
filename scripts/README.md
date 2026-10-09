@@ -117,6 +117,7 @@ These scripts form the main website generation pipeline:
 - **`enhance_widoco_html.py`** - Post-process WIDOCO HTML to add SKOS and dcterms annotations
 - **`enhance_webvowl_json.py`** - Post-process WebVOWL JSON to add SKOS and dcterms annotations
 - **`clean_webvowl_json.py`** - Post-process WebVOWL JSON to merge duplicate Literal nodes
+- **`patch_webvowl_links.py`** - Patch `webvowl.app.js` so entity IRI links open the WIDOCO docs (see `docs/SERVER_DEPLOYMENT.md`)
 
 ### Paper Diagram Generation
 
@@ -182,9 +183,11 @@ These scripts were used during development and have been removed.
    - Preserves all WebVOWL structure (IDs, types, links)
    - Adds `skos:notation`, `skos:altLabel`, `dcterms:description` to propertyAttribute objects
    - Annotations appear in WebVOWL sidebar when clicking properties
+12. Patch WebVOWL entity links (`patch_webvowl_links.py`)
+   - Selection Details links to `https://twin-ship.eu/twinship#X` open `../index-en.html#<IRI>` instead, because the namespace URL does not resolve yet
 
 **Stage 4: Landing Page**
-12. Create landing page linking to documentation and visualization
+13. Create landing page linking to documentation and visualization
 
 **Requirements:**
 - Python 3.9+ with rdflib (install: `uv sync`)

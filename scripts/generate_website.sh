@@ -275,6 +275,24 @@ if [ "$SKIP_WEBVOWL" = false ]; then
     else
         log "Skipping WebVOWL enhancement (files not found)"
     fi
+
+    # Step 4.7: Point WebVOWL entity links at the WIDOCO docs (twin-ship.eu/twinship does not resolve)
+    step "Step 4.7: Patching WebVOWL entity links"
+
+    WEBVOWL_APP_JS="$OUTPUT_ABS/documentation/webvowl/js/webvowl.app.js"
+
+    if [ -f "$WEBVOWL_APP_JS" ]; then
+        log "Running: uv run python scripts/patch_webvowl_links.py $WEBVOWL_APP_JS"
+
+        uv run python scripts/patch_webvowl_links.py "$WEBVOWL_APP_JS" || {
+            error "Failed to patch WebVOWL links"
+            exit 1
+        }
+
+        success "WebVOWL entity links point to WIDOCO documentation"
+    else
+        log "Skipping WebVOWL link patch (webvowl.app.js not found)"
+    fi
 else
     log "Skipping WebVOWL setup"
 fi
