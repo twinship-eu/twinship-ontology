@@ -4,10 +4,15 @@ Patch WebVOWL so entity IRI links in "Selection Details" open the WIDOCO
 documentation instead of dereferencing https://twin-ship.eu/twinship#X (404 until
 the server-side redirect exists; see docs/SERVER_DEPLOYMENT.md, option B).
 
+The patched script is then renamed to webvowl.app.<hash>.js and referenced from
+webvowl/index.html, because the host kept serving a stale pre-compressed copy of
+the old webvowl.app.js after a deploy.
+
 Usage:
     uv run python scripts/patch_webvowl_links.py docs/website/documentation/webvowl/js/webvowl.app.js
 """
 
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -43,6 +48,26 @@ def patch(js_path):
     return True
 
 
+def fingerprint(js_path):
+    """Rename js_path to webvowl.app.<hash>.js and point webvowl/index.html at it."""
+    index_path = js_path.parent.parent / "index.html"
+    html = index_path.read_text(encoding="utf-8")
+
+    script_pattern = re.compile(r'js/webvowl\.app(?:\.[0-9a-f]{8})?\.js')
+    if not script_pattern.search(html):
+        print(f"Error: webvowl.app.js script tag not found in {index_path}", file=sys.stderr)
+        return False
+
+    digest = hashlib.sha256(js_path.read_bytes()).hexdigest()[:8]
+    target = js_path.with_name(f"webvowl.app.{digest}.js")
+    if target != js_path:
+        target.write_bytes(js_path.read_bytes())
+        js_path.unlink()
+    index_path.write_text(script_pattern.sub(f"js/{target.name}", html), encoding="utf-8")
+    print(f"WebVOWL script fingerprinted: {target.name}")
+    return True
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print(__doc__)
@@ -51,4 +76,4 @@ if __name__ == "__main__":
     if not path.is_file():
         print(f"Error: {path} not found", file=sys.stderr)
         sys.exit(1)
-    sys.exit(0 if patch(path) else 1)
+    sys.exit(0 if patch(path) and fingerprint(path) else 1)

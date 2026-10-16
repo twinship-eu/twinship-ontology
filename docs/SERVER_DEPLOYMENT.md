@@ -62,6 +62,11 @@ which scrolls to the entity in the WIDOCO docs. The link text and tooltip still 
 IRI. This does not make the IRI itself dereferenceable for external tools; that needs
 Option A.
 
+The patched script is renamed to `webvowl/js/webvowl.app.<hash>.js` (and
+`webvowl/index.html` updated) because Hostinger kept serving a stale
+pre-compressed (`Content-Encoding: br`) copy of the old `webvowl.app.js` after a
+deploy, even in a fresh browser. A new file name avoids that.
+
 **Option A (not yet in use)** is described in the rest of this document. It is the
 standard Linked Data solution and also makes the IRIs dereferenceable for RDF tools.
 

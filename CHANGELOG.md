@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+- WebVOWL entity links: the patched `webvowl.app.js` is now renamed to a content-hashed file (`webvowl.app.<hash>.js`), because the host served a stale Brotli copy of the old script after the 0.1.0 deploy and links still pointed to `https://twin-ship.eu/twinship#X`
+
 ## [0.1.0] - 2026-10-16
 
 ### Added

@@ -117,7 +117,7 @@ These scripts form the main website generation pipeline:
 - **`enhance_widoco_html.py`** - Post-process WIDOCO HTML to add SKOS and dcterms annotations
 - **`enhance_webvowl_json.py`** - Post-process WebVOWL JSON to add SKOS and dcterms annotations
 - **`clean_webvowl_json.py`** - Post-process WebVOWL JSON to merge duplicate Literal nodes
-- **`patch_webvowl_links.py`** - Patch `webvowl.app.js` so entity IRI links open the WIDOCO docs (see `docs/SERVER_DEPLOYMENT.md`)
+- **`patch_webvowl_links.py`** - Patch `webvowl.app.js` so entity IRI links open the WIDOCO docs (see `docs/SERVER_DEPLOYMENT.md`), then rename it to `webvowl.app.<hash>.js` and update `webvowl/index.html` so a stale cached copy on the host is never served
 
 ### Paper Diagram Generation
 
