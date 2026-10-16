@@ -69,6 +69,9 @@ vessel instance data.  It uses three fictional vessels:
 | `td:Vessel2` | RoRo | Mechanical drive, TwoStroke, FPP, WASP, DynamicWing, GateRudder, AuxEngine, AUXLOAD |
 | `td:Vessel3` | RoRo (futuristic) | Diesel-electric, GenSet×2, CPP, FreqConverter, ESS, BidirConverter, AUXLOAD (unmanned) |
 
+CQs about the main engine (CQ-06, 09, 12, 21) match both `MainEngineSystem`
+(mechanical drive) and `GenSetSystem` (diesel-electric).
+
 No real vessel names, IMO numbers, or operator identities are used.  The file
 can be committed to the public repository and loaded into any GraphDB instance.
 

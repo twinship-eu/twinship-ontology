@@ -1,6 +1,7 @@
 # CQ-12 — What is the current fuel consumption rate (MT/hr) and total fuel consumption (MT) for each vessel's Main Engine System?
 #
-# Coverage: Instance-level. Requires MainEngineSystem individuals. AuxiliaryEngineSystem uses twAuxiliaryFuelRateMassNetKgPerHr (kg/hr).
+# Coverage: Instance-level. Requires MainEngineSystem (mechanical drive) or GenSetSystem
+#           (diesel-electric) individuals. AuxiliaryEngineSystem uses twAuxiliaryFuelRateMassNetKgPerHr (kg/hr).
 # Module:   vessel
 
 PREFIX :         <https://twin-ship.eu/twinship#>
@@ -13,7 +14,8 @@ SELECT ?vessel ?engine ?fuelConsumptionRateMTPerHr ?fuelConsumptionTotalMT
 WHERE {
   ?vessel a :VesselSystem .
   ?engine ido:partOf ?vessel ;
-          a :MainEngineSystem .
+          a ?engineClass .
+  VALUES ?engineClass { :MainEngineSystem :GenSetSystem }
   OPTIONAL { ?engine :twFuelConsumptionRateInMTPerHr ?fuelConsumptionRateMTPerHr }
   OPTIONAL { ?engine :twFuelConsumptionTotalInMT     ?fuelConsumptionTotalMT     }
 }

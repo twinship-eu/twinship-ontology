@@ -1,6 +1,6 @@
 # CQ-21 — For each vessel, what is the total CO2 emission rate (g/hr) calculated from fuel consumption and the fuel's CO2 emission factor?
 #
-# Coverage: Instance-level. Requires MainEngineSystem individuals with fuel consumption and Fuel individuals with CO2 emission factor.
+# Coverage: Instance-level. Requires MainEngineSystem or GenSetSystem individuals with fuel consumption and Fuel individuals with CO2 emission factor.
 # Module:   vessel
 
 PREFIX :         <https://twin-ship.eu/twinship#>
@@ -14,8 +14,9 @@ SELECT ?vessel ?engine ?fuel
 WHERE {
   ?vessel a :VesselSystem .
   ?engine ido:partOf ?vessel ;
-          a :MainEngineSystem ;
+          a ?engineClass ;
           :consume ?fuel .
+  VALUES ?engineClass { :MainEngineSystem :GenSetSystem }
   OPTIONAL { ?engine :twFuelConsumptionRateInMTPerHr      ?fuelConsumptionRateMTPerHr  }
   OPTIONAL { ?fuel   :twFuelEmissionFactorCo2InGPerKgFuel  ?co2FactorGPerKgFuel         }
 }
