@@ -1,0 +1,24 @@
+# KG-02 — Which legs make up each voyage, with distance, mean speed and end points?
+#
+# Retrieval: voyage legs with start/end waypoint, distance (nm) and mean speed (kn).
+# Module:   operational-context
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?voyage ?leg ?startWayPoint ?endWayPoint ?distanceNm ?meanSpeedKn
+WHERE {
+  ?voyage a :Voyage ;
+          :hasVoyageLeg ?leg .
+  ?leg a :VoyageLeg ;
+       :hasStartWayPoint ?startWayPoint ;
+       :hasEndWayPoint   ?endWayPoint .
+  OPTIONAL { ?leg :twDistanceInNm      ?distanceNm  }
+  OPTIONAL { ?leg :twMeanSpeedInKnots  ?meanSpeedKn }
+  OPTIONAL { ?startWayPoint :twWayPointTimestamp ?startTime }
+}
+ORDER BY ?voyage ?startTime ?leg
+LIMIT 100

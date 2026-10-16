@@ -1,0 +1,22 @@
+# KG-01 — Which voyages exist, between which ports, and when?
+#
+# Retrieval: voyage identifier, departure/arrival port and estimated start/end time.
+# Module:   operational-context
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?voyage ?voyageId ?departurePort ?arrivalPort ?startTime ?endTime
+WHERE {
+  ?voyage a :Voyage ;
+          :hasDeparturePort ?departurePort ;
+          :hasArrivalPort   ?arrivalPort .
+  OPTIONAL { ?voyage :twVoyageIdentifier         ?voyageId  }
+  OPTIONAL { ?voyage :twVoyageEstimatedStartTime ?startTime }
+  OPTIONAL { ?voyage :twVoyageEstimatedEndTime   ?endTime   }
+}
+ORDER BY ?startTime ?voyage
+LIMIT 100

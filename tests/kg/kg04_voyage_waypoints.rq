@@ -1,0 +1,23 @@
+# KG-04 — Which waypoints (position and time) lie along each voyage?
+#
+# Retrieval: distinct waypoints reachable via the voyage's legs, in time order.
+# Module:   operational-context
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?voyage ?wayPoint ?timestamp ?latitude ?longitude
+WHERE {
+  ?voyage a :Voyage ;
+          :hasVoyageLeg ?leg .
+  ?leg (:hasStartWayPoint|:hasEndWayPoint) ?wayPoint .
+  ?wayPoint a :WayPoint ;
+            :twWayPointTimestamp ?timestamp ;
+            :twWayPointLatitude  ?latitude ;
+            :twWayPointLongitude ?longitude .
+}
+ORDER BY ?voyage ?timestamp
+LIMIT 100

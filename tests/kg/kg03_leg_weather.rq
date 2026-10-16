@@ -1,0 +1,30 @@
+# KG-03 — What wind and sea conditions apply to each voyage leg?
+#
+# Retrieval: wind speed/direction and sea height/direction per leg, with the leg's mean speed.
+# Module:   operational-context, weather-conditions
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?leg ?meanSpeedKn ?windSpeedKn ?windDirectionDeg ?seaHeightM ?seaDirectionDeg
+WHERE {
+  ?leg a :VoyageLeg ;
+       :hasWeatherCondition ?weather .
+  OPTIONAL { ?leg :twMeanSpeedInKnots ?meanSpeedKn }
+  OPTIONAL {
+    ?weather :hasWindCondition ?wind .
+    OPTIONAL { ?wind :twWindSpeedInKnots        ?windSpeedKn      }
+    OPTIONAL { ?wind :twWindDirectionInDegrees  ?windDirectionDeg }
+  }
+  OPTIONAL {
+    ?weather :hasWaveCondition ?wave .
+    OPTIONAL { ?wave :twSeaHeightInMeters       ?seaHeightM       }
+    OPTIONAL { ?wave :twSeaDirectionInDegrees   ?seaDirectionDeg  }
+  }
+  FILTER (BOUND(?windSpeedKn) || BOUND(?seaHeightM))
+}
+ORDER BY ?leg
+LIMIT 100

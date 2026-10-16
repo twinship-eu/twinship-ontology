@@ -1,0 +1,22 @@
+# KG-05 — Which legs had the highest wind speed, and what were the sea height and vessel speed?
+#
+# Retrieval: top 10 legs by wind speed with co-occurring sea height and mean speed.
+# Module:   operational-context, weather-conditions
+
+PREFIX :         <https://twin-ship.eu/twinship#>
+PREFIX ido:      <http://rds.posccaesar.org/ontology/lis14/rdl/>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?leg ?windSpeedKn ?seaHeightM ?meanSpeedKn
+WHERE {
+  ?leg a :VoyageLeg ;
+       :hasWeatherCondition ?weather .
+  ?weather :hasWindCondition ?wind .
+  ?wind :twWindSpeedInKnots ?windSpeedKn .
+  OPTIONAL { ?weather :hasWaveCondition ?wave . ?wave :twSeaHeightInMeters ?seaHeightM }
+  OPTIONAL { ?leg :twMeanSpeedInKnots ?meanSpeedKn }
+}
+ORDER BY DESC(?windSpeedKn)
+LIMIT 10

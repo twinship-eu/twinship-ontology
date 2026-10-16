@@ -13,6 +13,10 @@ tests/
     cq02_vessel_max_displacement.rq
     ...
     cq36_digital_twin_api_interfaces.rq
+  test_kg_queries.py             — runner for the KG retrieval queries in kg/
+  kg/                            — retrieval queries against a populated KG (not competency questions)
+    kg01_voyage_overview.rq
+    ...
 ```
 
 The human-readable catalogue of competency questions (natural language, status, notes) lives alongside the SPARQL files in [docs/ontology/competency-questions.md](../docs/ontology/competency-questions.md).
@@ -153,6 +157,27 @@ GRAPHDB_TOKEN=$TOKEN uv run pytest tests/ \
   -v
 ```
 
+### Local GraphDB without authentication
+
+If the GraphDB instance has no authentication (e.g. a local Docker instance), omit all `KEYCLOAK_*` / `GRAPHDB_TOKEN` variables; no `Authorization` header is sent:
+
+```bash
+uv run pytest tests/ -v \
+  --graphdb-url http://localhost:7200 \
+  --graphdb-repos <repo-id>
+```
+
+### Environment variables
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `GRAPHDB_TOKEN` | — | Pre-acquired bearer token (takes precedence) |
+| `KEYCLOAK_CLIENT_ID` / `KEYCLOAK_CLIENT_SECRET` | — | Client-credentials flow; token fetched automatically |
+| `KEYCLOAK_URL` | `http://localhost:8080` | Keycloak base URL |
+| `KEYCLOAK_REALM` | `twinship` | Keycloak realm |
+
+If none of the token or client-credential variables are set, requests are sent unauthenticated.
+
 ### Specifying the repository list
 
 `--graphdb-repos` is required when using `--graphdb-url`; the default placeholders will not match real GraphDB repo IDs:
@@ -191,6 +216,18 @@ No changes to the `.rq` query files are required.
 | Current State and Observations | CQE-01–02 | xfail | n/a |
 | Estimation, Prediction and Forecasting | CQE-09–10 | xfail | n/a |
 | Observation and Prediction Provenance | CQE-20–22, CQE-26–28, CQE-30–31 | xfail | n/a |
+
+## KG Retrieval Queries
+
+`tests/kg/*.rq` retrieve data from a populated KG (voyages, legs, waypoints, weather). They are not competency questions and do not appear in the CQ report. A query passes if it returns at least one row.
+
+They need instance data, so they run only with `--graphdb-url` and are skipped in schema-only and `--graphdb-test-repo` modes (the synthetic test repository has no voyage data). Queries must stay generic: no instance IRIs, no hard-coded counts.
+
+```bash
+uv run pytest tests/test_kg_queries.py -v \
+  --graphdb-url http://localhost:7200 \
+  --graphdb-repos <repo-id>
+```
 
 ## Adding a New Competency Question
 
