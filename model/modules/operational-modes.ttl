@@ -19,13 +19,13 @@
     dcterms:description "Ontology module defining categorical operational states and modes used to classify vessel operation. Covers operating states, engine modes, draft modes, trim modes, combined draft\u2013trim modes, and speed reference frames, together with their controlled individuals and related object properties."@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-05-21"^^xsd:date ;
-    dcterms:modified "2026-10-02"^^xsd:date ;
+    dcterms:modified "2026-10-16"^^xsd:date ;
     pav:createdOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-10-02T00:00:00+00:00"^^xsd:dateTime ;
-    pav:version "0.0.4" ;
+    pav:lastUpdateOn "2026-10-16T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.1.0" ;
     rdfs:comment "Operational modes module for TwinShip ontology. Imports only twinship-base. All mode and state classes extend TwinShipQuality. Object properties are subproperties of hasQuality. This module is the canonical location for all categorical mode/state concepts in TwinShip." ;
     owl:imports <https://twin-ship.eu/twinship/base> ;
-    owl:versionIRI <https://twin-ship.eu/twinship/operational-modes/0.0.4> .
+    owl:versionIRI <https://twin-ship.eu/twinship/operational-modes/0.1.0> .
 
 # #################################################################
 # #
@@ -159,7 +159,7 @@
     rdfs:comment "Vessel operating state corresponding to cruise operation at sea." .
 
 :PortState a owl:NamedIndividual, :OperatingState ;
-    rdfs:label "Port" ;
+    rdfs:label "Port state" ;
     skos:altLabel "In port"@en, "In harbour"@en ;
     dcterms:description "Operating state for a vessel moored at berth, anchored, or otherwise stationary in port. Corresponds to the 'in port' voyage phase in IMO SEEMP Part II and CII voyage state classification." ;
     dcterms:source <https://www.imo.org/> ;
@@ -172,7 +172,7 @@
     rdfs:comment "Vessel operating state corresponding to maintenance period or lay-up." .
 
 :ManeuveringState a owl:NamedIndividual, :OperatingState ;
-    rdfs:label "Maneuvering" ;
+    rdfs:label "Maneuvering state" ;
     skos:altLabel "Manoeuvring"@en ;
     dcterms:description "Operating state for a vessel navigating at reduced speed during port approach, departure, canal transit, or similar constrained-waterway operations. Corresponds to the 'manoeuvring' voyage phase in IMO SEEMP Part II." ;
     dcterms:source <https://www.imo.org/> ;

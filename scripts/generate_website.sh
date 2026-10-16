@@ -461,7 +461,7 @@ cat > "$OUTPUT_ABS/index.html" << 'EOF'
         </div>
         
         <footer>
-            <p>TwinShip Ontology | Version 0.0.4</p>
+            <p>TwinShip Ontology | Version 0.1.0</p>
             <p style="font-size: 0.9em; margin-top: 10px;">Generated with WIDOCO & WebVOWL</p>
         </footer>
     </div>

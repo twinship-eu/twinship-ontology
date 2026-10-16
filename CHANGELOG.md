@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-16
+
 ### Added
 - `tests/kg/` retrieval queries (`kg01`–`kg05`: voyages, legs, waypoints, weather) with runner `tests/test_kg_queries.py`; they are not competency questions, run only with `--graphdb-url`, and pass when they return at least one row
 - `tests/` GraphDB access without authentication (omit `KEYCLOAK_*` / `GRAPHDB_TOKEN`), documented for local Docker instances
@@ -18,6 +20,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `statistics.ttl` module (estimation, prediction, statistical models, and Model Card documentation aligned to MCRO) with competency question tests `CQE-01`–`CQE-31` (incl. `cqe28_prediction_engine_mode.rq`)
 
 ### Changed
+- Declared `hasPerformanceDeviation` (range `PerformanceDeviation`), added `rdfs:range` to `componentOf`, `hasComponent` and `ownedBy`, and pointed the `statistics.ttl` section restrictions at `ido:hasPart` instead of an undeclared `:hasPart`
+- Relabelled the `PortState` and `ManeuveringState` individuals ("Port state", "Maneuvering state") so they no longer share labels with the `Port` and `Maneuvering` classes
 - `cq06`, `cq09`, `cq12`, `cq21`: match `GenSetSystem` as well as `MainEngineSystem`, so diesel-electric vessels return rows; `cq06` also reads `twShaftPowerMaxInKW` / `twShaftSpeedMaxInRevPerMin` when the `twDieselEngine*` properties are absent
 - `statistics.ttl`: renamed Model Card data properties to the `tw` convention (`hasAlgorithm` → `twAlgorithm`, `hasConfidenceIntervalValue` → `twConfidenceIntervalValue`, `hasMetricValue` → `twMetricValue`, `hasEvaluationSlice` → `twEvaluationSlice`, `hasDocumentationSummary` → `twDocumentationSummary`); datatype ranges changed from `rdfs:Literal` to `xsd:string`; `documentsModel` range and restriction now use `owl:unionOf` / `owl:someValuesFrom`
 - Added `EngineMode` kW range properties (`twEngineModeLowerBoundInKW`, `twEngineModeLowerBoundVariationInKW`, `twEngineModeUpperBoundInKW`) and `twEngineModeCount` on `EngineSystem`; `EngineMode` individuals are instantiated per engine in instance data, and an engine's roster is declared via `hasEngineMode`
@@ -73,10 +77,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Switched to WIDOCO's built-in OWL2VOWL converter for WebVOWL generation
 - Fixed WIDOCO HTML not displaying `skos:notation`, `skos:altLabel`, and `dcterms:description` annotation properties
 - Fixed WebVOWL interactive visualization not displaying `skos:notation`, `skos:altLabel`, and `dcterms:description` annotations
-
-## [0.0.3] - 2026-02-25
-
-### Changed
 - Enhanced visualization script to extract property ranges from OWL restrictions, enabling proper display of `directlyConnectedTo`, `connectedTo`, and `partOf` relationships in WebVOWL
 - Fixed WebVOWL blank union nodes for multi-domain properties
 - Added inter-component relationships to vessel ontology

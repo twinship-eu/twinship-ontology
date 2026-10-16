@@ -5,20 +5,20 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-# @prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
+@prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
 @prefix mcro: <http://purl.obolibrary.org/obo/mcro.owl#> .
 @prefix pav: <http://purl.org/pav/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
 <https://twin-ship.eu/twinship/statistics> a owl:Ontology ;
     rdfs:label "TwinShip Statistics Module" ;
-    owl:versionIRI <https://twin-ship.eu/twinship/statistics/0.0.4> ;
+    owl:versionIRI <https://twin-ship.eu/twinship/statistics/0.1.0> ;
     dcterms:title "TwinShip Statistics Module"@en ;
     dcterms:description "This module defines TwinShip-native estimation, prediction, and statistical model concepts for vessel operational analysis. The module does not import VesselAI or DUL. "@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-06-22"^^xsd:date ;
-    dcterms:modified "2026-10-08"^^xsd:date ;
-    owl:versionInfo "0.0.4" ;
+    dcterms:modified "2026-10-16"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
     owl:imports <https://twin-ship.eu/twinship/base>,
         <https://twin-ship.eu/twinship/operational-modes>,
         <https://twin-ship.eu/twinship/operational-context>,
@@ -198,10 +198,10 @@
                                                                                         :VesselPerformanceStatistics 
                                                                                         :VesselPerformanceModel     ) 
                                                                                     ] ] ,
-        [ a owl:Restriction ; owl:onProperty :hasPart           ; owl:someValuesFrom :ModelDetailSection    ] ,
-        [ a owl:Restriction ; owl:onProperty :hasPart           ; owl:someValuesFrom :ConsiderationInformationSection ] ,
-        [ a owl:Restriction ; owl:onProperty :hasPart           ; owl:someValuesFrom :ModelParameterSection ] ,
-        [ a owl:Restriction ; owl:onProperty :hasPart           ; owl:someValuesFrom :ResultSection         ] .
+        [ a owl:Restriction ; owl:onProperty ido:hasPart           ; owl:someValuesFrom :ModelDetailSection    ] ,
+        [ a owl:Restriction ; owl:onProperty ido:hasPart           ; owl:someValuesFrom :ConsiderationInformationSection ] ,
+        [ a owl:Restriction ; owl:onProperty ido:hasPart           ; owl:someValuesFrom :ModelParameterSection ] ,
+        [ a owl:Restriction ; owl:onProperty ido:hasPart           ; owl:someValuesFrom :ResultSection         ] .
     
 :ModelDetailSection a owl:Class ;
     rdfs:label "Model Detail Section"@en ;
@@ -212,7 +212,7 @@
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000021> ;
     rdfs:subClassOf :TwinShipInformationObject ,
         [ a owl:Restriction ; owl:onProperty :hasVersion    ; owl:someValuesFrom :VersionNumber ] ,
-        [ a owl:Restriction ; owl:onProperty :hasPart       ; owl:someValuesFrom :ModelArchitectureInformationSection ] .
+        [ a owl:Restriction ; owl:onProperty ido:hasPart       ; owl:someValuesFrom :ModelArchitectureInformationSection ] .
 
 :VersionNumber a owl:Class ;
     rdfs:label "Version Number"@en ;
@@ -242,9 +242,9 @@
     This section pertains to "Factors" of the model card report by Mitchell et al., 2019. The considerations section includes qualitative information about your model, including some analysis of its risks and limitations. As such, this section usually requires careful consideration, and conversations with many relevant  stakeholders, including other model developers, dataset producers, and downstream users likely to interact with your model, or be affected by its outputs."""@en ;
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000005> ;
     rdfs:subClassOf :TwinShipInformationObject ,
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :IntendedUseCaseInformationSection ] ,
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :OutOfScopeUseCaseInformationSection ] ,       
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :LimitationInformationSection ] .
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :IntendedUseCaseInformationSection ] ,
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :OutOfScopeUseCaseInformationSection ] ,       
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :LimitationInformationSection ] .
 
 :IntendedUseCaseInformationSection a owl:Class ;
     rdfs:label "Intended Use Case Information Section"@en ;
@@ -285,10 +285,10 @@
     dcterms:description "Section summarizing the content relating to the parameters for the development of the model." ;
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000022> ;
     rdfs:subClassOf :TwinShipInformationObject ,
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :DatasetInformationSection ] ,
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :InputFormatInformationSection ] ,       
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :ModelArchitectureInformationSection ] ,       
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :OutputFormatInformationSection ] .
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :DatasetInformationSection ] ,
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :InputFormatInformationSection ] ,       
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :ModelArchitectureInformationSection ] ,       
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :OutputFormatInformationSection ] .
 
 :InputFormatInformationSection a owl:Class ;
     rdfs:label "Input Format Information Section"@en ;
@@ -318,8 +318,8 @@
     dcterms:description "content overview of the quantatitve analysis of the model, specifically the performance of the model" ;
     dcterms:source <http://purl.obolibrary.org/obo/MCRO_0000031> ;
     rdfs:subClassOf :TwinShipInformationObject ,
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :DatasetInformationSection   ] ,
-        [ a owl:Restriction ; owl:onProperty :hasPart ; owl:someValuesFrom :PerformanceMetricSection    ] .
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :DatasetInformationSection   ] ,
+        [ a owl:Restriction ; owl:onProperty ido:hasPart ; owl:someValuesFrom :PerformanceMetricSection    ] .
 
 :PerformanceMetricSection a owl:Class ;
     rdfs:label "Performance Metric Information Section"@en ;

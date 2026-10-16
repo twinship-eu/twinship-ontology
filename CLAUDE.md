@@ -342,7 +342,7 @@ Never manually edit generated files in:
    - `.env` at repo root sets `PYTHONUTF8=1` — `uv run` loads it automatically.
    - All Python file I/O uses explicit `encoding='utf-8'` — never use bare `open(path)`.
    - WIDOCO Java is invoked with `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8`.
-10. **Version synchronization** — all version numbers must stay in sync (currently `0.0.4`) across ontology files and project metadata.
+10. **Version synchronization** — all version numbers must stay in sync (currently `0.1.0`) across ontology files and project metadata.
 
 ---
 

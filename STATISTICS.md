@@ -1,8 +1,8 @@
 # TwinShip Ontology — Statistics
 
-> **Version:** 0.0.4  
-> **Ontology last updated:** 2026-03-03  
-> **Statistics generated:** 2026-10-09  
+> **Version:** 0.1.0  
+> **Ontology last updated:** 2026-10-16  
+> **Statistics generated:** 2026-10-16  
 > **Source:** `build/twinship-core-complete-docs-viz.ttl`
 
 ## Summary
@@ -10,7 +10,7 @@
 | Metric              | Count | Illustrative examples |
 | ------------------- | ----- | --------------------- |
 | Classes             | 212   | TwinShipInformationObject<br>Voyage<br>TwinShipInanimatePhysicalObject<br>VoyageLeg<br>MainEngineSystem<br>Fuel<br>PropellerSystem<br>ShaftGeneratorSystem<br>GenSetSystem<br>EngineSystem |
-| Object properties   | 88    | hasInformationObject<br>twinshipObjectProperties<br>hasQuality<br>hasProcess<br>hasWeatherCondition<br>connectedTo<br>documentsModel<br>hasComponent<br>hasEstimation<br>hasLoadingCondition |
+| Object properties   | 88    | hasInformationObject<br>twinshipObjectProperties<br>hasQuality<br>hasProcess<br>hasWeatherCondition<br>partOf<br>connectedTo<br>documentsModel<br>hasComponent<br>hasEstimation |
 | Data properties     | 237   | twDocumentationSummary<br>twMeanSpeedInKnots<br>twNumericValue<br>twDieselEnginePowerMaxInKW<br>twDieselEngineSpeedInRevPerMin<br>twDistanceInNm<br>twEMPowerInMWh<br>twEngineLoadPercentage<br>twEngineSpeedInRevPerMin<br>twEstimatedMeanFuelConsumption |
 | Imported ontologies | 5     | IDO (LIS14)<br>PAV<br>QUDT QuantityKind<br>QUDT Unit<br>qudt-vocabulary |
 

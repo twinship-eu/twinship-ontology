@@ -19,7 +19,7 @@ Thank you for your interest in contributing to the TwinShip Ontology! We welcome
 
 ## Code of Conduct
 
-Please be respectful and constructive in all interactions. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) if available.
+Please be respectful and constructive in all interactions.
 
 ## Questions?
 
