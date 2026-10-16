@@ -369,6 +369,8 @@ uv run pytest tests/ \
 
 GraphDB is provided by the [`twinship-data-pipeline`](https://github.com/twinship-eu/twinship-data-pipeline) stack (`docker-compose up`) and must be reachable at `--graphdb-url`. Credentials and repository IDs come from that deployment — **do not commit them**. A single-repo strict mode (`--graphdb-test-repo`, synthetic data from `scripts/load_test_instances.py`) also exists. See `tests/README.md` for full options.
 
+Separately, `tests/kg/*.rq` are retrieval queries against a populated KG (voyages, legs, weather), run by `tests/test_kg_queries.py` only with `--graphdb-url`. They are not CQs; keep them generic (no instance IRIs or hard-coded counts).
+
 Privacy rules for tests:
 - No operator names, vessel names, or instance identifiers in committed test files.
 - `--graphdb-repos` defaults to generic placeholders (`vessel-roro`, etc.) — always override at runtime.

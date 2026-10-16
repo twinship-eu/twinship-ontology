@@ -142,9 +142,13 @@ uv run pytest tests/ \
   -v
 ```
 
+For a local GraphDB without authentication, omit the credentials and pass only `--graphdb-url` and `--graphdb-repos`.
+
 Credentials and repository IDs are not stored in this repository. See [tests/README.md](tests/README.md) for full setup instructions.
 
 Each `.rq` file in `tests/competency/` encodes one competency question. Tests default to **reporting-only** (`xfail`) until instance data is loaded; add `# STRICT` to a query to make it a hard requirement.
+
+Separately, `tests/kg/` holds retrieval queries against a populated KG (voyages, legs, weather). They are not competency questions, run only with `--graphdb-url`, and are described in [tests/README.md](tests/README.md).
 
 The human-readable competency question catalogue is at [docs/ontology/competency-questions.md](docs/ontology/competency-questions.md).
 
