@@ -1,4 +1,5 @@
 @prefix : <https://twin-ship.eu/twinship#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ido: <http://rds.posccaesar.org/ontology/lis14/rdl/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pav: <http://purl.org/pav/> .
@@ -17,6 +18,8 @@
 
 <https://twin-ship.eu/twinship/base> a owl:Ontology ;
     rdfs:label "TwinShip Ontology" ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:rightsHolder "TwinShip Consortium" ;
     pav:createdOn "2025-01-21T00:00:00+00:00"^^xsd:dateTime ;
     pav:lastUpdateOn "2026-10-16T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.1.0" ;

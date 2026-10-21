@@ -20,6 +20,8 @@
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-05-21"^^xsd:date ;
     dcterms:modified "2026-10-16"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:rightsHolder "TwinShip Consortium" ;
     pav:createdOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
     pav:lastUpdateOn "2026-10-16T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.1.0" ;

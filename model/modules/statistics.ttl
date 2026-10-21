@@ -18,6 +18,8 @@
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-06-22"^^xsd:date ;
     dcterms:modified "2026-10-16"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:rightsHolder "TwinShip Consortium" ;
     owl:versionInfo "0.1.0" ;
     owl:imports <https://twin-ship.eu/twinship/base>,
         <https://twin-ship.eu/twinship/operational-modes>,

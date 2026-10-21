@@ -1,11 +1,25 @@
 cff-version: 1.2.0
+message: If you use this ontology, please cite it using the metadata from this file.
 title: TwinShip Ontology
 authors:
-  - family-names: Maintainers
-    given-names: TwinShip Project
-    affiliation: TwinShip Consortium
-    orcid: https://orcid.org/0000-0000-0000-0000
+  - family-names: Elvesæter
+    given-names: Brian
+    affiliation: SINTEF
+  - family-names: Nystad
+    given-names: Erik
+  - family-names: Martin-Recuerda
+    given-names: Francisco
+    affiliation: SINTEF
+  - family-names: Lång
+    given-names: Elise Angelina
+    affiliation: UiT The Arctic University of Norway
+  - family-names: Hanssen
+    given-names: Bård Johan
+    affiliation: SINTEF
+  - name: TwinShip Consortium
 date-released: 2026-10-16
 version: 0.1.0
-license: MIT
+license:
+  - CC-BY-4.0
+  - MIT
 repository-code: https://github.com/twinship-eu/twinship-ontology

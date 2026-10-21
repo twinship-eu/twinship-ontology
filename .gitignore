@@ -6,8 +6,10 @@
 data/*
 !data/README.md
 
-# IMO Compendium Excel is cached in data/ alongside other transient artifacts
-# (re-downloadable via extract_imo_compendium.py; committed CSV lives in model/external/imo/)
+# IMO Compendium Excel is cached in data/ alongside other transient artifacts.
+# The extracted CSV is not committed: IMO terms of use do not allow redistribution
+# under an open licence. Regenerate it with scripts/extract_imo_compendium.py.
+model/external/imo/
 
 # Public example datasets, temporarily withheld until the full synthetic dataset
 # (covering the ontology extensions) is ready. Remove this entry to publish again.

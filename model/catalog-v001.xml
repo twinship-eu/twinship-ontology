@@ -24,8 +24,4 @@
     <uri id="PAV" name="http://purl.org/pav/" uri="external/PAV-simplified.ttl"/>
     <uri id="IDO" name="http://rds.posccaesar.org/ontology/lis14/ont/core/1.0" uri="external/IDO_20240503.ttl"/>
     <uri id="IDO Base" name="http://rds.posccaesar.org/ontology/lis14/ont/core" uri="external/IDO_20240503.ttl"/>
-    <!-- VesselAI ontology retained for external reference ONLY.
-         Not imported by any TwinShip ontology module.
-         See docs/ontology/vesselai-full-reuse-audit.txt for the full design decision. -->
-    <uri id="VesselAI" name="http://www.vesselAI-project.eu/vesselai" uri="external/vesselai/vesselAI_ontology_v2.owl"/>
 </catalog>

@@ -7,6 +7,8 @@
 
 <https://twin-ship.eu/twinship/core> a owl:Ontology ;
     dcterms:title "TwinShip Ontology"@en ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:rightsHolder "TwinShip Consortium" ;
     dcterms:description """Complete TwinShip ontology for digital twins of ships. This is an aggregate ontology that imports the base foundation (twinship-base) plus all domain modules. Use this ontology to get the complete TwinShip conceptual model including vessels and weather. For modular development, import twinship-base and specific modules instead.
 
 ## Modeling Approach - Restriction-Based Design

@@ -1,0 +1,77 @@
+version = 1
+SPDX-PackageName = "twinship-ontology"
+SPDX-PackageSupplier = "TwinShip Consortium"
+SPDX-PackageDownloadLocation = "https://github.com/twinship-eu/twinship-ontology"
+
+# Later [[annotations]] blocks take precedence over earlier ones for the same file,
+# so general rules come first and third-party files last.
+
+# Code and tooling
+[[annotations]]
+path = [
+    "scripts/**",
+    "tests/**/*.py",
+    "tests/README.md",
+    "*.sh",
+    "pyproject.toml",
+    "uv.lock",
+    ".github/**",
+    ".vscode/**",
+    ".env",
+    ".gitignore",
+    "data/README.md",
+    "build/.gitkeep",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025-2026 TwinShip Consortium"
+SPDX-License-Identifier = "MIT"
+
+# Ontology, knowledge artefacts and documentation
+[[annotations]]
+path = [
+    "model/*.ttl",
+    "model/catalog-v001.xml",
+    "model/README.md",
+    "model/modules/**",
+    "examples/**",
+    "queries/**",
+    "tests/competency/**",
+    "tests/kg/**",
+    "tests/data/**",
+    "docs/**",
+    "diagrams/**",
+    "README.md",
+    "CHANGELOG.md",
+    "STATISTICS.md",
+    "CONTRIBUTING.md",
+    "CITATION.cff",
+    "CLAUDE.md",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025-2026 TwinShip Consortium"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# Third-party: ISO 15926-14 / IDO (POSC Caesar Association)
+[[annotations]]
+path = "model/external/IDO_20240503.ttl"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "POSC Caesar Association"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+# Third-party: QUDT and simplified subsets derived from QUDT
+[[annotations]]
+path = [
+    "model/external/qudt/**",
+    "model/external/SCHEMA_QUDT-simplified.ttl",
+    "model/vocabularies/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "QUDT.org"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# Third-party: simplified subset of the PAV ontology (https://github.com/pav-ontology/pav)
+[[annotations]]
+path = "model/external/PAV-simplified.ttl"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Paolo Ciccarese, Stian Soiland-Reyes and PAV contributors"
+SPDX-License-Identifier = "Apache-2.0"

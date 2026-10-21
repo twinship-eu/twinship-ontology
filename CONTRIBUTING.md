@@ -16,6 +16,7 @@ Thank you for your interest in contributing to the TwinShip Ontology! We welcome
 - Add or update documentation in `docs/` as needed.
 - Ensure all new or modified ontology files are valid RDF/Turtle.
 - Add or update SHACL shapes or SPARQL tests in `tests/` if relevant.
+- Contributions to the ontology (`model/`) and other knowledge artefacts are made under CC BY 4.0; code contributions (`scripts/`, Python tests, shell scripts) are made under MIT. See `REUSE.toml`.
 
 ## Code of Conduct
 

@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+- Licensing: the ontology, examples, queries, and documentation are now CC BY 4.0 (root `LICENSE`); code and tooling stay MIT. Added `REUSE.toml` and `LICENSES/`, and `dcterms:license` / `dcterms:rightsHolder` in every TwinShip ontology header (`weather-conditions.ttl` previously stated MIT)
+- IMO Compendium definitions quoted in `vessel.ttl` and `weather-conditions.ttl` are excluded from CC BY 4.0 (© IMO), stated in `dcterms:rights` and the README
+
+### Removed
+- Local VesselAI copy (`model/external/vesselai/`), its catalog entry, and the VesselAI reuse audits (`docs/ontology/vesselai-*-reuse-audit.txt`); VesselAI was not imported and is still referenced by IRI via `rdfs:seeAlso`
+- IMO Compendium CSV (`model/external/imo/imo_compendium_all.csv`) from version control; the IMO terms of use do not permit open redistribution. Generate it locally with `scripts/extract_imo_compendium.py`
+
 ### Fixed
 - WebVOWL entity links: the patched `webvowl.app.js` is now renamed to a content-hashed file (`webvowl.app.<hash>.js`), because the host served a stale Brotli copy of the old script after the 0.1.0 deploy and links still pointed to `https://twin-ship.eu/twinship#X`
 

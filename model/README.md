@@ -50,8 +50,7 @@ model/                          # Source ontology files (version controlled)
 ├── external/                   # External ontology dependencies
 │   ├── IDO_20240503.ttl        # ISO 15926-14 upper ontology
 │   ├── PAV-simplified.ttl      # Provenance, Authoring and Versioning
-│   ├── SCHEMA_QUDT-simplified.ttl
-│   └── vesselai/               # External reference only, not imported
+│   └── SCHEMA_QUDT-simplified.ttl
 ├── vocabularies/               # QUDT vocabularies
 │   ├── VOCAB_QUDT-QUANTITY-KINDS-simplified.ttl
 │   └── VOCAB_QUDT_UNIT2-simplified.ttl
@@ -325,7 +324,7 @@ Data property names should ideally be traceable to a recognised maritime standar
 
 Properties without a matching standard need no `skos:notation` / `skos:altLabel` / `dcterms:description` / `dcterms:source` — `rdfs:label` and `rdfs:comment` are sufficient for those.
 
-**IMO Compendium reference:** A stable CSV of all 1,206 IMO Compendium BBIE data elements (FAL.5/Circ.56) is committed at `model/external/imo/imo_compendium_all.csv` (columns: `imo_code`, `name`, `definition`, `format`). Use `scripts/extract_imo_compendium.py --match-ttl model/modules/vessel.ttl` to generate ranked candidate matches for unlinked properties into `data/imo_candidates.csv`.
+**IMO Compendium reference:** A CSV of all 1,206 IMO Compendium BBIE data elements (FAL.5/Circ.56) is generated locally at `model/external/imo/imo_compendium_all.csv` by `scripts/extract_imo_compendium.py` (columns: `imo_code`, `name`, `definition`, `format`). It is gitignored because the IMO terms of use do not permit redistribution under an open licence. Use `scripts/extract_imo_compendium.py --match-ttl model/modules/vessel.ttl` to generate ranked candidate matches for unlinked properties into `data/imo_candidates.csv`.
 
 ### Named Individuals
 
@@ -359,12 +358,10 @@ All TwinShip physical entities inherit from `TwinShipInanimatePhysicalObject` wh
 
 ## External Dependencies
 
-### VesselAI (External Reference Only)
-- **Location**: `external/vesselai/vesselAI_ontology_v2.owl`
+### VesselAI (Not Used)
 - **URI**: `http://www.vesselAI-project.eu/vesselai`
-- **Upper Ontology**: DUL (DOLCE+DnS Ultralite)
-- **Status**: **Not imported** by any TwinShip module. Retained for inspection and reference only.
-- **Rationale**: VesselAI is DUL-based; TwinShip uses IDO (ISO 15926-14). The upper ontologies are categorially incompatible — e.g., VesselAI `Vessel` is a `dul:Agent` while TwinShip `VesselSystem` is an `ido:InanimatePhysicalObject`. Selected TwinShip terms carry `rdfs:seeAlso` annotations pointing to related VesselAI terms for traceability. See `docs/ontology/vesselai-full-reuse-audit.txt` for the full design decision.
+- **Status**: **Not imported** by any TwinShip module, and no local copy is kept in this repository.
+- **Rationale**: VesselAI is DUL-based; TwinShip uses IDO (ISO 15926-14). The upper ontologies are categorially incompatible — e.g., VesselAI `Vessel` is a `dul:Agent` while TwinShip `VesselSystem` is an `ido:InanimatePhysicalObject`. Selected TwinShip terms carry `rdfs:seeAlso` annotations pointing to related VesselAI terms for traceability.
 
 ### QUDT
 - **Purpose**: Quantities, units, and dimensions
@@ -375,7 +372,7 @@ All TwinShip physical entities inherit from `TwinShipInanimatePhysicalObject` wh
 
 ### PAV
 - **Purpose**: Provenance metadata
-- **File**: `external/PAV-simplified.ttl`
+- **File**: `external/PAV-simplified.ttl` (reduced subset of PAV, Apache-2.0)
 
 ## Catalog File
 
@@ -389,8 +386,6 @@ All TwinShip physical entities inherit from `TwinShipInanimatePhysicalObject` wh
 <uri name="https://twin-ship.eu/twinship/weather-conditions" uri="modules/weather-conditions.ttl"/>
 
 <!-- External Ontologies -->
-<!-- VesselAI: retained for reference only; not used by owl:imports -->
-<uri name="http://www.vesselAI-project.eu/vesselai" uri="external/vesselai/vesselAI_ontology_v2.owl"/>
 <uri name="http://rds.posccaesar.org/ontology/lis14/ont/core/1.0" uri="external/IDO_20240503.ttl"/>
 <uri name="http://qudt.org/schema/qudt/" uri="external/SCHEMA_QUDT-simplified.ttl"/>
 ```
@@ -441,4 +436,4 @@ This creates:
 
 ## License
 
-See repository LICENSE file.
+The TwinShip ontology files are licensed under CC BY 4.0 (see the repository `LICENSE`). Each ontology header states this with `dcterms:license <https://creativecommons.org/licenses/by/4.0/>`. Third-party files in `external/` and `vocabularies/` keep their own licences; see `REUSE.toml`. Definitions quoted from the IMO Compendium (properties with an IMO `skos:notation` code and `dcterms:source <https://www.imo.org/>`) remain © IMO and are not covered by CC BY 4.0; the affected modules state this in `dcterms:rights`.

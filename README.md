@@ -174,7 +174,7 @@ uv run python scripts/align_imo.py --apply --dry-run   # preview
 uv run python scripts/align_imo.py --apply             # write to .ttl files
 ```
 
-The stable reference CSV of all 1,206 IMO Compendium elements is committed at `model/external/imo/imo_compendium_all.csv`. The working review file lives in `data/` (gitignored).
+The reference CSV of all 1,206 IMO Compendium elements (`model/external/imo/imo_compendium_all.csv`) is **not committed**, because the IMO terms of use do not permit redistribution under an open licence. Generate it locally with `uv run python scripts/extract_imo_compendium.py` before running `align_imo.py`. The working review file lives in `data/` (gitignored).
 
 ### Workflow testing
 Currently, Deployment workflow only supports deployment to Hostinger.
@@ -208,9 +208,16 @@ This is not a reliable way to test the deployment step, as hostinger will reject
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute, report issues, or request features.
 
-## License
+## Licence
 
-This repository is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This repository has two licences. [`REUSE.toml`](REUSE.toml) gives the authoritative file-level mapping ([REUSE](https://reuse.software/) specification).
+
+- **Ontology and knowledge artefacts** (`model/`, `examples/`, `queries/`, SPARQL test queries, `docs/`, and documentation): [CC BY 4.0](LICENSE).
+- **Code** (`scripts/`, Python tests, shell scripts, CI and project configuration): [MIT](LICENSES/MIT.txt).
+- **Third-party resources** in `model/external/` and `model/vocabularies/` keep their own licences: IDO (ISO 15926-14) is [CC BY-SA 4.0](LICENSES/CC-BY-SA-4.0.txt) (POSC Caesar Association), QUDT is [CC BY 4.0](model/external/qudt/LICENSE.md) (QUDT.org), and PAV is [Apache 2.0](LICENSES/Apache-2.0.txt). `PAV-simplified.ttl` and the QUDT `*-simplified.ttl` files are reduced subsets of the upstream ontologies. The generated documentation reproduces labels and definitions of the IDO terms used by TwinShip; those excerpts remain under CC BY-SA 4.0.
+- **IMO definitions:** some `dcterms:description` values in `vessel.ttl` and `weather-conditions.ttl` quote data element definitions from the [IMO Compendium on Facilitation and Electronic Business](https://imocompendium.imo.org/) (FAL.5/Circ.56). These are the properties with an IMO code in `skos:notation` and `dcterms:source <https://www.imo.org/>`. The quoted definitions remain © International Maritime Organization (IMO) and are **not** covered by CC BY 4.0.
+
+Suggested attribution: *TwinShip Ontology, TwinShip Consortium, https://github.com/twinship-eu/twinship-ontology, CC BY 4.0*.
 
 ## Citing
 

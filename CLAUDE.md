@@ -56,6 +56,12 @@ After implementation:
 
 ---
 
+## Licensing
+
+Ontology, examples, queries, and documentation are CC BY 4.0; code and tooling are MIT. `REUSE.toml` is the authoritative mapping. Every TwinShip `owl:Ontology` header must state `dcterms:license <https://creativecommons.org/licenses/by/4.0/>`. Contributions to `model/` are made under CC BY 4.0 and code contributions under MIT.
+
+---
+
 ## Critical Ontology Rule: No `rdfs:domain` in Source
 
 Never add `rdfs:domain` to source ontology files:
@@ -296,11 +302,7 @@ Do not use:
 - `owl:equivalentClass` with VesselAI terms
 - `skos:closeMatch` with VesselAI terms
 
-VesselAI is retained only as external reference material under:
-
-```text
-model/external/vesselai/
-```
+VesselAI is not kept in this repository; reference its terms by IRI only.
 
 Use:
 - `rdfs:seeAlso` for traceability

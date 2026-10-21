@@ -18,6 +18,9 @@
 
 <https://twin-ship.eu/twinship/vessel> a owl:Ontology ;
     rdfs:label "TwinShip Vessel Module" ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:rightsHolder "TwinShip Consortium" ;
+    dcterms:rights "Definitions quoted from the IMO Compendium on Facilitation and Electronic Business (FAL.5/Circ.56), i.e. dcterms:description values of properties with an IMO skos:notation code and dcterms:source <https://www.imo.org/>, remain © International Maritime Organization (IMO) and are not covered by CC BY 4.0."@en ;
     pav:createdOn "2026-02-05T00:00:00+00:00"^^xsd:dateTime ;
     pav:lastUpdateOn "2026-10-16T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.1.0" ;

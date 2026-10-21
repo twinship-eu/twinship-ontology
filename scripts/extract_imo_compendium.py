@@ -11,7 +11,7 @@ Usage:
     uv run python scripts/extract_imo_compendium.py --compare model/modules/vessel.ttl
 
 Output files:
-    model/external/imo/imo_compendium_all.csv  — all BBIE data elements (committed, stable reference)
+    model/external/imo/imo_compendium_all.csv  — all BBIE data elements (gitignored, generated locally)
     data/IMO_Compendium.xlsx                   — cached Excel download (gitignored, re-downloadable)
     data/imo_compendium_filtered.csv           — filtered by --keywords (gitignored, transient)
     data/imo_alignment_gaps.csv                — properties missing IMO codes (gitignored, transient)

@@ -142,7 +142,7 @@ These scripts form the main website generation pipeline:
 
 ### Legacy Scripts
 
-- **`extract_imo_compendium.py`** — Download and extract the IMO Compendium (FAL.5/Circ.56) to CSV. Outputs the stable full-compendium CSV to `model/external/imo/imo_compendium_all.csv` and transient working artifacts to `data/`. Use `align_imo.py` for systematic multi-module alignment; use this script for ad-hoc keyword searches with `--keywords`.
+- **`extract_imo_compendium.py`** — Download and extract the IMO Compendium (FAL.5/Circ.56) to CSV. Outputs the full-compendium CSV to `model/external/imo/imo_compendium_all.csv` (gitignored, not redistributable under the IMO terms of use) and transient working artifacts to `data/`. Use `align_imo.py` for systematic multi-module alignment; use this script for ad-hoc keyword searches with `--keywords`.
 - **`generate_stats_table.py`** — Generate ontology statistics table for STATISTICS.md
 - **`generate_docs.sh`** — Older documentation generation script (superseded by generate_website.sh)
 - **`setup_webvowl.py`** — Legacy WebVOWL setup (superseded by WIDOCO's built-in converter)
@@ -694,4 +694,4 @@ black scripts/
 
 ## License
 
-These scripts are part of the TwinShip ontology project.
+These scripts are part of the TwinShip ontology project and are licensed under MIT (see `LICENSES/MIT.txt`). The ontology itself is licensed under CC BY 4.0.
