@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-21
+
 ### Changed
 - Licensing: the ontology, examples, queries, and documentation are now CC BY 4.0 (root `LICENSE`); code and tooling stay MIT. Added `REUSE.toml` and `LICENSES/`, and `dcterms:license` / `dcterms:rightsHolder` in every TwinShip ontology header (`weather-conditions.ttl` previously stated MIT)
 - IMO Compendium definitions quoted in `vessel.ttl` and `weather-conditions.ttl` are excluded from CC BY 4.0 (© IMO), stated in `dcterms:rights` and the README
