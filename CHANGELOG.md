@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- SHACL shapes (`shapes/`) as a closed-world validation profile for vessel component data, derived from twinship-data-pipeline (commit `16a7a97`) with corrections; pipeline-specific shapes stay in the pipeline. See `shapes/README.md`
+- `tests/test_shapes.py`: checks that shapes reference existing ontology terms and that `sh:datatype` matches `rdfs:range`, and validates the synthetic test data against the shapes; `pyshacl` added as a development dependency
+- `scripts/merge_shapes.py`: merges `shapes/` into `build/twinship-shapes.ttl`; `generate_website.sh` runs it and publishes the file on the website
+
+### Changed
+- Unknown values are now omitted instead of encoded as `-1`: removed "Value -1 indicates unknown" and the `-1 (unknown)` codes from 168 `rdfs:comment`s in `vessel.ttl`, and documented the convention in `model/README.md`
+- `tests/data/twinship-test-instances.ttl`: numeric values of `xsd:double` properties are now typed `xsd:double` (were `xsd:decimal`)
+
 ## [0.1.1] - 2026-10-21
 
 ### Changed

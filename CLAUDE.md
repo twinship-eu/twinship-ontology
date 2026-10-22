@@ -187,6 +187,8 @@ Common unit suffixes:
 
 No unit suffix for dimensionless values, counts, identifiers, or date/time values.
 
+Unknown values are omitted (no triple). Never use `-1` or other sentinel values.
+
 ---
 
 ## Standards Traceability
@@ -229,6 +231,7 @@ Committed source:
 - `model/`
 - `model/modules/`
 - `model/external/`
+- `shapes/` — SHACL validation profile (shape IRIs in `https://twin-ship.eu/twinship/shapes#`); not imported by the ontology. Keep `sh:datatype` aligned with `rdfs:range` (`tests/test_shapes.py`)
 - `examples/README.md` only — dataset `.ttl` files under `examples/` are gitignored until published
 
 Generated or transient:

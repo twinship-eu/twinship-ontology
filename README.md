@@ -5,6 +5,7 @@ Welcome to the TwinShip Ontology repository! This project provides a modular, ex
 ## Repository Structure
 
 - `model/`   — Source ontology files (base, modules, external references)
+- `shapes/`  — SHACL shapes: closed-world validation profile for vessel component instance data ([shapes/README.md](shapes/README.md))
 - `build/`   — Auto-generated build artifacts (gitignored)
 - `docs/`    — Documentation, diagrams, design decisions, and generated website
 - `scripts/` — Build and processing scripts (Python + shell)
@@ -212,7 +213,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute, repo
 
 This repository has two licences. [`REUSE.toml`](REUSE.toml) gives the authoritative file-level mapping ([REUSE](https://reuse.software/) specification).
 
-- **Ontology and knowledge artefacts** (`model/`, `examples/`, `queries/`, SPARQL test queries, `docs/`, and documentation): [CC BY 4.0](LICENSE).
+- **Ontology and knowledge artefacts** (`model/`, `shapes/`, `examples/`, `queries/`, SPARQL test queries, `docs/`, and documentation): [CC BY 4.0](LICENSE).
 - **Code** (`scripts/`, Python tests, shell scripts, CI and project configuration): [MIT](LICENSES/MIT.txt).
 - **Third-party resources** in `model/external/` and `model/vocabularies/` keep their own licences: IDO (ISO 15926-14) is [CC BY-SA 4.0](LICENSES/CC-BY-SA-4.0.txt) (POSC Caesar Association), QUDT is [CC BY 4.0](model/external/qudt/LICENSE.md) (QUDT.org), and PAV is [Apache 2.0](LICENSES/Apache-2.0.txt). `PAV-simplified.ttl` and the QUDT `*-simplified.ttl` files are reduced subsets of the upstream ontologies. The generated documentation reproduces labels and definitions of the IDO terms used by TwinShip; those excerpts remain under CC BY-SA 4.0.
 - **IMO definitions:** some `dcterms:description` values in `vessel.ttl` and `weather-conditions.ttl` quote data element definitions from the [IMO Compendium on Facilitation and Electronic Business](https://imocompendium.imo.org/) (FAL.5/Circ.56). These are the properties with an IMO code in `skos:notation` and `dcterms:source <https://www.imo.org/>`. The quoted definitions remain © International Maritime Organization (IMO) and are **not** covered by CC BY 4.0.

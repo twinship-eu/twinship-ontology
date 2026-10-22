@@ -286,6 +286,8 @@ All data properties use the **`tw` prefix** (two-character lowercase abbreviatio
 :twWindSpeedInKnots     rdfs:label "Wind speed in knots"@en .
 ```
 
+**Unknown values** are left out: if a value is unknown, the triple is not asserted. Do not use sentinel values such as `-1`; they can be valid measurements (angles, temperatures) and distort aggregates. The SHACL shapes in `shapes/` reject `-1` where it is not a valid value.
+
 ### Standards Traceability for Data Properties
 
 Data property names should ideally be traceable to a recognised maritime standard. The **preference is IMO** (publicly accessible) over **ISO** (closed standard, requires purchase). When a property corresponds to a standard definition, annotate it with all four of the following triples:
@@ -301,7 +303,7 @@ Data property names should ideally be traceable to a recognised maritime standar
 ```turtle
 :twFuelConsumptionTotalInMT a owl:DatatypeProperty ;
     rdfs:label "fuel consumption total in MT" ;
-    rdfs:comment "Total fuel consumption in metric tons. Value -1 indicates unknown." ;
+    rdfs:comment "Total fuel consumption in metric tons." ;
     skos:notation "IMO0670" ;
     skos:altLabel "Fuel consumed, by Main Engine" ;
     dcterms:description "Fuel consumed by Main Engine, measured in metric tons since last reporting." ;
@@ -314,7 +316,7 @@ Data property names should ideally be traceable to a recognised maritime standar
 ```turtle
 :twInletAirPressureMaxInHPa a owl:DatatypeProperty ;
     rdfs:label "inlet air pressure max in hPa" ;
-    rdfs:comment "Maximum inlet air pressure in hectopascals. Value -1 indicates unknown." ;
+    rdfs:comment "Maximum inlet air pressure in hectopascals." ;
     skos:notation "ME_AIR_PRS" ;
     skos:altLabel "Main Engine Air Pressure" ;
     dcterms:description "The pressure of the air supplied to the main engine for combustion or other purposes, measured at the designated point in the air system." ;
