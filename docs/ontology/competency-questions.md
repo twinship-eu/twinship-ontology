@@ -149,9 +149,9 @@ under [`tests/competency/`](../../tests/competency/).
 | CQE‑01 | What are the current fuel consumption and CO₂ emissions of the vessel for the ongoing voyage? | 🔲 | — |
 | CQE‑02 | What is the current fuel consumption rate (MT/hr) and total fuel consumption (MT) for each vessel's Main Engine System and Auxiliary Engine System?  | 🔲 | — |
 | CQE-03 | Which weather conditions correlate with speed reduction? | 🔲 | — |
-| CQE-04 | Which operational parameters influence vessel emissions? | 🔲 | — |
-| CQE-05 | Which weather conditions contribute to increased vessel energy efficiency | 🔲 | — |
-| CQE-06 | How do weather conditions affect fuel consumption on Voyage leg and Voyage? | 🔲 | — |
+| CQE-04 | Which operational parameters influence vessel emissions? | ❌ | — |
+| CQE-05 | Which weather conditions contribute to increased vessel energy efficiency | ❌ | — |
+| CQE-06 | How do weather conditions affect fuel consumption on Voyage leg and Voyage? | ❌ | — |
 
 ---
 
@@ -165,14 +165,14 @@ under [`tests/competency/`](../../tests/competency/).
 | CQE-08 | What is the predicted fuel consumption rate (MT/hr) and total fuel consumption (MT) for each vessel's Main Engine System and Auxiliary Engine System? | 🔲 | — |
 | CQE-09 | What is the predicted CO₂ emission rate (g/hr) for a vessel during a voyage under the current operational conditions? | 🔲 | — |
 | CQE-10 | How would the predicted emissions change if change of engine mode? | 🔲 | — |
-| CQE-11 | How do predicted emissions differ between alternative speeds for the remainder of the voyage? | 🔲 | — |
+| CQE-11 | How do predicted emissions differ between alternative speeds for the remainder of the voyage? | ❌ | — |
 | CQE-12 | What are the emissions per nautical mile for each voyage leg? | 🔲 | — |
-| CQE-13 | What are the predicted emissions after changing speed for Voyage leg? | 🔲 | — |
-| CQE-14 | How does the predicted fuel consumption differ between alternative itineraries for the same voyage objective? | 🔲 | — |
-| CQE-15 | How does Just-in-Time arrival affect predicted fuel consumption and emissions compared to arriving early? | 🔲 | — |
-| CQE-16 | How do predicted fuel cost and emissions differ between voyage plans satisfying different voyage objectives? | 🔲 | — |
-| CQE-17 | How do predicted emissions differ between engine operational modes under the same speed condition? | 🔲 | — |
-| CQE-18 | How do predicted emissions differ between trim/draft configurations? | 🔲 | — |
+| CQE-13 | What are the predicted emissions after changing speed for Voyage leg? | ❌ | — |
+| CQE-14 | How does the predicted fuel consumption differ between alternative itineraries for the same voyage objective? | ❌ | — |
+| CQE-15 | How does Just-in-Time arrival affect predicted fuel consumption and emissions compared to arriving early? | ❌ | — |
+| CQE-16 | How do predicted fuel cost and emissions differ between voyage plans satisfying different voyage objectives? | ❌ | — |
+| CQE-17 | How do predicted emissions differ between engine operational modes under the same speed condition? | ❌ | — |
+| CQE-18 | How do predicted emissions differ between trim/draft configurations? | ❌ | — |
 
 
 ---
@@ -183,17 +183,17 @@ under [`tests/competency/`](../../tests/competency/).
 
 | CQ No. | Competency Question | Status | Test file |
 |--------|---------------------|--------|-----------|
-| CQE-19 | Is the emission value observed or estimated? | 🔲 | — |
+| CQE-19 | Is the emission value observed or estimated? | ❌ | — |
 | CQE-20 | Which prediction belongs to Voyage leg? | 🔲 | — |
 | CQE-21 | Which estimation belongs to Voyage? | 🔲 | — |
 | CQE-22 | For which voyage leg is the prediction valid? | 🔲 | — |
-| CQE-23 | Which statistical model was used to generate a prediction and which input variables were included? | 🔲 | — |
-| CQE-24 | Which synthetic voyage scenarios were generated for a vessel and what assumptions were used? | 🔲 | — |
-| CQE-25 | What confidence level /(model parameters) is associated with the predicted fuel consumption for a voyage leg / voyage? | 🔲 | — |
+| CQE-23 | Which statistical model was used to generate a prediction and which input variables were included? | ❌ | — |
+| CQE-24 | Which synthetic voyage scenarios were generated for a vessel and what assumptions were used? | ❌ | — |
+| CQE-25 | What confidence level /(model parameters) is associated with the predicted fuel consumption for a voyage leg / voyage? | ❌ | — |
 | CQE-26 | Which current observations were used to generate a given prediction? | 🔲 | — |
 | CQE-27 | Which weather conditions were used to generate the prediction? | 🔲 | — |
 | CQE-28 | Which engine operational mode was assumed for the predicted voyage? | 🔲 | — |
-| CQE-29 | Which operational parameters contributed to the prediction and to what extent? | 🔲 | — |
+| CQE-29 | Which operational parameters contributed to the prediction and to what extent? | ❌ | — |
 | CQE-30 | Which dataset was used to train this statistical model? | 🔲 | — |
 | CQE-31 | Which version of the statistical model generated this prediction? | 🔲 | — |
 
@@ -206,4 +206,4 @@ under [`tests/competency/`](../../tests/competency/).
 
 | CQ No. | Competency Question | Status | Test file |
 |--------|---------------------|--------|-----------|
-| CQE-32 | How do predictions differ between alternative statistical models for the same voyage? | 🔲 | — |
+| CQE-32 | How do predictions differ between alternative statistical models for the same voyage? | ❌ | — |
