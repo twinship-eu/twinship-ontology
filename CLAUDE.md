@@ -1,4 +1,6 @@
-# CLAUDE.md — TwinShip Ontology Agent Context
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Purpose
 
@@ -230,7 +232,7 @@ uv run python scripts/extract_imo_compendium.py
 Committed source:
 - `model/`
 - `model/modules/`
-- `model/external/`
+- `model/external/`, `model/vocabularies/` — simplified local copies of IDO, QUDT, PAV; `catalog-v001.xml` maps their import IRIs to these files so builds run offline
 - `shapes/` — SHACL validation profile (shape IRIs in `https://twin-ship.eu/twinship/shapes#`); not imported by the ontology. Keep `sh:datatype` aligned with `rdfs:range` (`tests/test_shapes.py`)
 - `examples/README.md` only — dataset `.ttl` files under `examples/` are gitignored until published
 
@@ -240,10 +242,13 @@ Generated or transient:
 - `data/` — gitignored working data/cache
 - `papers/` — gitignored; SWJ paper planning/readiness files (local only, never committed)
 
-Scripts:
+Setup, scripts, lint:
 
 ```bash
+./setup.sh                            # or: uv sync
 uv run python scripts/<script>.py
+uv run ruff check scripts tests
+uv run black --check scripts tests    # line-length 100
 ```
 
 Full build:
@@ -326,6 +331,9 @@ Full website/documentation build:
 Main outputs:
 - WIDOCO documentation uses `complete-docs-viz.ttl`
 - WebVOWL visualization uses `complete-viz-clean-minimal.ttl`
+- Release SHACL file merged from `shapes/*.ttl` by `scripts/merge_shapes.py`
+
+Deployment: `.github/workflows/deploy.yml`.
 
 Never manually edit generated files in:
 - `build/`
@@ -347,7 +355,7 @@ Never manually edit generated files in:
    - `.env` at repo root sets `PYTHONUTF8=1` — `uv run` loads it automatically.
    - All Python file I/O uses explicit `encoding='utf-8'` — never use bare `open(path)`.
    - WIDOCO Java is invoked with `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8`.
-10. **Version synchronization** — all version numbers must stay in sync (currently `0.1.1`) across ontology files and project metadata.
+10. **Version synchronization** — all version numbers must stay in sync (currently `0.1.1`): `pyproject.toml`, `CITATION.cff`, `CHANGELOG.md`, `STATISTICS.md`, `model/README.md`, `model/catalog-v001.xml`, all `model/*.ttl` and `model/modules/*.ttl`, `shapes/twinship-shapes.ttl`, `scripts/generate_website.sh`.
 
 ---
 
@@ -361,6 +369,12 @@ mkdir -p build && uv run python scripts/merge_modules.py --catalog model/catalog
 uv run pytest tests/ -v
 ```
 Most CQs will `xfail` (no instance data). Add `# STRICT` to a `.rq` file to make it a hard failure.
+
+Single test / single CQ (`test_shapes.py` skips unless the merged `build/twinship-core-complete.ttl` exists):
+```bash
+uv run pytest tests/test_shapes.py -v
+uv run pytest tests/test_competency_questions.py -k cq06 -v
+```
 
 **Live GraphDB (instance data):** queries all vessel repositories in a running GraphDB instance.
 ```bash
