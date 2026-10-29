@@ -355,7 +355,7 @@ Never manually edit generated files in:
    - `.env` at repo root sets `PYTHONUTF8=1` — `uv run` loads it automatically.
    - All Python file I/O uses explicit `encoding='utf-8'` — never use bare `open(path)`.
    - WIDOCO Java is invoked with `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8`.
-10. **Version synchronization** — all version numbers must stay in sync (currently `0.1.1`): `pyproject.toml`, `CITATION.cff`, `CHANGELOG.md`, `STATISTICS.md`, `model/README.md`, `model/catalog-v001.xml`, all `model/*.ttl` and `model/modules/*.ttl`, `shapes/twinship-shapes.ttl`, `scripts/generate_website.sh`.
+10. **Version synchronization** — all version numbers must stay in sync (currently `0.1.2`): `pyproject.toml`, `CITATION.cff`, `CHANGELOG.md`, `STATISTICS.md`, `model/README.md`, `model/catalog-v001.xml`, all `model/*.ttl` and `model/modules/*.ttl`, `shapes/twinship-shapes.ttl`, `scripts/generate_website.sh`.
 
 ---
 

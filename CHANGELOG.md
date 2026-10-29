@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-29
+
 ### Added
 - SHACL shapes (`shapes/`) as a closed-world validation profile for vessel component data, derived from twinship-data-pipeline (commit `16a7a97`) with corrections; pipeline-specific shapes stay in the pipeline. See `shapes/README.md`
 - `tests/test_shapes.py`: checks that shapes reference existing ontology terms and that `sh:datatype` matches `rdfs:range`, and validates the synthetic test data against the shapes; `pyshacl` added as a development dependency

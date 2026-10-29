@@ -17,8 +17,8 @@ authors:
     given-names: Bård Johan
     affiliation: SINTEF
   - name: TwinShip Consortium
-date-released: 2026-10-21
-version: 0.1.1
+date-released: 2026-10-29
+version: 0.1.2
 license:
   - CC-BY-4.0
   - MIT

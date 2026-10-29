@@ -347,7 +347,7 @@ https://twin-ship.eu/twinship/operational-modes
 https://twin-ship.eu/twinship/operational-context
 ```
 
-Version IRIs append `/<semver>`, e.g., `https://twin-ship.eu/twinship/base/0.1.1`.
+Version IRIs append `/<semver>`, e.g., `https://twin-ship.eu/twinship/base/0.1.2`.
 
 ## Upper Ontology (TOP)
 
@@ -404,9 +404,9 @@ The `modules/` directory contains four fully implemented modules. To add a new m
 
 ## Version Information
 
-- **Version**: 0.1.1
+- **Version**: 0.1.2
 - **Created**: 2025-01-21
-- **Last Updated**: 2026-10-21
+- **Last Updated**: 2026-10-29
 
 ## Usage Examples
 

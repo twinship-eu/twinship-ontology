@@ -22,11 +22,11 @@
     dcterms:rightsHolder "TwinShip Consortium" ;
     dcterms:rights "Definitions quoted from the IMO Compendium on Facilitation and Electronic Business (FAL.5/Circ.56), i.e. dcterms:description values of properties with an IMO skos:notation code and dcterms:source <https://www.imo.org/>, remain © International Maritime Organization (IMO) and are not covered by CC BY 4.0."@en ;
     pav:createdOn "2026-02-05T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-10-21T00:00:00+00:00"^^xsd:dateTime ;
-    pav:version "0.1.1" ;
+    pav:lastUpdateOn "2026-10-29T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.1.2" ;
     rdfs:comment "Vessel module for TwinShip ontology. Combines engine and hull concepts. Defines vessel types, hull-related properties, and all engine-related classes, properties, and individuals including propulsion systems, auxiliary power generation, propellers, gearboxes, shaft generators, boilers, and fuel types. Extends twinship-base foundation classes." ;
     owl:imports <https://twin-ship.eu/twinship/base> ;
-    owl:versionIRI <https://twin-ship.eu/twinship/vessel/0.1.1> .
+    owl:versionIRI <https://twin-ship.eu/twinship/vessel/0.1.2> .
 
 # #################################################################
 # #

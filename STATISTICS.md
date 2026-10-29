@@ -1,8 +1,8 @@
 # TwinShip Ontology — Statistics
 
-> **Version:** 0.1.1  
-> **Ontology last updated:** 2026-10-21  
-> **Statistics generated:** 2026-10-21  
+> **Version:** 0.1.2  
+> **Ontology last updated:** 2026-10-29  
+> **Statistics generated:** 2026-10-29  
 > **Source:** `build/twinship-core-complete-docs-viz.ttl`
 
 ## Summary
