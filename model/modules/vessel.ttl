@@ -572,6 +572,9 @@
         [ a owl:Restriction ;
             owl:onProperty :twElectricalEfficiencyPercentage ;
             owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCommonFuelMode ;
+            owl:someValuesFrom xsd:integer ],
         :EngineSystem .
 
 :FrequencyConverterSystem a owl:Class ;

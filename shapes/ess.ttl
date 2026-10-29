@@ -31,5 +31,6 @@ twsh:EnergyStorageSystemShape a sh:NodeShape ;
         sh:path tws:twESSCycleLife ;
         sh:maxCount 1 ;
         sh:datatype xsd:integer ;
-        sh:message "ESS cycle life must be an integer" ;
+        sh:minInclusive 0 ;
+        sh:message "ESS cycle life must be a non-negative integer" ;
     ] .

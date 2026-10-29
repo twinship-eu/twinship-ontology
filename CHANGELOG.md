@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - SHACL shapes (`shapes/`) as a closed-world validation profile for vessel component data, derived from twinship-data-pipeline (commit `16a7a97`) with corrections; pipeline-specific shapes stay in the pipeline. See `shapes/README.md`
 - `tests/test_shapes.py`: checks that shapes reference existing ontology terms and that `sh:datatype` matches `rdfs:range`, and validates the synthetic test data against the shapes; `pyshacl` added as a development dependency
 - `scripts/merge_shapes.py`: merges `shapes/` into `build/twinship-shapes.ttl`; `generate_website.sh` runs it and publishes the file on the website
+- `GenSetSystem`: `owl:someValuesFrom xsd:integer` restriction on `twCommonFuelMode`, as on `MainEngineSystem`
+- `shapes/genset.ttl`: `twCommonFuelMode` must be `0` or `1`; `shapes/ess.ttl`: `twESSCycleLife` must be non-negative (both previously let `-1` through)
+- `docs/ontology/competency-questions.md`: 32 extension competency questions (CQE-01 to CQE-32) for the statistical extension, marked where no test query exists yet
 
 ### Changed
 - Unknown values are now omitted instead of encoded as `-1`: removed "Value -1 indicates unknown" and the `-1 (unknown)` codes from 168 `rdfs:comment`s in `vessel.ttl`, and documented the convention in `model/README.md`

@@ -46,6 +46,13 @@ twsh:GenSetSystemShape a sh:NodeShape ;
         sh:message "Generator frequency must be a single number" ;
     ] ;
     sh:property [
+        sh:path tws:twCommonFuelMode ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:in (0 1) ;
+        sh:message "Common fuel mode must be 0 (off) or 1 (on)" ;
+    ] ;
+    sh:property [
         sh:path tws:consume ;
         sh:class tws:Fuel ;
         sh:message "Genset consume property must reference a Fuel individual" ;
