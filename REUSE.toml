@@ -33,6 +33,7 @@ path = [
     "model/catalog-v001.xml",
     "model/README.md",
     "model/modules/**",
+    "shapes/**",
     "examples/**",
     "queries/**",
     "tests/competency/**",

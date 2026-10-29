@@ -141,6 +141,15 @@ else
     log "Skipping merge step (using existing: $COMPLETE_FILE)"
 fi
 
+# Step 1.5: Merge SHACL shapes into a single release file
+SHAPES_FILE="$REPO_ROOT/build/twinship-shapes.ttl"
+step "Step 1.5: Merging SHACL shapes into single file"
+uv run python scripts/merge_shapes.py --output "$SHAPES_FILE" || {
+    error "Failed to merge SHACL shapes"
+    exit 1
+}
+success "Merged shapes created: $SHAPES_FILE"
+
 # Step 2: Generate visualization-friendly version
 VIZ_FILE="${COMPLETE_FILE%.ttl}-viz.ttl"
 if [ "$SKIP_VIZ" = false ]; then
@@ -300,6 +309,12 @@ fi
 # Step 5: Create landing page
 step "Step 5: Creating website landing page"
 
+mkdir -p "$OUTPUT_ABS"
+cp "$SHAPES_FILE" "$OUTPUT_ABS/twinship-shapes.ttl" || {
+    error "Failed to copy SHACL shapes to website"
+    exit 1
+}
+
 cat > "$OUTPUT_ABS/index.html" << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
@@ -436,6 +451,13 @@ cat > "$OUTPUT_ABS/index.html" << 'EOF'
                 <p>Explore the ontology structure with WebVOWL's interactive force-directed graph. Filter, zoom, and navigate through classes and properties.</p>
                 <a href="visualization/index.html" class="button">Launch Visualization →</a>
             </div>
+
+            <div class="card">
+                <div class="card-icon">✅</div>
+                <h2>SHACL Shapes</h2>
+                <p>Closed-world validation profile for vessel component instance data. Validate with the ontology as ontology graph and RDFS inference.</p>
+                <a href="twinship-shapes.ttl" class="button" download>Download Shapes (Turtle) →</a>
+            </div>
         </div>
         
         <div class="features">
@@ -492,4 +514,5 @@ echo "Contents:"
 echo "  • Landing page:     $OUTPUT_ABS/index.html"
 echo "  • Documentation:    $OUTPUT_ABS/documentation/index-en.html"
 echo "  • WebVOWL:          $OUTPUT_ABS/documentation/webvowl/index.html"
+echo "  • SHACL shapes:     $OUTPUT_ABS/twinship-shapes.ttl"
 echo ""
