@@ -4,10 +4,12 @@ Thank you for your interest in contributing to the TwinShip Ontology! We welcome
 
 ## How to Contribute
 
-1. **Fork the repository** and create your branch from `main`.
+1. **Fork the repository** and create your branch from `develop`.
 2. **Make your changes** in a modular and well-documented manner.
 3. **Validate your changes** using the scripts in `tools/` and tests in `tests/`.
-4. **Submit a pull request** with a clear description of your changes and the motivation behind them.
+4. **Submit a pull request** into `develop` with a clear description of your changes and the motivation behind them.
+
+`develop` is the default branch. `main` holds released versions only and is updated through release pull requests from `develop`.
 
 ## Guidelines
 

@@ -58,6 +58,14 @@ After implementation:
 
 ---
 
+## Branches
+
+- `develop` is the default branch. Work on a feature branch from `develop` and open PRs into `develop`.
+- `main` only receives release PRs from `develop` (merge commit, not squash), approved by the maintainer.
+- Releases: bump the version (see Common Pitfalls 10) and `CHANGELOG.md` on `develop` before the release PR; tag `vX.Y.Z` on `main` after merging. The tag triggers `deploy.yml`.
+
+---
+
 ## Licensing
 
 Ontology, examples, queries, and documentation are CC BY 4.0; code and tooling are MIT. `REUSE.toml` is the authoritative mapping. Every TwinShip `owl:Ontology` header must state `dcterms:license <https://creativecommons.org/licenses/by/4.0/>`. Contributions to `model/` are made under CC BY 4.0 and code contributions under MIT.
