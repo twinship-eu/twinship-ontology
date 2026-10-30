@@ -211,8 +211,8 @@
 # #    of the shared ontology 2026-10-02, following the same pattern
 # #    already applied to EngineMode). The futuristic vessel
 # #    demonstrator's placeholder individuals now live in
-# #    twinship-futuristic-vessel/data/futuristic-vessel-individuals.ttl,
-# #    pending merge into examples/futuristic-vessel.ttl. Other
+# #    twinship-data-pipeline's data/RoRo Futuristic Vessel
+# #    Operational Modes.ttl. Other
 # #    vessels/fleets instantiate their own in their own instance data.
 # #
 # #################################################################
@@ -237,8 +237,8 @@
 # #    the shared ontology 2026-10-02, following the same pattern
 # #    already applied to EngineMode). The futuristic vessel
 # #    demonstrator's placeholder individuals now live in
-# #    twinship-futuristic-vessel/data/futuristic-vessel-individuals.ttl,
-# #    pending merge into examples/futuristic-vessel.ttl. Other
+# #    twinship-data-pipeline's data/RoRo Futuristic Vessel
+# #    Operational Modes.ttl. Other
 # #    vessels/fleets instantiate their own in their own instance data.
 # #
 # #################################################################
@@ -252,8 +252,8 @@
 # #    the shared ontology 2026-10-02, following the same pattern
 # #    already applied to EngineMode). The futuristic vessel
 # #    demonstrator's placeholder individuals now live in
-# #    twinship-futuristic-vessel/data/futuristic-vessel-individuals.ttl,
-# #    pending merge into examples/futuristic-vessel.ttl. Other
+# #    twinship-data-pipeline's data/RoRo Futuristic Vessel
+# #    Operational Modes.ttl. Other
 # #    vessels/fleets instantiate their own in their own instance data.
 # #
 # #################################################################
