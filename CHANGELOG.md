@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Draft and trim mode ranges in `operational-modes.ttl`: `twDraftModeReferenceDraftInM`, `twDraftModeLowerBoundInM`, `twDraftModeUpperBoundInM` on `DraftMode`, and `twTrimModeLowerBoundInM`, `twTrimModeUpperBoundInM` on `TrimMode` (trim as in `twTrimInM`: aft minus forward draft, positive = stern trim), with `hasQuantityLength` restrictions
+- `twSpeedBinPropellerSpeedInRevPerMin` on `VesselSpeedBin` (optional representative propeller speed), with a `hasQuantityRotationalVelocity` restriction
+- SHACL shapes for operational modes and bins (`shapes/operational_modes.ttl`): engine, draft and trim modes and vessel speed bins have at most one value per bound, non-negative where physical, and lower bound ≤ upper bound; draft–trim modes have exactly one draft and one trim mode; speed bins exactly one speed reference
+
 ### Changed
 - `operational-modes.ttl` comments and `examples/README.md` now point to the futuristic vessel's operational modes in twinship-data-pipeline (`data/RoRo Futuristic Vessel Operational Modes.ttl`); the `twinship-futuristic-vessel` generator is archived
 
