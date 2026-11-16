@@ -160,6 +160,44 @@
             owl:onProperty :twBoilerMGOMassInKgPerHr ;
             owl:someValuesFrom xsd:double ] .
 
+:CompositeExhaustGasBoiler a owl:Class ;
+    rdfs:label "Composite Exhaust Gas Boiler" ;
+    rdfs:comment "A boiler that generates steam from exhaust-gas heat and can also be oil-fired. Uses the composite exhaust gas boiler datatype properties; other boiler characteristics are inherited from Boiler." ;
+    rdfs:subClassOf :Boiler,
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerBLRFuelMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerDOTemperatureInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerDOVolInLitrePerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerEmergencyDOMode ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerFuelTempInDegC ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerFuelVolLitrePerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerMGOInUse ;
+            owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerMGOMassInKgPerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerMassInKgPerHr ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerPowerMaxInKW ;
+            owl:someValuesFrom xsd:double ],
+        [ a owl:Restriction ;
+            owl:onProperty :twCompositeExhaustGasBoilerSpeedMaxInRevPerMin ;
+            owl:someValuesFrom xsd:double ] .
+
 :CPP a owl:Class ;
     rdfs:label "Controllable Pitch Propeller" ;
     rdfs:comment "Controllable Pitch Propeller - a propeller where the blade pitch can be adjusted while rotating to optimize thrust and efficiency." ;

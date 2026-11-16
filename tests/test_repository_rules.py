@@ -81,18 +81,6 @@ UNRESTRICTED_ALLOWED = {
     "hasTrimCondition",
     "hasVoyage",
     "ownedBy",
-    # Composite exhaust gas boiler: Boiler or a new subclass
-    "twCompositeExhaustGasBoilerBLRFuelMode",
-    "twCompositeExhaustGasBoilerDOTemperatureInDegC",
-    "twCompositeExhaustGasBoilerDOVolInLitrePerHr",
-    "twCompositeExhaustGasBoilerEmergencyDOMode",
-    "twCompositeExhaustGasBoilerFuelTempInDegC",
-    "twCompositeExhaustGasBoilerFuelVolLitrePerHr",
-    "twCompositeExhaustGasBoilerMGOInUse",
-    "twCompositeExhaustGasBoilerMGOMassInKgPerHr",
-    "twCompositeExhaustGasBoilerMassInKgPerHr",
-    "twCompositeExhaustGasBoilerPowerMaxInKW",
-    "twCompositeExhaustGasBoilerSpeedMaxInRevPerMin",
     # Owner unclear from the comment
     "twEmergencyMassRetInKgPerHr",
     "twLoadingConditionLogged",
