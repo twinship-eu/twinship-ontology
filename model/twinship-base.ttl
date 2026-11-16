@@ -74,7 +74,6 @@ ido:contains a owl:ObjectProperty ;
 ido:directlyConnectedTo a owl:ObjectProperty ;
     rdfs:label "directly connected to" ;
     rdfs:comment "Relates two inanimate physical objects that are directly connected." ;
-    rdfs:domain ido:InanimatePhysicalObject ;
     rdfs:range ido:InanimatePhysicalObject .
 
 # #################################################################
