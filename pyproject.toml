@@ -47,10 +47,10 @@ build-backend = "hatchling.build"
 only-include = ["scripts"]
 packages = []
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pytest>=7.0.0",
-    "black>=23.0.0", 
+    "black>=23.0.0",
     "ruff>=0.1.0",
     "pyshacl>=0.26.0",
 ]
