@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Lint
+        run: uv run ruff check scripts tests
+
+      - name: Check formatting (fix locally with `uv run black scripts tests`)
+        run: uv run black --check scripts tests
+
+      - name: Check licensing (REUSE)
+        run: uvx --from 'reuse[charset-normalizer]' reuse lint
+
+      - name: Merge ontology modules
+        run: |
+          mkdir -p build
+          uv run python scripts/merge_modules.py --catalog model/catalog-v001.xml model/twinship-core.ttl build/twinship-core-complete.ttl
+
+      - name: Run tests
+        run: uv run pytest tests/

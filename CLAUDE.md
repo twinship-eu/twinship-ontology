@@ -259,6 +259,8 @@ uv run ruff check scripts tests
 uv run black --check scripts tests    # line-length 100
 ```
 
+CI (`.github/workflows/ci.yml`, job `lint-and-test`) runs ruff, black, `reuse lint`, the module merge and `pytest` on PRs to `develop` and `main`. `tests/test_repository_rules.py` enforces no `rdfs:domain` in `model/` and the version sync below.
+
 Full build:
 
 ```bash
