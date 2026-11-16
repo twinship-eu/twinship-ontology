@@ -29,8 +29,6 @@ import subprocess
 import sys
 import urllib.request
 from pathlib import Path
-import shutil
-import os
 
 
 # WIDOCO version and download URL
@@ -72,11 +70,11 @@ def download_widoco(tools_dir):
     
     try:
         urllib.request.urlretrieve(WIDOCO_URL, jar_path)
-        print(f"✓ Downloaded WIDOCO successfully")
+        print("✓ Downloaded WIDOCO successfully")
         return jar_path
     except Exception as e:
         print(f"✗ Error downloading WIDOCO: {e}")
-        print(f"  Please download manually from:")
+        print("  Please download manually from:")
         print(f"  {WIDOCO_URL}")
         return None
 
@@ -114,18 +112,18 @@ def run_widoco(jar_path, input_file, output_dir, include_diagram=True,
     if not include_crossref:
         cmd.append('-excludeIntroduction')
     
-    print(f"\nGenerating WIDOCO documentation...")
+    print("\nGenerating WIDOCO documentation...")
     print(f"  Input: {input_path.name}")
     print(f"  Output: {output_path}")
     print(f"  Options: diagram={include_diagram}, crossref={include_crossref}, lang={lang}")
     
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True, encoding='utf-8')
-        print(f"\n✓ Documentation generated successfully!")
+        subprocess.run(cmd, check=True, capture_output=True, text=True, encoding='utf-8')
+        print("\n✓ Documentation generated successfully!")
         print(f"  Open: {output_path / 'index-en.html'}")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"\n✗ Error running WIDOCO:")
+        print("\n✗ Error running WIDOCO:")
         print(e.stderr)
         return False
 
@@ -169,9 +167,9 @@ def fix_webvowl_iframe_height(output_dir):
         if original in html_content:
             html_content = html_content.replace(original, replacement)
             index_file.write_text(html_content, encoding='utf-8')
-            print(f"✓ Increased WebVOWL iframe height to 800px")
+            print("✓ Increased WebVOWL iframe height to 800px")
         else:
-            print(f"⚠ Warning: Could not find iframe tag to modify")
+            print("⚠ Warning: Could not find iframe tag to modify")
     except Exception as e:
         print(f"⚠ Warning: Failed to fix iframe height: {e}")
 
@@ -191,7 +189,7 @@ def fix_ontology_title(output_dir):
         html_content = html_content.replace('TwinShip Core Ontology (Complete)', 'TwinShip Ontology')
         
         index_file.write_text(html_content, encoding='utf-8')
-        print(f"✓ Changed title to 'TwinShip Ontology'")
+        print("✓ Changed title to 'TwinShip Ontology'")
     except Exception as e:
         print(f"⚠ Warning: Failed to fix title: {e}")
 
@@ -260,11 +258,11 @@ Note: Requires Java 11 or later. WIDOCO jar will be downloaded automatically.
         print("\n" + "=" * 70)
         print("Documentation generation complete!")
         print("=" * 70)
-        print(f"\nTo view the documentation:")
+        print("\nTo view the documentation:")
         print(f"  1. Open: {Path(args.output).resolve() / 'index.html'}")
-        print(f"  2. Or serve locally:")
+        print("  2. Or serve locally:")
         print(f"     cd {args.output} && python -m http.server 8000")
-        print(f"     Then open: http://localhost:8000")
+        print("     Then open: http://localhost:8000")
         return 0
     else:
         return 1

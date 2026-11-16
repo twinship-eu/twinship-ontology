@@ -26,11 +26,9 @@ Output:
 
 import argparse
 import json
-import subprocess
 import sys
-import shutil
 from pathlib import Path
-from rdflib import Graph, RDF, RDFS, OWL, Namespace
+from rdflib import Graph, RDF, RDFS, OWL
 
 
 def convert_to_webvowl_json(input_file, output_file):
@@ -351,9 +349,9 @@ Note: For best results, use the visualization-friendly ontology (output of gener
     print("WebVOWL setup complete!")
     print("=" * 70)
     print(f"\nOutput directory: {output_dir.resolve()}")
-    print(f"\nTo visualize:")
+    print("\nTo visualize:")
     print(f"  1. Open: {output_dir.resolve() / 'index.html'}")
-    print(f"  2. Follow the instructions to load ontology.json")
+    print("  2. Follow the instructions to load ontology.json")
     
     if args.install_local:
         print("\n⚠️  Local WebVOWL installation not yet implemented.")

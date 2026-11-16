@@ -17,8 +17,7 @@ Usage:
 import argparse
 import sys
 from pathlib import Path
-from rdflib import Graph, Namespace, RDF, RDFS, OWL, URIRef, BNode
-from rdflib.namespace import SKOS, DCTERMS
+from rdflib import Graph, RDF, RDFS, OWL, URIRef, BNode
 
 
 # TwinShip namespaces

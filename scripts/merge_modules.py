@@ -22,8 +22,7 @@ import argparse
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
-from rdflib import Graph, Namespace, RDF, RDFS, OWL, URIRef
-from rdflib.namespace import XSD
+from rdflib import Graph, RDF, OWL
 
 
 def resolve_import_path(ontology_uri, base_path, catalog_file=None):
@@ -50,7 +49,7 @@ def resolve_import_path(ontology_uri, base_path, catalog_file=None):
                     resolved = (catalog_file.parent / rel_path).resolve()
                     if resolved.exists():
                         return resolved
-        except Exception as e:
+        except Exception:
             pass  # Catalog parsing failed, try other strategies
     
     # Strategy 2: file:// URI
@@ -156,7 +155,7 @@ def merge_ontology(source_file, base_path=None, catalog_file=None, visited=None,
             # Try to fetch from web
             try:
                 if verbose:
-                    print(f"    → Fetching from web")
+                    print("    → Fetching from web")
                 temp_graph = Graph()
                 temp_graph.parse(import_uri)
                 graph += temp_graph
@@ -267,7 +266,7 @@ The --auto flag automatically creates output file with '-complete' suffix.
         )
         
         if args.verbose:
-            print(f"\nMerged ontology statistics:")
+            print("\nMerged ontology statistics:")
             print(f"  Total triples: {len(merged_graph)}")
             print(f"  Classes: {len(list(merged_graph.subjects(RDF.type, OWL.Class)))}")
             print(f"  Data properties: {len(list(merged_graph.subjects(RDF.type, OWL.DatatypeProperty)))}")

@@ -21,8 +21,7 @@ Usage:
 import argparse
 import sys
 from pathlib import Path
-from rdflib import Graph, Namespace, RDF, RDFS, OWL, BNode, Literal, URIRef
-from rdflib.namespace import XSD
+from rdflib import Graph, RDF, RDFS, OWL, BNode, Literal, URIRef
 
 # Define namespaces to include in visualization
 TWINSHIP_NAMESPACE = "https://twin-ship.eu/twinship"
@@ -156,7 +155,7 @@ def extract_union_classes(graph, union_node):
             for item in Collection(graph, union_list):
                 if not isinstance(item, BNode):
                     classes.append(item)
-        except:
+        except Exception:
             # Fallback: manual list traversal
             current = union_list
             while current and current != RDF.nil:
@@ -272,14 +271,14 @@ def create_visualization_graph(source_graph, create_virtual_properties=True):
         
         if len(pairs_list) == 0:
             # No pairs - add property with type only
-            if not (prop, RDF.type, prop_type) in viz_graph:
+            if (prop, RDF.type, prop_type) not in viz_graph:
                 viz_graph.add((prop, RDF.type, prop_type))
         elif len(pairs_list) == 1:
             # Single pair - add normally to the original property
             domain, range_class = pairs_list[0]
             
             # Ensure property has type in viz_graph
-            if not (prop, RDF.type, prop_type) in viz_graph:
+            if (prop, RDF.type, prop_type) not in viz_graph:
                 viz_graph.add((prop, RDF.type, prop_type))
             
             viz_graph.add((prop, RDFS.domain, domain))
@@ -325,7 +324,7 @@ def create_visualization_graph(source_graph, create_virtual_properties=True):
         else:
             # Multiple pairs - add all directly to original property (for WIDOCO)
             # Ensure property has type in viz_graph
-            if not (prop, RDF.type, prop_type) in viz_graph:
+            if (prop, RDF.type, prop_type) not in viz_graph:
                 viz_graph.add((prop, RDF.type, prop_type))
             
             for domain, range_class in pairs_list:
@@ -497,7 +496,7 @@ The --auto flag automatically creates output file with '-viz' suffix.
                          len(list(viz_graph.subjects(RDF.type, OWL.DatatypeProperty)))
             domains_added = len(list(viz_graph.subject_objects(RDFS.domain)))
             
-            print(f"\nStatistics:")
+            print("\nStatistics:")
             print(f"  Classes: {classes_after} (filtered from {classes_before})")
             print(f"  Properties: {props_after}")
             print(f"  Domain assertions: {domains_added}")

@@ -13,7 +13,7 @@ Usage:
 import argparse
 import sys
 from pathlib import Path
-from rdflib import Graph, URIRef, Namespace, RDF, RDFS
+from rdflib import Graph, URIRef, Namespace
 from bs4 import BeautifulSoup
 
 # Namespaces

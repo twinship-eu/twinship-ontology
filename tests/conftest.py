@@ -46,7 +46,6 @@ import dataclasses
 import html as _html
 import json
 import os
-import time
 import urllib.error
 import urllib.parse
 import urllib.request

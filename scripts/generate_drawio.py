@@ -665,10 +665,12 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
         connected: set[URIRef] = set()
         for _, src, tgt in cross_links:
             if src in essential_uris and tgt in essential_uris:
-                connected.add(src); connected.add(tgt)
+                connected.add(src)
+                connected.add(tgt)
         for s_uri, t_uri in zip(manual_src, manual_tgt):
             if s_uri and t_uri and s_uri in essential_uris and t_uri in essential_uris:
-                connected.add(s_uri); connected.add(t_uri)
+                connected.add(s_uri)
+                connected.add(t_uri)
         if connected >= essential_uris:
             break
         essential_uris &= connected

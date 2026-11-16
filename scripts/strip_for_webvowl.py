@@ -14,8 +14,7 @@ Keeps only:
 
 import sys
 from pathlib import Path
-from rdflib import Graph, Namespace, RDF, RDFS, OWL, Literal, URIRef
-from rdflib.namespace import XSD
+from rdflib import Graph, Namespace, RDF, RDFS, OWL, URIRef
 
 # Define additional namespaces for annotations
 SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
