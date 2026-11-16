@@ -16,7 +16,7 @@
 <https://twin-ship.eu/twinship/operational-context> a owl:Ontology ;
     rdfs:label "TwinShip Operational Context Module" ;
     dcterms:title "TwinShip Operational Context Module"@en ;
-    dcterms:description "Ontology module for vessel operational context: voyages, voyage legs, routes, ports, fuel-consumption observations and summaries, operational profiles, speed bins, and frequency distributions. Extends twinship-base and imports operational-modes for cross-module range constraints."@en ;
+    dcterms:description "Ontology module for vessel operational context: voyages, voyage legs, routes, ports, fuel-consumption observations and summaries, operational profiles, speed bins, and frequency distributions. Extends twinship-base and imports operational-modes, weather-conditions and vessel for cross-module range constraints and restrictions."@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-05-21"^^xsd:date ;
     dcterms:modified "2026-10-29"^^xsd:date ;
