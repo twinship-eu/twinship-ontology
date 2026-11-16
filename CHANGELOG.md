@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `operational-modes.ttl` comments and `examples/README.md` now point to the futuristic vessel's operational modes in twinship-data-pipeline (`data/RoRo Futuristic Vessel Operational Modes.ttl`); the `twinship-futuristic-vessel` generator is archived
 
 ### Fixed
+- `ElectricMotorShaft`: the QUDT restriction used `hasQuantityForce`/`TwinShipQuantityForce`, but its property `twEMSHTorqueInKN` holds a torque; now `hasQuantityTorque`/`TwinShipQuantityTorque`. The Force family stays in the vocabulary although no class uses it now; the restriction test lists `hasQuantityForce` as such
+- `twFuelConsumptionRateInMTPerHr` is now also restricted on `EngineSystem`, so gensets and auxiliary engines are covered, not only `MainEngineSystem` (whose restriction is kept)
 - Removed `rdfs:domain ido:InanimatePhysicalObject` from `ido:directlyConnectedTo` in `twinship-base.ttl`, the only `rdfs:domain` in a source module (restriction-based modelling rule); the range is kept, and since the property is symmetric in IDO, both ends are still typed as `ido:InanimatePhysicalObject`. The seven class restrictions on the property are unchanged: WebVOWL shows the same connections, and the generated documentation lists the restriction-derived domains (`MainEngineSystem`, `PropellerSystem`, `PTO`, `ElectricMotorSystem`, `ElectricMotorShaft`) without the generic `InanimatePhysicalObject` one
 
 ## [0.1.2] - 2026-10-29
