@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - `operational-modes.ttl` comments and `examples/README.md` now point to the futuristic vessel's operational modes in twinship-data-pipeline (`data/RoRo Futuristic Vessel Operational Modes.ttl`); the `twinship-futuristic-vessel` generator is archived
 
+### Fixed
+- Removed `rdfs:domain ido:InanimatePhysicalObject` from `ido:directlyConnectedTo` in `twinship-base.ttl`, the only `rdfs:domain` in a source module (restriction-based modelling rule); the range is kept, and since the property is symmetric in IDO, both ends are still typed as `ido:InanimatePhysicalObject`. The seven class restrictions on the property are unchanged: WebVOWL shows the same connections, and the generated documentation lists the restriction-derived domains (`MainEngineSystem`, `PropellerSystem`, `PTO`, `ElectricMotorSystem`, `ElectricMotorShaft`) without the generic `InanimatePhysicalObject` one
+
 ## [0.1.2] - 2026-10-29
 
 ### Added
