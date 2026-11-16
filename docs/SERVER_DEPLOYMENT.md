@@ -24,7 +24,7 @@ The generated website lives in `docs/website/` after running the build pipeline:
 ./scripts/generate_website.sh --verbose
 ```
 
-Deploy the contents of `docs/website/documentation/` to the web root of
+Deployment is automated: pushing a `vX.Y.Z` tag on `main` runs `.github/workflows/deploy.yml`, which builds the site and rsyncs `docs/website/documentation/` to the host. To deploy by hand, copy the contents of `docs/website/documentation/` to the web root of
 `ontology.twin-ship.eu`. The directory structure should be:
 
 ```
