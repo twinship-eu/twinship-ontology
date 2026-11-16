@@ -126,13 +126,25 @@ def extract_domain_range_from_restrictions(graph):
                                 if prop_str.startswith(IDO_NAMESPACE):
                                     used_external_properties.add(prop)
 
-                        # Extract range from someValuesFrom or allValuesFrom
+                        # Extract range from someValuesFrom, allValuesFrom or, for
+                        # qualified cardinality restrictions, onClass
                         range_class = graph.value(parent, OWL.someValuesFrom)
                         if not range_class:
                             range_class = graph.value(parent, OWL.allValuesFrom)
+                        if not range_class:
+                            range_class = graph.value(parent, OWL.onClass)
+
+                        # A union range (e.g. someValuesFrom [ owl:unionOf (A B) ])
+                        # gives one pair per class in the union
+                        if isinstance(range_class, BNode):
+                            range_classes = extract_union_classes(graph, range_class)
+                        elif isinstance(range_class, URIRef):
+                            range_classes = [range_class]
+                        else:
+                            range_classes = []
 
                         # Store domain-range pair together (preserve the pairing from restriction)
-                        if range_class and isinstance(range_class, URIRef):
+                        for range_class in range_classes:
                             range_str = str(range_class)
                             domain_range_pairs.add((prop, cls, range_class))
                             # Track external classes (non-XSD)
