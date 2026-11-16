@@ -31,46 +31,51 @@ from rdflib import BNode, Graph, Namespace, RDF, RDFS, OWL, URIRef
 # ---------------------------------------------------------------------------
 
 TW_NS = "https://twin-ship.eu/twinship#"
-TW    = Namespace(TW_NS)
+TW = Namespace(TW_NS)
 
 MODULES: dict[str, str] = {
-    "vessel":               "model/modules/vessel.ttl",
-    "operational-context":  "model/modules/operational-context.ttl",
-    "operational-modes":    "model/modules/operational-modes.ttl",
-    "weather-conditions":   "model/modules/weather-conditions.ttl",
-    "statistics":           "model/modules/statistics.ttl",
+    "vessel": "model/modules/vessel.ttl",
+    "operational-context": "model/modules/operational-context.ttl",
+    "operational-modes": "model/modules/operational-modes.ttl",
+    "weather-conditions": "model/modules/weather-conditions.ttl",
+    "statistics": "model/modules/statistics.ttl",
 }
 
-MOD_ORDER = ["vessel", "operational-context", "operational-modes",
-             "weather-conditions", "statistics"]
+MOD_ORDER = [
+    "vessel",
+    "operational-context",
+    "operational-modes",
+    "weather-conditions",
+    "statistics",
+]
 
 # Import dependencies between domain modules (excluding base, which all import)
 MOD_DEPS: dict[str, list[str]] = {
-    "vessel":               [],
-    "operational-modes":    [],
-    "weather-conditions":   [],
-    "operational-context":  ["operational-modes", "weather-conditions"],
-    "statistics":           ["operational-modes", "operational-context", "weather-conditions"],
+    "vessel": [],
+    "operational-modes": [],
+    "weather-conditions": [],
+    "operational-context": ["operational-modes", "weather-conditions"],
+    "statistics": ["operational-modes", "operational-context", "weather-conditions"],
 }
 
 # Module descriptions shown in the modules diagram
 MOD_DESC: dict[str, str] = {
-    "vessel":               "Vessel systems, engines,\npropulsion, fuel, gearbox",
-    "operational-context":  "Voyage, leg, port, route,\nprofiles, observations",
-    "operational-modes":    "Operating states,\nengine/draft/trim modes",
-    "weather-conditions":   "Weather, wind, wave\nand current conditions",
-    "statistics":           "ML predictions, estimations,\nmodel cards (MCRO)",
+    "vessel": "Vessel systems, engines,\npropulsion, fuel, gearbox",
+    "operational-context": "Voyage, leg, port, route,\nprofiles, observations",
+    "operational-modes": "Operating states,\nengine/draft/trim modes",
+    "weather-conditions": "Weather, wind, wave\nand current conditions",
+    "statistics": "ML predictions, estimations,\nmodel cards (MCRO)",
 }
 
 # Maximum number of classes to show in per-module diagrams.
 # Modules already within this limit show all classes.
 # Larger modules are filtered to the most connected classes.
 MODULE_MAX_CLASSES: dict[str, int] = {
-    "vessel":               14,
-    "operational-context":  12,
-    "operational-modes":    10,   # only 5 classes — no filtering needed
-    "weather-conditions":   10,   # only 4 classes — no filtering needed
-    "statistics":           13,
+    "vessel": 14,
+    "operational-context": 12,
+    "operational-modes": 10,  # only 5 classes — no filtering needed
+    "weather-conditions": 10,  # only 4 classes — no filtering needed
+    "statistics": 13,
 }
 DEFAULT_MAX_CLASSES = 12
 
@@ -104,67 +109,70 @@ MANUAL_LINKS: list[tuple[str, str, str]] = [
 # Values are (x, y) top-left corner of the group's class cluster.
 # Designed for A4 landscape so VoyageLeg sits at the centre.
 OVERVIEW_GROUP_POS: dict[str, tuple[int, int]] = {
-    "operational-modes":    (180,  50),
-    "weather-conditions":   (720,  50),
-    "vessel":               (30,  310),
-    "operational-context":  (400, 270),
-    "statistics":           (640, 460),
+    "operational-modes": (180, 50),
+    "weather-conditions": (720, 50),
+    "vessel": (30, 310),
+    "operational-context": (400, 270),
+    "statistics": (640, 460),
 }
 
 # ---------------------------------------------------------------------------
 # Graffoo colours
 # ---------------------------------------------------------------------------
 
-CLR_CLASS    = "#FFFF88"   # yellow — OWL class (default, overridden in overview)
-CLR_EXTERNAL = "#F5F5F5"   # grey   — class from another module
-CLR_INDIV    = "#FFFF88"   # yellow — named individual (ellipse)
-CLR_BASE     = "#E8E8E8"   # light grey — twinship-base box in modules diagram
-CLR_CORE     = "#D4D4D4"   # darker grey — twinship-core box in modules diagram (entry point)
+CLR_CLASS = "#FFFF88"  # yellow — OWL class (default, overridden in overview)
+CLR_EXTERNAL = "#F5F5F5"  # grey   — class from another module
+CLR_INDIV = "#FFFF88"  # yellow — named individual (ellipse)
+CLR_BASE = "#E8E8E8"  # light grey — twinship-base box in modules diagram
+CLR_CORE = "#D4D4D4"  # darker grey — twinship-core box in modules diagram (entry point)
 
-MOD_CLR: dict[str, tuple[str, str]] = {   # (fill, stroke)
-    "vessel":               ("#DAE8FC", "#6C8EBF"),
-    "operational-context":  ("#D5E8D4", "#82B366"),
-    "operational-modes":    ("#FFE6CC", "#D6B656"),
-    "weather-conditions":   ("#E1D5E7", "#9673A6"),
-    "statistics":           ("#FFF2CC", "#B85450"),
+MOD_CLR: dict[str, tuple[str, str]] = {  # (fill, stroke)
+    "vessel": ("#DAE8FC", "#6C8EBF"),
+    "operational-context": ("#D5E8D4", "#82B366"),
+    "operational-modes": ("#FFE6CC", "#D6B656"),
+    "weather-conditions": ("#E1D5E7", "#9673A6"),
+    "statistics": ("#FFF2CC", "#B85450"),
 }
 
 # ---------------------------------------------------------------------------
 # A4 landscape canvas
 # ---------------------------------------------------------------------------
 
-A4_W = 1123   # A4 landscape width in pixels at 96 dpi
+A4_W = 1123  # A4 landscape width in pixels at 96 dpi
 A4_H = 794
 
 # ---------------------------------------------------------------------------
 # Layout constants
 # ---------------------------------------------------------------------------
 
-CLS_W_MIN   = 180
-CLS_H_BASE  = 40
-CLS_H_PROP  = 16    # extra height per data property line
-COL_GAP     = 220   # horizontal spacing between class columns
-LEVEL_GAP   = 90    # vertical spacing between hierarchy levels
-ROW_GAP     = 16    # spacing between classes on the same level
-CONT_PAD    = 40    # padding inside module containers
-MARGIN      = 30    # canvas margin
+CLS_W_MIN = 180
+CLS_H_BASE = 40
+CLS_H_PROP = 16  # extra height per data property line
+COL_GAP = 220  # horizontal spacing between class columns
+LEVEL_GAP = 90  # vertical spacing between hierarchy levels
+ROW_GAP = 16  # spacing between classes on the same level
+CONT_PAD = 40  # padding inside module containers
+MARGIN = 30  # canvas margin
 
 # ---------------------------------------------------------------------------
 # Data model
 # ---------------------------------------------------------------------------
 
+
 class ModuleData:
     def __init__(self) -> None:
-        self.classes:            set[URIRef]                       = set()
-        self.subclass_pairs:     list[tuple[URIRef, URIRef]]       = []  # (child, parent) same-module
-        self.ext_subclass_pairs: list[tuple[URIRef, URIRef]]       = []  # (child, ext_parent)
-        self.obj_props:          list[tuple[str, URIRef, URIRef]]  = []  # (name, src, tgt)
-        self.data_props_by_cls:  dict[URIRef, list[tuple[str,str]]] = defaultdict(list)
-        self.individuals:        list[tuple[URIRef, URIRef]]       = []  # (ind, class)
+        self.classes: set[URIRef] = set()
+        self.subclass_pairs: list[tuple[URIRef, URIRef]] = []  # (child, parent) same-module
+        self.ext_subclass_pairs: list[tuple[URIRef, URIRef]] = []  # (child, ext_parent)
+        self.obj_props: list[tuple[str, URIRef, URIRef]] = []  # (name, src, tgt)
+        self.data_props_by_cls: dict[URIRef, list[tuple[str, str]]] = defaultdict(list)
+        self.individuals: list[tuple[URIRef, URIRef]] = []  # (ind, class)
+
 
 # ---------------------------------------------------------------------------
 # Parsing
 # ---------------------------------------------------------------------------
+
 
 def _local(uri: URIRef) -> str:
     s = str(uri)
@@ -175,14 +183,12 @@ def _cls_width(name: str) -> int:
     return max(CLS_W_MIN, len(name) * 9)
 
 
-def parse_module(path: str,
-                 global_obj_props: frozenset[URIRef] = frozenset()) -> ModuleData:
+def parse_module(path: str, global_obj_props: frozenset[URIRef] = frozenset()) -> ModuleData:
     g = Graph()
     g.parse(path, format="turtle")
     md = ModuleData()
 
-    tw_classes = {c for c in g.subjects(RDF.type, OWL.Class)
-                  if str(c).startswith(TW_NS)}
+    tw_classes = {c for c in g.subjects(RDF.type, OWL.Class) if str(c).startswith(TW_NS)}
     md.classes = tw_classes
 
     # Subclass pairs — TW→TW named classes only (skip blank-node restrictions)
@@ -197,23 +203,22 @@ def parse_module(path: str,
     # Merge locally-declared properties with the global registry so that
     # cross-module restrictions (where the property lives in an imported
     # module) are still classified correctly.
-    local_obj_props  = frozenset(g.subjects(RDF.type, OWL.ObjectProperty))
+    local_obj_props = frozenset(g.subjects(RDF.type, OWL.ObjectProperty))
     local_data_props = frozenset(g.subjects(RDF.type, OWL.DatatypeProperty))
-    all_obj_props    = local_obj_props | global_obj_props
+    all_obj_props = local_obj_props | global_obj_props
 
     seen_obj: set[tuple[str, URIRef, URIRef]] = set()
     for cls in tw_classes:
         for restr in g.objects(cls, RDFS.subClassOf):
             if not isinstance(restr, BNode):
                 continue
-            on_prop  = g.value(restr, OWL.onProperty)
-            val_from = (g.value(restr, OWL.someValuesFrom)
-                        or g.value(restr, OWL.allValuesFrom))
+            on_prop = g.value(restr, OWL.onProperty)
+            val_from = g.value(restr, OWL.someValuesFrom) or g.value(restr, OWL.allValuesFrom)
             if not (on_prop and val_from) or isinstance(val_from, BNode):
                 continue
 
             is_data = on_prop in local_data_props
-            is_obj  = on_prop in all_obj_props
+            is_obj = on_prop in all_obj_props
 
             if is_data:
                 xsd_t = _local(val_from)
@@ -240,9 +245,11 @@ def parse_module(path: str,
     # Also pick up individuals typed directly as a TW class (no owl:NamedIndividual declaration)
     for cls in tw_classes:
         for ind in g.subjects(RDF.type, cls):
-            if (not str(ind).startswith(TW_NS)
-                    or isinstance(ind, BNode)
-                    or (ind, RDF.type, OWL.Class) in g):
+            if (
+                not str(ind).startswith(TW_NS)
+                or isinstance(ind, BNode)
+                or (ind, RDF.type, OWL.Class) in g
+            ):
                 continue
             entry = (ind, cls)
             if entry not in md.individuals:
@@ -254,6 +261,7 @@ def parse_module(path: str,
 # ---------------------------------------------------------------------------
 # Central class selection for per-module diagrams
 # ---------------------------------------------------------------------------
+
 
 def select_central_classes(
     classes: set[URIRef],
@@ -267,6 +275,7 @@ def select_central_classes(
         return set(classes)
 
     from collections import defaultdict
+
     scores: dict[URIRef, int] = {c: 0 for c in classes}
     tw_parents: set[URIRef] = {child for child, _ in subclass_pairs}
     tw_children: dict[URIRef, int] = defaultdict(int)
@@ -275,18 +284,18 @@ def select_central_classes(
 
     prop_sources: set[URIRef] = {src for _, src, _ in obj_props if src in classes}
     prop_targets: set[URIRef] = {tgt for _, _, tgt in obj_props if tgt in classes}
-    ind_classes:  set[URIRef] = {cls for _, cls in individuals if cls in classes}
+    ind_classes: set[URIRef] = {cls for _, cls in individuals if cls in classes}
 
     for cls in classes:
-        if cls not in tw_parents:        # root class
+        if cls not in tw_parents:  # root class
             scores[cls] += 4
         scores[cls] += tw_children[cls]  # has named subclasses
         if cls in prop_sources:
-            scores[cls] += 3             # initiates object property
+            scores[cls] += 3  # initiates object property
         if cls in prop_targets:
-            scores[cls] += 3             # is target of object property
+            scores[cls] += 3  # is target of object property
         if cls in ind_classes:
-            scores[cls] += 2             # has named individuals
+            scores[cls] += 2  # has named individuals
 
     return set(sorted(classes, key=lambda c: scores[c], reverse=True)[:max_classes])
 
@@ -294,6 +303,7 @@ def select_central_classes(
 # ---------------------------------------------------------------------------
 # Layout
 # ---------------------------------------------------------------------------
+
 
 def _compute_layout(
     classes: set[URIRef],
@@ -346,7 +356,7 @@ def _compute_layout(
         cls_list = by_level[lvl]
         # Wrap long rows into sub-rows to stay within A4 width
         for chunk_start in range(0, len(cls_list), max_cols):
-            chunk = cls_list[chunk_start:chunk_start + max_cols]
+            chunk = cls_list[chunk_start : chunk_start + max_cols]
             row_h = max(_h(c) for c in chunk)
             for col, cls in enumerate(chunk):
                 w = _cls_width(_local(cls))
@@ -377,15 +387,26 @@ def _reset() -> None:
 
 def _make_graph(name: str = "diagram") -> tuple[ET.Element, ET.Element]:
     """Return (mxfile, root) where root is the <root> layer element."""
-    mxfile  = ET.Element("mxfile")
+    mxfile = ET.Element("mxfile")
     diagram = ET.SubElement(mxfile, "diagram", name=name)
-    graph   = ET.SubElement(
-        diagram, "mxGraphModel",
-        dx="1422", dy="762", grid="1", gridSize="10",
-        guides="1", tooltips="1", connect="1", arrows="1",
-        fold="1", page="1", pageScale="1",
-        pageWidth=str(A4_W), pageHeight=str(A4_H),   # A4 landscape
-        math="0", shadow="0",
+    graph = ET.SubElement(
+        diagram,
+        "mxGraphModel",
+        dx="1422",
+        dy="762",
+        grid="1",
+        gridSize="10",
+        guides="1",
+        tooltips="1",
+        connect="1",
+        arrows="1",
+        fold="1",
+        page="1",
+        pageScale="1",
+        pageWidth=str(A4_W),
+        pageHeight=str(A4_H),  # A4 landscape
+        math="0",
+        shadow="0",
     )
     root_el = ET.SubElement(graph, "root")
     ET.SubElement(root_el, "mxCell", id="0")
@@ -394,19 +415,27 @@ def _make_graph(name: str = "diagram") -> tuple[ET.Element, ET.Element]:
 
 
 def _geo(parent: ET.Element, x: int, y: int, w: int, h: int) -> None:
-    ET.SubElement(parent, "mxGeometry",
-                  x=str(x), y=str(y), width=str(w), height=str(h),
-                  **{"as": "geometry"})
+    ET.SubElement(
+        parent, "mxGeometry", x=str(x), y=str(y), width=str(w), height=str(h), **{"as": "geometry"}
+    )
 
 
 def _geo_rel(parent: ET.Element) -> None:
     ET.SubElement(parent, "mxGeometry", relative="1", **{"as": "geometry"})
 
 
-def add_module_boundary(root: ET.Element, cid: str, label: str,
-                        x: int, y: int, w: int, h: int,
-                        fill: str, stroke: str,
-                        parent: str = "1") -> None:
+def add_module_boundary(
+    root: ET.Element,
+    cid: str,
+    label: str,
+    x: int,
+    y: int,
+    w: int,
+    h: int,
+    fill: str,
+    stroke: str,
+    parent: str = "1",
+) -> None:
     """Dashed module boundary box drawn behind class boxes (SSN Figure 3 style)."""
     style = (
         f"rounded=1;whiteSpace=wrap;dashed=1;dashPattern=8 4;"
@@ -414,36 +443,50 @@ def add_module_boundary(root: ET.Element, cid: str, label: str,
         "fontStyle=1;fontSize=11;verticalAlign=top;align=left;"
         "spacingLeft=8;spacingTop=4;"
     )
-    cell = ET.SubElement(root, "mxCell",
-                         id=cid, value=_html.escape(label), style=style,
-                         vertex="1", parent=parent)
+    cell = ET.SubElement(
+        root, "mxCell", id=cid, value=_html.escape(label), style=style, vertex="1", parent=parent
+    )
     _geo(cell, x, y, w, h)
 
 
-def add_container(root: ET.Element, cid: str, label: str,
-                  x: int, y: int, w: int, h: int,
-                  fill: str, stroke: str,
-                  parent: str = "1") -> None:
+def add_container(
+    root: ET.Element,
+    cid: str,
+    label: str,
+    x: int,
+    y: int,
+    w: int,
+    h: int,
+    fill: str,
+    stroke: str,
+    parent: str = "1",
+) -> None:
     style = (
         f"swimlane;startSize=30;fillColor={fill};strokeColor={stroke};"
         "fontStyle=1;fontSize=13;rounded=1;arcSize=4;"
     )
-    cell = ET.SubElement(root, "mxCell",
-                         id=cid, value=label, style=style,
-                         vertex="1", parent=parent)
+    cell = ET.SubElement(
+        root, "mxCell", id=cid, value=label, style=style, vertex="1", parent=parent
+    )
     _geo(cell, x, y, w, h)
 
 
-def add_class_box(root: ET.Element, cid: str, name: str,
-                  x: int, y: int, w: int, h: int,
-                  data_props: list[tuple[str, str]],
-                  fill: str = CLR_CLASS,
-                  stroke: str = "#333333",
-                  parent: str = "1") -> None:
+def add_class_box(
+    root: ET.Element,
+    cid: str,
+    name: str,
+    x: int,
+    y: int,
+    w: int,
+    h: int,
+    data_props: list[tuple[str, str]],
+    fill: str = CLR_CLASS,
+    stroke: str = "#333333",
+    parent: str = "1",
+) -> None:
     if data_props:
         rows = "".join(
-            f"<br/><font style='font-size:10px;'>"
-            f"{_html.escape(p)} : {_html.escape(t)}</font>"
+            f"<br/><font style='font-size:10px;'>" f"{_html.escape(p)} : {_html.escape(t)}</font>"
             for p, t in data_props
         )
         label = f"<b>{_html.escape(name)}</b>{rows}"
@@ -455,44 +498,55 @@ def add_class_box(root: ET.Element, cid: str, name: str,
         "fontStyle=0;arcSize=10;html=1;verticalAlign=top;align=center;"
         "spacingTop=4;spacingLeft=4;spacingRight=4;"
     )
-    cell = ET.SubElement(root, "mxCell",
-                         id=cid, value=label, style=style,
-                         vertex="1", parent=parent)
+    cell = ET.SubElement(
+        root, "mxCell", id=cid, value=label, style=style, vertex="1", parent=parent
+    )
     _geo(cell, x, y, w, h)
 
 
-def add_individual(root: ET.Element, cid: str, name: str,
-                   x: int, y: int,
-                   parent: str = "1") -> None:
+def add_individual(
+    root: ET.Element, cid: str, name: str, x: int, y: int, parent: str = "1"
+) -> None:
     style = (
-        f"ellipse;whiteSpace=wrap;fillColor={CLR_INDIV};strokeColor=#333333;"
-        "fontStyle=1;html=1;"
+        f"ellipse;whiteSpace=wrap;fillColor={CLR_INDIV};strokeColor=#333333;" "fontStyle=1;html=1;"
     )
-    cell = ET.SubElement(root, "mxCell",
-                         id=cid, value=_html.escape(name), style=style,
-                         vertex="1", parent=parent)
+    cell = ET.SubElement(
+        root, "mxCell", id=cid, value=_html.escape(name), style=style, vertex="1", parent=parent
+    )
     _geo(cell, x, y, 130, 40)
 
 
-def add_subclass_edge(root: ET.Element, cid: str,
-                      source: str, target: str,
-                      parent: str = "1") -> None:
+def add_subclass_edge(
+    root: ET.Element, cid: str, source: str, target: str, parent: str = "1"
+) -> None:
     # dashed line, hollow open-triangle head (child → parent = subClassOf)
     style = (
         "endArrow=block;endFill=0;dashed=1;"
         "edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;"
     )
-    cell = ET.SubElement(root, "mxCell",
-                         id=cid, value="", style=style,
-                         edge="1", source=source, target=target,
-                         parent=parent)
+    cell = ET.SubElement(
+        root,
+        "mxCell",
+        id=cid,
+        value="",
+        style=style,
+        edge="1",
+        source=source,
+        target=target,
+        parent=parent,
+    )
     _geo_rel(cell)
 
 
-def add_obj_edge(root: ET.Element, cid: str, label: str,
-                 source: str, target: str,
-                 cross_module: bool = False,
-                 parent: str = "1") -> None:
+def add_obj_edge(
+    root: ET.Element,
+    cid: str,
+    label: str,
+    source: str,
+    target: str,
+    cross_module: bool = False,
+    parent: str = "1",
+) -> None:
     # solid open arrowhead; dashed for cross-module references
     dash = "dashed=1;" if cross_module else ""
     style = (
@@ -500,10 +554,17 @@ def add_obj_edge(root: ET.Element, cid: str, label: str,
         "edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#333333;"
         "fontSize=10;"
     )
-    cell = ET.SubElement(root, "mxCell",
-                         id=cid, value=_html.escape(label), style=style,
-                         edge="1", source=source, target=target,
-                         parent=parent)
+    cell = ET.SubElement(
+        root,
+        "mxCell",
+        id=cid,
+        value=_html.escape(label),
+        style=style,
+        edge="1",
+        source=source,
+        target=target,
+        parent=parent,
+    )
     _geo_rel(cell)
 
 
@@ -520,6 +581,7 @@ def write_drawio(mxfile: ET.Element, path: Path) -> None:
 # Modules diagram (Figure 2 style) — dependency graph only, no classes
 # ---------------------------------------------------------------------------
 
+
 def generate_modules_diagram(out_path: Path) -> None:
     """Module dependency graph: boxes for each module + import arrows."""
     _reset()
@@ -527,16 +589,16 @@ def generate_modules_diagram(out_path: Path) -> None:
 
     # Fixed positions chosen to fill A4 landscape cleanly
     MOD_W, MOD_H = 200, 80
-    BASE_W        = 220
+    BASE_W = 220
 
     positions: dict[str, tuple[int, int]] = {
-        "twinship-base":      (A4_W // 2 - BASE_W // 2, 40),
-        "vessel":             (60,  220),
-        "operational-modes":  (310, 220),
+        "twinship-base": (A4_W // 2 - BASE_W // 2, 40),
+        "vessel": (60, 220),
+        "operational-modes": (310, 220),
         "weather-conditions": (700, 220),
-        "operational-context":(450, 380),
-        "statistics":         (450, 540),
-        "twinship-core":      (A4_W // 2 - BASE_W // 2, 690),
+        "operational-context": (450, 380),
+        "statistics": (450, 540),
+        "twinship-core": (A4_W // 2 - BASE_W // 2, 690),
     }
 
     cell_ids: dict[str, str] = {}
@@ -549,11 +611,15 @@ def generate_modules_diagram(out_path: Path) -> None:
         f"rounded=1;whiteSpace=wrap;fillColor={CLR_BASE};strokeColor=#555555;"
         "fontStyle=1;fontSize=13;html=1;"
     )
-    cell = ET.SubElement(root, "mxCell",
-                         id=cid,
-                         value="<b>twinship-base</b><br/>"
-                               "<font style='font-size:10px;'>IDO · QUDT · PAV</font>",
-                         style=style, vertex="1", parent="1")
+    cell = ET.SubElement(
+        root,
+        "mxCell",
+        id=cid,
+        value="<b>twinship-base</b><br/>" "<font style='font-size:10px;'>IDO · QUDT · PAV</font>",
+        style=style,
+        vertex="1",
+        parent="1",
+    )
     _geo(cell, bx, by, BASE_W, MOD_H)
 
     # Core box (special styling) - single entry point for the complete ontology
@@ -564,11 +630,16 @@ def generate_modules_diagram(out_path: Path) -> None:
         f"rounded=1;whiteSpace=wrap;fillColor={CLR_CORE};strokeColor=#333333;"
         "fontStyle=1;fontSize=13;html=1;"
     )
-    cell = ET.SubElement(root, "mxCell",
-                         id=cid,
-                         value="<b>twinship-core</b><br/>"
-                               "<font style='font-size:10px;'>Complete ontology - single entry point</font>",
-                         style=style, vertex="1", parent="1")
+    cell = ET.SubElement(
+        root,
+        "mxCell",
+        id=cid,
+        value="<b>twinship-core</b><br/>"
+        "<font style='font-size:10px;'>Complete ontology - single entry point</font>",
+        style=style,
+        vertex="1",
+        parent="1",
+    )
     _geo(cell, cx, cy, BASE_W, MOD_H)
 
     # Domain module boxes
@@ -586,33 +657,53 @@ def generate_modules_diagram(out_path: Path) -> None:
             f"rounded=1;whiteSpace=wrap;fillColor={fill};strokeColor={stroke};"
             "fontStyle=0;fontSize=12;html=1;verticalAlign=middle;align=center;"
         )
-        cell = ET.SubElement(root, "mxCell",
-                             id=cid, value=label, style=style,
-                             vertex="1", parent="1")
+        cell = ET.SubElement(
+            root, "mxCell", id=cid, value=label, style=style, vertex="1", parent="1"
+        )
         _geo(cell, x, y, MOD_W, MOD_H)
 
     # Import arrows: all modules → base
     for mod_name in MOD_ORDER:
-        add_obj_edge(root, _uid("imp"), "imports",
-                     cell_ids[mod_name], cell_ids["twinship-base"],
-                     cross_module=True)
+        add_obj_edge(
+            root,
+            _uid("imp"),
+            "imports",
+            cell_ids[mod_name],
+            cell_ids["twinship-base"],
+            cross_module=True,
+        )
 
     # Cross-module import arrows between domain modules (same dashed style as above)
     for mod_name, deps in MOD_DEPS.items():
         for dep in deps:
             if mod_name in cell_ids and dep in cell_ids:
-                add_obj_edge(root, _uid("dep"), "imports",
-                             cell_ids[mod_name], cell_ids[dep],
-                             cross_module=True)
+                add_obj_edge(
+                    root,
+                    _uid("dep"),
+                    "imports",
+                    cell_ids[mod_name],
+                    cell_ids[dep],
+                    cross_module=True,
+                )
 
     # Core imports: base + all domain modules (single entry point for the complete ontology)
-    add_obj_edge(root, _uid("core"), "imports",
-                 cell_ids["twinship-core"], cell_ids["twinship-base"],
-                 cross_module=True)
+    add_obj_edge(
+        root,
+        _uid("core"),
+        "imports",
+        cell_ids["twinship-core"],
+        cell_ids["twinship-base"],
+        cross_module=True,
+    )
     for mod_name in MOD_ORDER:
-        add_obj_edge(root, _uid("core"), "imports",
-                     cell_ids["twinship-core"], cell_ids[mod_name],
-                     cross_module=True)
+        add_obj_edge(
+            root,
+            _uid("core"),
+            "imports",
+            cell_ids["twinship-core"],
+            cell_ids[mod_name],
+            cross_module=True,
+        )
 
     write_drawio(mxfile, out_path)
 
@@ -620,6 +711,7 @@ def generate_modules_diagram(out_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Overview diagram (Figure 3 style) — connected classes, dashed module boxes
 # ---------------------------------------------------------------------------
+
 
 def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
     """
@@ -631,8 +723,8 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
     mxfile, root = _make_graph("TwinShip Overview")
 
     # ── 1. Build global lookups ─────────────────────────────────────────────
-    cls_to_mod:   dict[URIRef, str]  = {}
-    name_to_uri:  dict[str, URIRef] = {}
+    cls_to_mod: dict[URIRef, str] = {}
+    name_to_uri: dict[str, URIRef] = {}
     for mod_name, md in all_data.items():
         for c in md.classes:
             cls_to_mod[c] = mod_name
@@ -649,7 +741,7 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
     essential_uris: set[URIRef] = set()
     for _, src, tgt in cross_links:
         essential_uris.add(src)
-        if tgt in cls_to_mod:   # skip external-to-TW targets
+        if tgt in cls_to_mod:  # skip external-to-TW targets
             essential_uris.add(tgt)
 
     # Add VesselSystem manually (central concept, not OWL-linked cross-module)
@@ -661,7 +753,7 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
     # that has zero links where both endpoints are in the shown set.
     manual_src = {name_to_uri.get(s) for s, _, _ in MANUAL_LINKS}
     manual_tgt = {name_to_uri.get(t) for _, t, _ in MANUAL_LINKS}
-    for _ in range(10):   # iterate to convergence
+    for _ in range(10):  # iterate to convergence
         connected: set[URIRef] = set()
         for _, src, tgt in cross_links:
             if src in essential_uris and tgt in essential_uris:
@@ -687,12 +779,12 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
         by_module[mod].sort(key=_local)
 
     # ── 4. Lay out class boxes per module group ─────────────────────────────
-    BOX_PAD    = 18   # padding inside module boundary box
-    LABEL_H    = 22   # space for module name label at top of boundary box
-    CLS_COL_W  = CLS_W_MIN + 12
+    BOX_PAD = 18  # padding inside module boundary box
+    LABEL_H = 22  # space for module name label at top of boundary box
+    CLS_COL_W = CLS_W_MIN + 12
     GROUP_COLS = 2
 
-    group_boxes:  dict[str, tuple[int, int, int, int]] = {}  # mod → (x,y,w,h)
+    group_boxes: dict[str, tuple[int, int, int, int]] = {}  # mod → (x,y,w,h)
     class_cell_ids: dict[URIRef, str] = {}
 
     # Pass 1: compute bounding box sizes (before drawing, so boundary boxes
@@ -706,20 +798,21 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
         for j, cls_uri in enumerate(cls_list):
             col = j % GROUP_COLS
             row = j // GROUP_COLS
-            lx  = gx + BOX_PAD + col * (CLS_COL_W + 10)
-            ly  = gy + BOX_PAD + LABEL_H + row * (CLS_H_BASE + ROW_GAP)
+            lx = gx + BOX_PAD + col * (CLS_COL_W + 10)
+            ly = gy + BOX_PAD + LABEL_H + row * (CLS_H_BASE + ROW_GAP)
             layout.append((cls_uri, lx, ly))
         n_rows = (len(cls_list) + GROUP_COLS - 1) // GROUP_COLS
         bw = GROUP_COLS * (CLS_COL_W + 10) - 10 + 2 * BOX_PAD
         bh = LABEL_H + n_rows * (CLS_H_BASE + ROW_GAP) - ROW_GAP + 2 * BOX_PAD
-        group_boxes[mod_name]   = (gx, gy, bw, bh)
+        group_boxes[mod_name] = (gx, gy, bw, bh)
         group_layouts[mod_name] = layout
 
     # Pass 2: emit module boundary boxes FIRST (renders behind class boxes)
     for mod_name, (bx, by, bw, bh) in group_boxes.items():
         fill, stroke = MOD_CLR.get(mod_name, ("#F5F5F5", "#666666"))
-        add_module_boundary(root, f"bnd_{mod_name.replace('-','_')}",
-                            mod_name, bx, by, bw, bh, fill, stroke)
+        add_module_boundary(
+            root, f"bnd_{mod_name.replace('-','_')}", mod_name, bx, by, bw, bh, fill, stroke
+        )
 
     # Pass 3: emit class boxes on top of boundary boxes
     for mod_name, layout in group_layouts.items():
@@ -727,9 +820,18 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
         for cls_uri, lx, ly in layout:
             cid = _uid("ov_cls")
             class_cell_ids[cls_uri] = cid
-            add_class_box(root, cid, _local(cls_uri),
-                          lx, ly, CLS_COL_W, CLS_H_BASE, [],
-                          fill=fill, stroke=stroke)
+            add_class_box(
+                root,
+                cid,
+                _local(cls_uri),
+                lx,
+                ly,
+                CLS_COL_W,
+                CLS_H_BASE,
+                [],
+                fill=fill,
+                stroke=stroke,
+            )
 
     # ── 5. Draw cross-module OWL object property arrows ─────────────────────
     drawn: set[tuple[str, str]] = set()
@@ -751,8 +853,7 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
         src_cid = class_cell_ids.get(src_uri) if src_uri else None
         tgt_cid = class_cell_ids.get(tgt_uri) if tgt_uri else None
         if src_cid and tgt_cid:
-            add_obj_edge(root, _uid("ov_manual"), prop_label,
-                         src_cid, tgt_cid, cross_module=True)
+            add_obj_edge(root, _uid("ov_manual"), prop_label, src_cid, tgt_cid, cross_module=True)
 
     write_drawio(mxfile, out_path)
 
@@ -760,6 +861,7 @@ def generate_overview(all_data: dict[str, ModuleData], out_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Per-module diagram
 # ---------------------------------------------------------------------------
+
 
 def generate_module_diagram(
     mod_name: str,
@@ -779,35 +881,41 @@ def generate_module_diagram(
     )
 
     # Restrict subclass pairs and object props to the shown set
-    shown_subclass = [(c, p) for c, p in md.subclass_pairs
-                      if c in shown and p in shown]
+    shown_subclass = [(c, p) for c, p in md.subclass_pairs if c in shown and p in shown]
     shown_obj = [(n, s, t) for n, s, t in md.obj_props if s in shown]
 
-    positions   = _compute_layout(shown, shown_subclass, md.data_props_by_cls)
-    cell_ids:   dict[URIRef, str] = {}
-    ext_ids:    dict[URIRef, str] = {}
+    positions = _compute_layout(shown, shown_subclass, md.data_props_by_cls)
+    cell_ids: dict[URIRef, str] = {}
+    ext_ids: dict[URIRef, str] = {}
 
     # Draw shown TW classes in module colour
     for cls, (x, y, w, h) in positions.items():
-        cid   = _uid("cls")
+        cid = _uid("cls")
         cell_ids[cls] = cid
         props = sorted(md.data_props_by_cls.get(cls, []), key=lambda p: p[0])
-        add_class_box(root, cid, _local(cls),
-                      x + CONT_PAD, y + CONT_PAD, w, h, props,
-                      fill=fill, stroke=stroke)
+        add_class_box(
+            root,
+            cid,
+            _local(cls),
+            x + CONT_PAD,
+            y + CONT_PAD,
+            w,
+            h,
+            props,
+            fill=fill,
+            stroke=stroke,
+        )
 
     # Subclass edges
     for child, parent in shown_subclass:
         if child in cell_ids and parent in cell_ids:
-            add_subclass_edge(root, _uid("sub"),
-                              cell_ids[child], cell_ids[parent])
+            add_subclass_edge(root, _uid("sub"), cell_ids[child], cell_ids[parent])
 
     # External classes: cross-module obj-prop targets
     ext_classes: set[URIRef] = {
-        tgt for _, src, tgt in shown_obj
-        if src in cell_ids
-        and tgt not in cell_ids
-        and cls_to_mod.get(tgt, mod_name) != mod_name
+        tgt
+        for _, src, tgt in shown_obj
+        if src in cell_ids and tgt not in cell_ids and cls_to_mod.get(tgt, mod_name) != mod_name
     }
     # External TW superclasses (e.g. TwinShipQuality from twinship-base)
     ext_classes |= {parent for child, parent in md.ext_subclass_pairs if child in shown}
@@ -833,9 +941,10 @@ def generate_module_diagram(
             for restr in ctx_g.objects(cls, RDFS.subClassOf):
                 if not isinstance(restr, BNode):
                     continue
-                on_prop  = ctx_g.value(restr, OWL.onProperty)
-                val_from = (ctx_g.value(restr, OWL.someValuesFrom)
-                            or ctx_g.value(restr, OWL.allValuesFrom))
+                on_prop = ctx_g.value(restr, OWL.onProperty)
+                val_from = ctx_g.value(restr, OWL.someValuesFrom) or ctx_g.value(
+                    restr, OWL.allValuesFrom
+                )
                 if not (on_prop and val_from) or val_from not in md.classes:
                     continue
                 key = (_local(on_prop), str(cls), str(val_from))
@@ -844,20 +953,17 @@ def generate_module_diagram(
                     inbound_triples.append((_local(on_prop), cls, val_from))
     ext_classes |= {src for _, src, _ in inbound_triples if src not in cell_ids}
 
-    max_x = (
-        max((x + w for x, y, w, h in positions.values()), default=0)
-        + CONT_PAD + 80
-    )
+    max_x = max((x + w for x, y, w, h in positions.values()), default=0) + CONT_PAD + 80
     ext_y = CONT_PAD
     for ext_cls in sorted(ext_classes, key=_local):
         cid = _uid("ext")
         ext_ids[ext_cls] = cid
         origin = cls_to_mod.get(ext_cls, "base")
-        label  = f"{_local(ext_cls)}\n({origin})"
-        w      = _cls_width(_local(ext_cls))
-        add_class_box(root, cid, label,
-                      max_x, ext_y, w, CLS_H_BASE, [],
-                      fill=CLR_EXTERNAL, stroke="#666666")
+        label = f"{_local(ext_cls)}\n({origin})"
+        w = _cls_width(_local(ext_cls))
+        add_class_box(
+            root, cid, label, max_x, ext_y, w, CLS_H_BASE, [], fill=CLR_EXTERNAL, stroke="#666666"
+        )
         ext_y += CLS_H_BASE + ROW_GAP + 20
 
     # Object property edges
@@ -865,9 +971,14 @@ def generate_module_diagram(
         src_cid = cell_ids.get(src_cls)
         tgt_cid = cell_ids.get(tgt_cls) or ext_ids.get(tgt_cls)
         if src_cid and tgt_cid:
-            add_obj_edge(root, _uid("prop"), prop_name,
-                         src_cid, tgt_cid,
-                         cross_module=(tgt_cls not in cell_ids))
+            add_obj_edge(
+                root,
+                _uid("prop"),
+                prop_name,
+                src_cid,
+                tgt_cid,
+                cross_module=(tgt_cls not in cell_ids),
+            )
 
     # Subclass edges to external TW superclasses
     for child, parent in md.ext_subclass_pairs:
@@ -879,14 +990,12 @@ def generate_module_diagram(
         src_cid = ext_ids.get(src_cls)
         tgt_cid = cell_ids.get(tgt_cls)
         if src_cid and tgt_cid:
-            add_obj_edge(root, _uid("prop"), prop_name,
-                         src_cid, tgt_cid, cross_module=True)
+            add_obj_edge(root, _uid("prop"), prop_name, src_cid, tgt_cid, cross_module=True)
 
     # Named individuals — hidden by default; opt-in via MODULE_SHOW_INDIVIDUALS
     if md.individuals and MODULE_SHOW_INDIVIDUALS.get(mod_name, False):
         bottom_y = (
-            max((y + h for x, y, w, h in positions.values()), default=0)
-            + CONT_PAD + LEVEL_GAP
+            max((y + h for x, y, w, h in positions.values()), default=0) + CONT_PAD + LEVEL_GAP
         )
         by_class: dict[URIRef, list[URIRef]] = defaultdict(list)
         for ind, cls in md.individuals:
@@ -904,14 +1013,13 @@ def generate_module_diagram(
         for i, (ind, cls) in enumerate(all_inds):
             col = i % max_ind_cols
             row = i // max_ind_cols
-            ix  = CONT_PAD + col * (IND_W + IND_GAP)
-            iy  = bottom_y + row * (IND_H + IND_GAP)
+            ix = CONT_PAD + col * (IND_W + IND_GAP)
+            iy = bottom_y + row * (IND_H + IND_GAP)
             cid = _uid("ind")
             add_individual(root, cid, _local(ind), ix, iy)
             parent_cid = cell_ids.get(cls)
             if parent_cid:
-                add_obj_edge(root, _uid("ityp"), "a",
-                             cid, parent_cid, cross_module=True)
+                add_obj_edge(root, _uid("ityp"), "a", cid, parent_cid, cross_module=True)
 
     write_drawio(mxfile, out_path)
 
@@ -920,11 +1028,16 @@ def generate_module_diagram(
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--out-dir", default="diagrams",
-                        help="Output directory for .drawio files (default: diagrams)")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--out-dir",
+        default="diagrams",
+        help="Output directory for .drawio files (default: diagrams)",
+    )
     args = parser.parse_args()
 
     out_dir = Path(args.out_dir)
@@ -965,8 +1078,7 @@ def main() -> None:
     generate_modules_diagram(out_dir / "modules.drawio")
     generate_overview(all_data, out_dir / "overview.drawio")
     for mod_name, md in all_data.items():
-        generate_module_diagram(mod_name, md, cls_to_mod,
-                                out_dir / f"{mod_name}.drawio")
+        generate_module_diagram(mod_name, md, cls_to_mod, out_dir / f"{mod_name}.drawio")
 
     print(f"\nDone — {len(all_data) + 2} files written.")
     print("Open in draw.io (diagrams.net) to tune layout before exporting to PDF/SVG.")

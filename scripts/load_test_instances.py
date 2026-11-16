@@ -54,11 +54,13 @@ def _fetch_keycloak_token() -> str | None:
     realm = os.environ.get("KEYCLOAK_REALM", "twinship")
     token_url = f"{keycloak_url}/realms/{realm}/protocol/openid-connect/token"
 
-    body = urllib.parse.urlencode({
-        "grant_type": "client_credentials",
-        "client_id": client_id,
-        "client_secret": client_secret,
-    }).encode()
+    body = urllib.parse.urlencode(
+        {
+            "grant_type": "client_credentials",
+            "client_id": client_id,
+            "client_secret": client_secret,
+        }
+    ).encode()
     req = urllib.request.Request(token_url, data=body, method="POST")
     req.add_header("Content-Type", "application/x-www-form-urlencoded")
     try:
@@ -66,8 +68,7 @@ def _fetch_keycloak_token() -> str | None:
             return json.loads(resp.read().decode()).get("access_token")
     except urllib.error.URLError as exc:
         raise RuntimeError(
-            f"Could not reach Keycloak at {token_url}: {exc}. "
-            "Is docker-compose running?"
+            f"Could not reach Keycloak at {token_url}: {exc}. " "Is docker-compose running?"
         ) from exc
 
 
@@ -83,9 +84,14 @@ def get_token() -> str | None:
 # ---------------------------------------------------------------------------
 
 
-def _request(url: str, method: str, data: bytes | None = None,
-             content_type: str | None = None, token: str | None = None,
-             accept: str | None = None) -> tuple[int, bytes]:
+def _request(
+    url: str,
+    method: str,
+    data: bytes | None = None,
+    content_type: str | None = None,
+    token: str | None = None,
+    accept: str | None = None,
+) -> tuple[int, bytes]:
     req = urllib.request.Request(url, data=data, method=method)
     if content_type:
         req.add_header("Content-Type", content_type)
@@ -114,14 +120,21 @@ def create_repo(token: str | None) -> None:
         "title": "TwinShip synthetic test data",
         "type": "graphdb",
         "params": {
-            "repositoryType": {"name": "repositoryType", "label": "Repository type", "value": "file-repository"},
+            "repositoryType": {
+                "name": "repositoryType",
+                "label": "Repository type",
+                "value": "file-repository",
+            },
             "ruleset": {"name": "ruleset", "label": "Ruleset", "value": "rdfsplus-optimized"},
-            "storageFolder": {"name": "storageFolder", "label": "Storage folder", "value": "storage"},
+            "storageFolder": {
+                "name": "storageFolder",
+                "label": "Storage folder",
+                "value": "storage",
+            },
         },
     }
     body = json.dumps(config).encode()
-    code, resp = _request(url, "POST", data=body,
-                          content_type="application/json", token=token)
+    code, resp = _request(url, "POST", data=body, content_type="application/json", token=token)
     if code not in (200, 201):
         raise RuntimeError(
             f"Failed to create repository '{TEST_REPO}': HTTP {code} — {resp.decode()[:200]}"
@@ -141,12 +154,9 @@ def load_ttl(ttl_path: Path, token: str | None) -> None:
     """PUT the TTL file into the default graph."""
     url = f"{GRAPHDB_URL}/repositories/{TEST_REPO}/statements"
     data = ttl_path.read_bytes()
-    code, resp = _request(url, "PUT", data=data,
-                          content_type="application/x-turtle", token=token)
+    code, resp = _request(url, "PUT", data=data, content_type="application/x-turtle", token=token)
     if code not in (200, 204):
-        raise RuntimeError(
-            f"Failed to upload triples: HTTP {code} — {resp.decode()[:200]}"
-        )
+        raise RuntimeError(f"Failed to upload triples: HTTP {code} — {resp.decode()[:200]}")
 
 
 # ---------------------------------------------------------------------------
@@ -186,8 +196,7 @@ def main() -> None:
     print()
     print("Run CQ tests against the test repository:")
     print(
-        f"  uv run pytest tests/ --graphdb-url {GRAPHDB_URL} "
-        f"--graphdb-test-repo {TEST_REPO} -v"
+        f"  uv run pytest tests/ --graphdb-url {GRAPHDB_URL} " f"--graphdb-test-repo {TEST_REPO} -v"
     )
 
 

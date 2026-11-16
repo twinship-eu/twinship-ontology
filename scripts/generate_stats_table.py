@@ -41,6 +41,7 @@ LIST_ALL_THRESHOLD = 10
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
+
 def short_name(uri: str) -> str:
     """Return the local name from a URI."""
     s = str(uri)
@@ -72,7 +73,9 @@ def collect_ontology_meta(graph: Graph) -> dict:
     for s in graph.subjects(RDF.type, OWL.Ontology):
         meta["version"] = str(graph.value(s, PAV.version) or graph.value(s, OWL.versionInfo) or "")
         meta["last_updated"] = str(graph.value(s, PAV.lastUpdateOn) or "")[:10]  # date only
-        meta["title"] = str(graph.value(s, DCTERMS.title) or graph.value(s, RDFS.label) or "TwinShip Ontology")
+        meta["title"] = str(
+            graph.value(s, DCTERMS.title) or graph.value(s, RDFS.label) or "TwinShip Ontology"
+        )
         break
     return meta
 
@@ -125,6 +128,7 @@ def collect_data_properties(graph: Graph) -> list[str]:
 def top_classes_by_refs(graph: Graph, classes: list[str], n: int) -> list[str]:
     """Return up to n classes ranked by how many times they are referenced in the graph."""
     from collections import Counter
+
     class_set = set(classes)
     refs = Counter()
     for _s, _p, o in graph:
@@ -138,6 +142,7 @@ def top_classes_by_refs(graph: Graph, classes: list[str], n: int) -> list[str]:
 def top_data_props_by_domains(graph: Graph, data_props: list[str], n: int) -> list[str]:
     """Return up to n data properties ranked by number of rdfs:domain assignments."""
     from collections import Counter
+
     dom_count = Counter()
     for uri in data_props:
         for _s, _p, _o in graph.triples((URIRef(uri), RDFS.domain, None)):
@@ -147,6 +152,7 @@ def top_data_props_by_domains(graph: Graph, data_props: list[str], n: int) -> li
 
 
 # ── Markdown builders ─────────────────────────────────────────────────────────
+
 
 def md_table(headers: list[str], rows: list[tuple]) -> str:
     """Render a Markdown table. Last column is not padded."""
@@ -181,7 +187,9 @@ def build_markdown(
     if len(obj_props) < LIST_ALL_THRESHOLD:
         obj_prop_examples = "<br>".join(short_name(u) for u in obj_props)
     else:
-        obj_prop_examples = "<br>".join(short_name(u) for u in top_classes_by_refs(graph, obj_props, examples_n))
+        obj_prop_examples = "<br>".join(
+            short_name(u) for u in top_classes_by_refs(graph, obj_props, examples_n)
+        )
 
     class_examples = "<br>".join(
         short_name(u) for u in top_classes_by_refs(graph, classes, examples_n)
@@ -248,8 +256,11 @@ def build_markdown(
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate STATISTICS.md for the TwinShip ontology.")
+    parser = argparse.ArgumentParser(
+        description="Generate STATISTICS.md for the TwinShip ontology."
+    )
     parser.add_argument(
         "--output",
         default="STATISTICS.md",
@@ -298,7 +309,10 @@ def main() -> None:
     )
 
     output_path.write_text(content, encoding="utf-8")
-    print(f"✅ Written: {output_path}  ({len(classes)} classes, {len(obj_props)} object props, {len(data_props)} data props)", file=sys.stderr)
+    print(
+        f"✅ Written: {output_path}  ({len(classes)} classes, {len(obj_props)} object props, {len(data_props)} data props)",
+        file=sys.stderr,
+    )
 
 
 if __name__ == "__main__":

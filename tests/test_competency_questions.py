@@ -78,26 +78,18 @@ def _normalise_rows(raw: Any) -> tuple[list[str], list[list[str]]]:
     if hasattr(raw, "vars"):
         # rdflib Result
         cols = [str(v) for v in (raw.vars or [])]
-        rows = [
-            [str(v) if v is not None else "" for v in row]
-            for row in raw
-        ]
+        rows = [[str(v) if v is not None else "" for v in row] for row in raw]
     else:
         # GraphDB: list of dicts
         raw_list = list(raw)
         if not raw_list:
             return [], []
         cols = list(raw_list[0].keys())
-        rows = [
-            [row.get(c, {}).get("value", "") for c in cols]
-            for row in raw_list
-        ]
+        rows = [[row.get(c, {}).get("value", "") for c in cols] for row in raw_list]
     return cols, rows
 
 
-def _run_query(
-    graph: Any, sparql: str
-) -> tuple[list[str], list[list[str]], float, str]:
+def _run_query(graph: Any, sparql: str) -> tuple[list[str], list[list[str]], float, str]:
     """Execute sparql against graph with a timeout.
 
     Returns (columns, rows, duration_ms, query_status) where query_status is
@@ -164,22 +156,22 @@ def test_competency_question(
         status = "XFAIL"
         error_msg = None
 
-    cq_collector.add(CQRecord(
-        cq_id=rq_file.stem,
-        description=description,
-        status=status,
-        row_count=len(rows),
-        duration_ms=duration_ms,
-        columns=cols,
-        rows=rows,
-        error_msg=error_msg,
-    ))
+    cq_collector.add(
+        CQRecord(
+            cq_id=rq_file.stem,
+            description=description,
+            status=status,
+            row_count=len(rows),
+            duration_ms=duration_ms,
+            columns=cols,
+            rows=rows,
+            error_msg=error_msg,
+        )
+    )
 
     # Apply pytest verdict
     if query_status == "TIMEOUT":
-        pytest.fail(
-            f"CQ '{rq_file.stem}' timed out after {_QUERY_TIMEOUT_S}s"
-        )
+        pytest.fail(f"CQ '{rq_file.stem}' timed out after {_QUERY_TIMEOUT_S}s")
     elif query_status.startswith("ERROR"):
         raise RuntimeError(query_status)
     elif is_strict:

@@ -72,20 +72,20 @@ _DEFAULT_REPOS = ["vessel-roro", "vessel-ropax", "vessel-tanker", "vessel-futuri
 
 @dataclasses.dataclass
 class CQRecord:
-    cq_id: str            # e.g. "cq01_vessels_by_fleet_and_type"
-    description: str      # human-readable first comment line from .rq file
-    status: str           # PASS | FAIL | XFAIL | ERROR | TIMEOUT
+    cq_id: str  # e.g. "cq01_vessels_by_fleet_and_type"
+    description: str  # human-readable first comment line from .rq file
+    status: str  # PASS | FAIL | XFAIL | ERROR | TIMEOUT
     row_count: int
     duration_ms: float
-    columns: list         # result variable names
-    rows: list            # all result rows as list[list[str]]
+    columns: list  # result variable names
+    rows: list  # all result rows as list[list[str]]
     error_msg: str | None
 
 
 class CQResultCollector:
     """Accumulates CQ results during a test session and writes reports at the end."""
 
-    _MAX_HTML_ROWS = 10   # rows shown inline in the HTML report
+    _MAX_HTML_ROWS = 10  # rows shown inline in the HTML report
 
     def __init__(self) -> None:
         self._records: list[CQRecord] = []
@@ -132,8 +132,7 @@ class CQResultCollector:
         }
         html_path = REPORTS_DIR / "cq-report.html"
         html_path.write_text(
-            _render_html(self.records, run_mode, timestamp, counts,
-                         self._MAX_HTML_ROWS),
+            _render_html(self.records, run_mode, timestamp, counts, self._MAX_HTML_ROWS),
             encoding="utf-8",
         )
         return html_path
@@ -144,11 +143,11 @@ class CQResultCollector:
 # ---------------------------------------------------------------------------
 
 _STATUS_CSS = {
-    "PASS":    "badge-pass",
-    "FAIL":    "badge-fail",
-    "XFAIL":   "badge-xfail",
+    "PASS": "badge-pass",
+    "FAIL": "badge-fail",
+    "XFAIL": "badge-xfail",
     "TIMEOUT": "badge-timeout",
-    "ERROR":   "badge-error",
+    "ERROR": "badge-error",
 }
 
 _CSS = """
@@ -196,8 +195,13 @@ table.res td { padding: .2rem .5rem; border-bottom: 1px solid #e2e8f0;
 """
 
 
-def _render_html(records: list[CQRecord], run_mode: str, timestamp: str,
-                 counts: dict[str, int], max_html_rows: int) -> str:
+def _render_html(
+    records: list[CQRecord],
+    run_mode: str,
+    timestamp: str,
+    counts: dict[str, int],
+    max_html_rows: int,
+) -> str:
     total = len(records)
 
     # Summary badges
@@ -205,9 +209,7 @@ def _render_html(records: list[CQRecord], run_mode: str, timestamp: str,
     for status, css in _STATUS_CSS.items():
         n = counts.get(status, 0)
         if n:
-            badge_parts.append(
-                f'<span class="badge {css}">{status} {n}</span>'
-            )
+            badge_parts.append(f'<span class="badge {css}">{status} {n}</span>')
 
     # Table rows
     row_parts = []
@@ -218,22 +220,16 @@ def _render_html(records: list[CQRecord], run_mode: str, timestamp: str,
 
         # Result cell
         if rec.error_msg:
-            result_cell = (
-                f'<span class="err-msg">'
-                f'{_html.escape(rec.error_msg[:200])}</span>'
-            )
+            result_cell = f'<span class="err-msg">' f"{_html.escape(rec.error_msg[:200])}</span>"
         elif rec.columns and rec.rows:
             shown = rec.rows[:max_html_rows]
             more = rec.row_count - len(shown)
             more_note = f" (+ {more} more, see CSV)" if more > 0 else ""
-            th = "".join(
-                f"<th>{_html.escape(str(c))}</th>" for c in rec.columns
-            )
+            th = "".join(f"<th>{_html.escape(str(c))}</th>" for c in rec.columns)
             trs = "".join(
                 "<tr>"
                 + "".join(
-                    f'<td title="{_html.escape(str(v))}">'
-                    f'{_html.escape(str(v)[:80])}</td>'
+                    f'<td title="{_html.escape(str(v))}">' f"{_html.escape(str(v)[:80])}</td>"
                     for v in row
                 )
                 + "</tr>"
@@ -277,17 +273,13 @@ def _render_html(records: list[CQRecord], run_mode: str, timestamp: str,
         f"  <p>Generated: {_html.escape(timestamp)}"
         f" &nbsp;|&nbsp; Mode: <strong>{_html.escape(run_mode)}</strong>"
         f" &nbsp;|&nbsp; Total CQs: {total}</p>\n"
-        '  <div class="badges">\n    '
-        + "\n    ".join(badge_parts)
-        + "\n  </div>\n</div>\n"
+        '  <div class="badges">\n    ' + "\n    ".join(badge_parts) + "\n  </div>\n</div>\n"
         '<table class="main">\n'
         "<thead><tr>"
         "<th>CQ</th><th>Description</th><th>Status</th>"
         "<th>Rows</th><th>ms</th><th>Results</th>"
         "</tr></thead>\n"
-        "<tbody>\n"
-        + "\n".join(row_parts)
-        + "\n</tbody>\n</table>\n"
+        "<tbody>\n" + "\n".join(row_parts) + "\n</tbody>\n</table>\n"
         "</body>\n</html>\n"
     )
 
@@ -320,9 +312,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: object) -> None:
     """Write HTML and CSV reports after all tests have run."""
-    collector: CQResultCollector | None = getattr(
-        session.config, "_cq_collector", None
-    )
+    collector: CQResultCollector | None = getattr(session.config, "_cq_collector", None)
     if collector is not None:
         run_mode = _get_run_mode(session.config)
         collector.write_reports(run_mode)
@@ -340,7 +330,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=None,
         metavar="URL",
         help="GraphDB base URL (e.g. http://localhost:7200). "
-             "When set, CQ tests run against live GraphDB with instance data.",
+        "When set, CQ tests run against live GraphDB with instance data.",
     )
     parser.addoption(
         "--graphdb-repos",
@@ -348,8 +338,8 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=",".join(_DEFAULT_REPOS),
         metavar="REPOS",
         help="Comma-separated GraphDB repository IDs to query. "
-             "Must match the actual repository IDs in your GraphDB instance. "
-             f"Defaults to generic placeholders: {', '.join(_DEFAULT_REPOS)}.",
+        "Must match the actual repository IDs in your GraphDB instance. "
+        f"Defaults to generic placeholders: {', '.join(_DEFAULT_REPOS)}.",
     )
     parser.addoption(
         "--graphdb-test-repo",
@@ -357,11 +347,11 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=None,
         metavar="REPO",
         help="GraphDB repository ID for the synthetic test data "
-             "(e.g. vessel-test). Requires --graphdb-url. When set, "
-             "only this repository is queried and all CQs that the test data "
-             "covers are treated as strict assertions (hard failures). "
-             "Load the test data first with: "
-             "uv run python scripts/load_test_instances.py",
+        "(e.g. vessel-test). Requires --graphdb-url. When set, "
+        "only this repository is queried and all CQs that the test data "
+        "covers are treated as strict assertions (hard failures). "
+        "Load the test data first with: "
+        "uv run python scripts/load_test_instances.py",
     )
 
 
@@ -401,11 +391,13 @@ class GraphDBFederatedSparql:
         realm = os.environ.get("KEYCLOAK_REALM", "twinship")
         token_url = f"{keycloak_url}/realms/{realm}/protocol/openid-connect/token"
 
-        body = urllib.parse.urlencode({
-            "grant_type": "client_credentials",
-            "client_id": client_id,
-            "client_secret": client_secret,
-        }).encode()
+        body = urllib.parse.urlencode(
+            {
+                "grant_type": "client_credentials",
+                "client_id": client_id,
+                "client_secret": client_secret,
+            }
+        ).encode()
         req = urllib.request.Request(token_url, data=body, method="POST")
         req.add_header("Content-Type", "application/x-www-form-urlencoded")
         try:
@@ -413,8 +405,7 @@ class GraphDBFederatedSparql:
                 return json.loads(resp.read().decode()).get("access_token")
         except urllib.error.URLError as exc:
             raise RuntimeError(
-                f"Could not reach Keycloak at {token_url}: {exc}. "
-                "Is docker-compose running?"
+                f"Could not reach Keycloak at {token_url}: {exc}. " "Is docker-compose running?"
             ) from exc
 
     def _get_token(self) -> str | None:
@@ -501,17 +492,13 @@ def graph(request: pytest.FixtureRequest):
     test_repo: str | None = request.config.getoption("--graphdb-test-repo")
 
     if graphdb_url and test_repo:
-        print(
-            f"\n[conftest] GraphDB test-repo mode — {graphdb_url} | repo: {test_repo}"
-        )
+        print(f"\n[conftest] GraphDB test-repo mode — {graphdb_url} | repo: {test_repo}")
         return GraphDBFederatedSparql(base_url=graphdb_url, repo_ids=[test_repo])
 
     if graphdb_url:
         repos_opt: str = request.config.getoption("--graphdb-repos")
         repo_ids = [r.strip() for r in repos_opt.split(",") if r.strip()]
-        print(
-            f"\n[conftest] GraphDB mode — {graphdb_url} | repos: {', '.join(repo_ids)}"
-        )
+        print(f"\n[conftest] GraphDB mode — {graphdb_url} | repos: {', '.join(repo_ids)}")
         return GraphDBFederatedSparql(base_url=graphdb_url, repo_ids=repo_ids)
 
     # Default: rdflib in-memory graph (schema only)
