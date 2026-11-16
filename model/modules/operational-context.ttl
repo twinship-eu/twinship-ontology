@@ -25,10 +25,11 @@
     pav:createdOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
     pav:lastUpdateOn "2026-10-29T00:00:00+00:00"^^xsd:dateTime ;
     pav:version "0.1.2" ;
-    rdfs:comment "Operational context module for TwinShip ontology. Imports twinship-base and twinship-operational-modes. The import of operational-modes enables range constraints on properties that reference OperatingState (e.g. summarisesOperatingState). No circular imports are introduced: operational-modes imports only base, and operational-context imports base + operational-modes." ;
+    rdfs:comment "Operational context module for TwinShip ontology. Imports twinship-base and twinship-operational-modes. The import of operational-modes enables range constraints on properties that reference OperatingState (e.g. summarisesOperatingState). No circular imports are introduced: operational-modes imports only base, and operational-context imports base + operational-modes. It also imports vessel, for restrictions that use vessel classes (VesselSystem, DraftCondition, TrimCondition, LoadingPreset); vessel imports only base." ;
     owl:imports <https://twin-ship.eu/twinship/base>,
         <https://twin-ship.eu/twinship/operational-modes>,
-        <https://twin-ship.eu/twinship/weather-conditions> ;
+        <https://twin-ship.eu/twinship/weather-conditions>,
+        <https://twin-ship.eu/twinship/vessel> ;
     owl:versionIRI <https://twin-ship.eu/twinship/operational-context/0.1.2> .
 
 # #################################################################
@@ -50,6 +51,9 @@
         [ a owl:Restriction ; owl:onProperty :hasFuelConsumptionSummary     ; owl:someValuesFrom :FuelConsumptionSummary   ],
         [ a owl:Restriction ; owl:onProperty :hasOperatingState             ; owl:someValuesFrom :OperatingState           ],
         [ a owl:Restriction ; owl:onProperty :hasDraftMode                  ; owl:someValuesFrom :DraftMode                ],
+        [ a owl:Restriction ; owl:onProperty :hasDraftCondition             ; owl:someValuesFrom :DraftCondition           ],
+        [ a owl:Restriction ; owl:onProperty :hasTrimCondition              ; owl:someValuesFrom :TrimCondition            ],
+        [ a owl:Restriction ; owl:onProperty :hasLoadingPreset              ; owl:someValuesFrom :LoadingPreset            ],
         [ a owl:Restriction ; owl:onProperty :twVoyageIdentifier            ; owl:someValuesFrom xsd:string               ],
         [ a owl:Restriction ; owl:onProperty :twVoyageDurationHours         ; owl:someValuesFrom xsd:decimal              ],
         [ a owl:Restriction ; owl:onProperty :twVoyageEstimatedStartTime     ; owl:someValuesFrom xsd:dateTime             ],
@@ -75,12 +79,19 @@
         [ a owl:Restriction ; owl:onProperty :hasEngineMode                 ; owl:someValuesFrom :EngineMode               ],
         [ a owl:Restriction ; owl:onProperty :hasTrimMode                   ; owl:someValuesFrom :TrimMode                 ],
         [ a owl:Restriction ; owl:onProperty :hasDraftTrimMode              ; owl:someValuesFrom :DraftTrimMode            ],
+        [ a owl:Restriction ; owl:onProperty :hasDraftCondition             ; owl:someValuesFrom :DraftCondition           ],
+        [ a owl:Restriction ; owl:onProperty :hasTrimCondition              ; owl:someValuesFrom :TrimCondition            ],
+        [ a owl:Restriction ; owl:onProperty :hasLoadingPreset              ; owl:someValuesFrom :LoadingPreset            ],
         [ a owl:Restriction ; owl:onProperty :hasWeatherCondition           ; owl:someValuesFrom :WeatherCondition         ],
         [ a owl:Restriction ; owl:onProperty :twStateDurationHours          ; owl:someValuesFrom xsd:decimal               ],
         [ a owl:Restriction ; owl:onProperty :twTimeSharePercentage         ; owl:someValuesFrom xsd:decimal               ],
         [ a owl:Restriction ; owl:onProperty :twStateLabel                  ; owl:someValuesFrom xsd:string                ],
         [ a owl:Restriction ; owl:onProperty :twEngineSpeedInRevPerMin         ; owl:someValuesFrom xsd:decimal               ],
         [ a owl:Restriction ; owl:onProperty :twEngineLoadPercentage            ; owl:someValuesFrom xsd:decimal               ] .
+
+# Vessels perform voyages (VesselSystem is defined in the vessel module)
+:VesselSystem rdfs:subClassOf
+        [ a owl:Restriction ; owl:onProperty :hasVoyage ; owl:someValuesFrom :Voyage ] .
 
 :Route a owl:Class ;
     rdfs:label "Route" ;

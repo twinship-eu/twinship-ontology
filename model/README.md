@@ -120,7 +120,7 @@ build/                          # Auto-generated build artifacts (gitignored)
    - Object properties: voyage structure, profile/statistics, fuel, context links
    - Data properties: voyage times/IDs, state statistics, engine observations, speed bins, fuel consumption
    - IRI: `https://twin-ship.eu/twinship/operational-context`
-   - Imports: `twinship-base`, `operational-modes`, `weather-conditions`
+   - Imports: `twinship-base`, `operational-modes`, `weather-conditions`, `vessel`
 
 7. **modules/statistics.ttl** — TwinShip-native estimation, prediction, and statistical model concepts
    - Statistical classes: `VesselPerformanceStatistics`, `VesselPerformanceModel`
