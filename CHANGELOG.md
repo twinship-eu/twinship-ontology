@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - SHACL shapes for operational modes and bins (`shapes/operational_modes.ttl`): engine, draft and trim modes and vessel speed bins have at most one value per bound, non-negative where physical, and lower bound ≤ upper bound; draft–trim modes have exactly one draft and one trim mode; speed bins exactly one speed reference
 
 ### Changed
+- Class restrictions for 41 datatype properties that had none, so the documentation shows their domains: bow-thruster, stern-thruster, boiler and emergency-diesel-generator fuel and flow properties on `BowThruster`, `Maneuvering`, `Boiler` and `EmergencyEquipment` (following their already-restricted siblings and the SHACL shapes); bow, stern, aft and fore draft on `DraftCondition`, `twTrimInM` on `TrimCondition`, `twDisplacementInMT` on `LoadingCondition`, `twGearboxEfficiency` on `GearboxSystem`. Matching QUDT restrictions added on `Maneuvering`, `Boiler` and `EmergencyEquipment`
+- `tests/test_repository_rules.py`: every TwinShip property that is not a superproperty must have a class restriction; 20 properties awaiting a modelling decision are allow-listed
 - `operational-modes.ttl` comments and `examples/README.md` now point to the futuristic vessel's operational modes in twinship-data-pipeline (`data/RoRo Futuristic Vessel Operational Modes.ttl`); the `twinship-futuristic-vessel` generator is archived
 
 ### Fixed

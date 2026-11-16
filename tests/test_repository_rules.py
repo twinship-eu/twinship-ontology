@@ -68,3 +68,62 @@ def test_version_in_sync(file: str, pattern: str) -> None:
     if file == "CHANGELOG.md":
         found = found[:1]  # only the latest release heading
     assert set(found) == {VERSION}, f"{file}: {sorted(set(found))}, expected {VERSION}"
+
+
+# Properties without a class restriction, pending a modelling decision. Remove a name
+# from this list when its restriction is added; do not add new names.
+UNRESTRICTED_ALLOWED = {
+    # Object properties: owner class to be decided (or treated as generic)
+    "componentOf",
+    "hasComponent",
+    "hasDraftCondition",
+    "hasLoadingPreset",
+    "hasTrimCondition",
+    "hasVoyage",
+    "ownedBy",
+    # Composite exhaust gas boiler: Boiler or a new subclass
+    "twCompositeExhaustGasBoilerBLRFuelMode",
+    "twCompositeExhaustGasBoilerDOTemperatureInDegC",
+    "twCompositeExhaustGasBoilerDOVolInLitrePerHr",
+    "twCompositeExhaustGasBoilerEmergencyDOMode",
+    "twCompositeExhaustGasBoilerFuelTempInDegC",
+    "twCompositeExhaustGasBoilerFuelVolLitrePerHr",
+    "twCompositeExhaustGasBoilerMGOInUse",
+    "twCompositeExhaustGasBoilerMGOMassInKgPerHr",
+    "twCompositeExhaustGasBoilerMassInKgPerHr",
+    "twCompositeExhaustGasBoilerPowerMaxInKW",
+    "twCompositeExhaustGasBoilerSpeedMaxInRevPerMin",
+    # Owner unclear from the comment
+    "twEmergencyMassRetInKgPerHr",
+    "twLoadingConditionLogged",
+}
+
+
+@pytest.fixture(scope="module")
+def source_graph() -> Graph:
+    graph = Graph()
+    for path in SOURCE_MODULES:
+        graph.parse(path, format="turtle")
+    return graph
+
+
+def test_properties_have_class_restrictions(source_graph: Graph) -> None:
+    """Every TwinShip property that is not a superproperty has a restriction on some class.
+
+    The documentation derives property domains from these restrictions.
+    """
+    tws = "https://twin-ship.eu/twinship#"
+    restricted = set(source_graph.objects(None, OWL.onProperty))
+    missing = set()
+    for prop_type in (OWL.ObjectProperty, OWL.DatatypeProperty):
+        for prop in source_graph.subjects(RDF.type, prop_type):
+            if not str(prop).startswith(tws) or prop in restricted:
+                continue
+            if any(source_graph.subjects(RDFS.subPropertyOf, prop)):
+                continue  # superproperty: grouping only
+            missing.add(str(prop)[len(tws) :])
+    assert (
+        not missing - UNRESTRICTED_ALLOWED
+    ), f"Add a class restriction: {sorted(missing - UNRESTRICTED_ALLOWED)}"
+    fixed = UNRESTRICTED_ALLOWED - missing
+    assert not fixed, f"Restricted now; remove from UNRESTRICTED_ALLOWED: {sorted(fixed)}"
