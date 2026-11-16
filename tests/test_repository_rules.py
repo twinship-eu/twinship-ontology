@@ -80,6 +80,9 @@ UNRESTRICTED_ALLOWED = {
 # Generic structural properties, intentionally without a class restriction
 GENERIC_PROPERTIES = {"componentOf", "hasComponent"}
 
+# QUDT quantity families kept in the vocabulary although no class uses them at present
+UNUSED_QUDT_PROPERTIES = {"hasQuantityForce"}
+
 
 @pytest.fixture(scope="module")
 def source_graph() -> Graph:
@@ -104,7 +107,7 @@ def test_properties_have_class_restrictions(source_graph: Graph) -> None:
             if any(source_graph.subjects(RDFS.subPropertyOf, prop)):
                 continue  # superproperty: grouping only
             missing.add(str(prop)[len(tws) :])
-    missing -= GENERIC_PROPERTIES
+    missing -= GENERIC_PROPERTIES | UNUSED_QUDT_PROPERTIES
     assert (
         not missing - UNRESTRICTED_ALLOWED
     ), f"Add a class restriction: {sorted(missing - UNRESTRICTED_ALLOWED)}"

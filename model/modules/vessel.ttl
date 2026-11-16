@@ -269,6 +269,9 @@
         [ a owl:Restriction ;
             owl:onProperty :twEngineModeCount ;
             owl:someValuesFrom xsd:integer ],
+        [ a owl:Restriction ;
+            owl:onProperty :twFuelConsumptionRateInMTPerHr ;
+            owl:someValuesFrom xsd:double ],
         :TwinShipInanimatePhysicalObject .
 
 :FPP a owl:Class ;
@@ -2336,8 +2339,8 @@
       owl:onProperty :hasQuantityRotationalVelocity ;
       owl:someValuesFrom :TwinShipQuantityRotationalVelocity ] ,
     [ a owl:Restriction ;
-      owl:onProperty :hasQuantityForce ;
-      owl:someValuesFrom :TwinShipQuantityForce ] .
+      owl:onProperty :hasQuantityTorque ;
+      owl:someValuesFrom :TwinShipQuantityTorque ] .
 
 :BidirectionalConverterSystem rdfs:subClassOf
     [ a owl:Restriction ;
