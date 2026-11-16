@@ -9,14 +9,14 @@ Requirements:
     - Python 3.9+ with rdflib (install: uv sync)
     - Node.js and npm (for local WebVOWL setup)
     - OR use online version at http://vowl.visualdataweb.org/webvowl.html
-    
+
 Usage:
     # Prepare for online WebVOWL
     python setup_webvowl.py model/twinship-core-complete-viz.ttl
-    
+
     # Install local WebVOWL
     python setup_webvowl.py --install-local model/twinship-core-complete-viz.ttl
-    
+
 Output:
     docs/webvowl/
     ├── ontology.json         # WebVOWL-compatible format
@@ -26,30 +26,28 @@ Output:
 
 import argparse
 import json
-import subprocess
 import sys
-import shutil
 from pathlib import Path
-from rdflib import Graph, RDF, RDFS, OWL, Namespace
+from rdflib import Graph, RDF, RDFS, OWL
 
 
 def convert_to_webvowl_json(input_file, output_file):
     """
     Convert ontology to WebVOWL JSON format.
-    
+
     WebVOWL expects a specific JSON structure with:
     - classes: list of class objects
-    - properties: list of property objects  
+    - properties: list of property objects
     - propertyAttributes: additional property info
     """
     print(f"Converting {input_file} to WebVOWL JSON format...")
-    
+
     g = Graph()
     g.parse(input_file)
-    
+
     # Extract namespaces
     namespaces = {prefix: str(ns) for prefix, ns in g.namespaces()}
-    
+
     # Helper function to shorten URIs
     def shorten_uri(uri):
         uri_str = str(uri)
@@ -57,104 +55,112 @@ def convert_to_webvowl_json(input_file, output_file):
             if uri_str.startswith(ns):
                 return f"{prefix}:{uri_str[len(ns):]}"
         return uri_str
-    
+
     # Extract classes
     classes = []
     class_map = {}
-    
+
     for i, cls in enumerate(g.subjects(RDF.type, OWL.Class)):
-        if isinstance(cls, str) or str(cls).startswith('http'):
+        if isinstance(cls, str) or str(cls).startswith("http"):
             label = g.value(cls, RDFS.label) or shorten_uri(cls)
             comment = g.value(cls, RDFS.comment) or ""
-            
+
             class_obj = {
                 "id": str(i),
                 "type": "owl:Class",
                 "iri": str(cls),
-                "baseIri": str(cls).rsplit('/', 1)[0] if '/' in str(cls) else str(cls),
+                "baseIri": str(cls).rsplit("/", 1)[0] if "/" in str(cls) else str(cls),
                 "label": {"IRI-based": shorten_uri(cls), "undefined": str(label)},
-                "comment": {"undefined": str(comment)} if comment else {}
+                "comment": {"undefined": str(comment)} if comment else {},
             }
-            
+
             # Add superclasses
             superclasses = list(g.objects(cls, RDFS.subClassOf))
-            superclasses = [s for s in superclasses if not isinstance(s, type(None)) and str(s).startswith('http')]
+            superclasses = [
+                s
+                for s in superclasses
+                if not isinstance(s, type(None)) and str(s).startswith("http")
+            ]
             if superclasses:
                 class_obj["subClassOf"] = [str(s) for s in superclasses]
-            
+
             classes.append(class_obj)
             class_map[str(cls)] = str(i)
-    
+
     # Extract properties (both object and datatype properties)
     properties = []
     prop_id = 0
-    
+
     for prop_type in [OWL.ObjectProperty, OWL.DatatypeProperty]:
         for prop in g.subjects(RDF.type, prop_type):
-            if isinstance(prop, str) or str(prop).startswith('http'):
+            if isinstance(prop, str) or str(prop).startswith("http"):
                 label = g.value(prop, RDFS.label) or shorten_uri(prop)
                 comment = g.value(prop, RDFS.comment) or ""
-                
+
                 prop_obj = {
                     "id": str(prop_id),
-                    "type": "owl:ObjectProperty" if prop_type == OWL.ObjectProperty else "owl:DatatypeProperty",
+                    "type": (
+                        "owl:ObjectProperty"
+                        if prop_type == OWL.ObjectProperty
+                        else "owl:DatatypeProperty"
+                    ),
                     "iri": str(prop),
-                    "baseIri": str(prop).rsplit('/', 1)[0] if '/' in str(prop) else str(prop),
+                    "baseIri": str(prop).rsplit("/", 1)[0] if "/" in str(prop) else str(prop),
                     "label": {"IRI-based": shorten_uri(prop), "undefined": str(label)},
-                    "comment": {"undefined": str(comment)} if comment else {}
+                    "comment": {"undefined": str(comment)} if comment else {},
                 }
-                
+
                 # Add domain and range
                 domains = list(g.objects(prop, RDFS.domain))
-                if domains and str(domains[0]).startswith('http'):
+                if domains and str(domains[0]).startswith("http"):
                     domain_id = class_map.get(str(domains[0]))
                     if domain_id:
                         prop_obj["domain"] = domain_id
-                
+
                 ranges = list(g.objects(prop, RDFS.range))
                 if ranges:
                     range_uri = str(ranges[0])
-                    if range_uri.startswith('http'):
+                    if range_uri.startswith("http"):
                         range_id = class_map.get(range_uri)
                         if range_id:
                             prop_obj["range"] = range_id
                         else:
                             # External class or datatype
                             prop_obj["range"] = "external"
-                
+
                 properties.append(prop_obj)
                 prop_id += 1
-    
+
     # Build WebVOWL JSON structure
     webvowl_data = {
         "header": {
             "languages": ["en"],
             "title": {"en": "TwinShip Ontology"},
             "description": {"en": "Digital Twin Ontology for Maritime Vessels"},
-            "iri": "https://twin-ship.eu/twinship-core"
+            "iri": "https://twin-ship.eu/twinship-core",
         },
         "namespace": list(namespaces.values()),
         "class": classes,
-        "property": properties
+        "property": properties,
     }
-    
+
     # Write to file
     output_path = Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    with output_path.open('w', encoding='utf-8') as f:
+
+    with output_path.open("w", encoding="utf-8") as f:
         json.dump(webvowl_data, f, indent=2, ensure_ascii=False)
-    
+
     print(f"✓ WebVOWL JSON created: {output_path}")
     print(f"  Classes: {len(classes)}")
     print(f"  Properties: {len(properties)}")
-    
+
     return output_path
 
 
 def create_viewer_html(output_dir, json_file):
     """Create HTML page for viewing with online WebVOWL."""
-    
+
     html_content = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -300,7 +306,7 @@ python -m http.server 8000</code></pre>
 </body>
 </html>
 """
-    
+
     index_path = Path(output_dir) / "index.html"
     index_path.write_text(html_content, encoding="utf-8")
     print(f"✓ Created viewer page: {index_path}")
@@ -322,45 +328,46 @@ Examples:
   python setup_webvowl.py --install-local model/twinship-core-complete-viz.ttl
 
 Note: For best results, use the visualization-friendly ontology (output of generate_viz_ontology.py)
-        """
+        """,
     )
-    
-    parser.add_argument('input', help='Input ontology file (use viz version)')
-    parser.add_argument('-o', '--output', default='docs/webvowl',
-                       help='Output directory (default: docs/webvowl)')
-    parser.add_argument('--install-local', action='store_true',
-                       help='Clone and setup local WebVOWL (requires Node.js)')
-    
+
+    parser.add_argument("input", help="Input ontology file (use viz version)")
+    parser.add_argument(
+        "-o", "--output", default="docs/webvowl", help="Output directory (default: docs/webvowl)"
+    )
+    parser.add_argument(
+        "--install-local",
+        action="store_true",
+        help="Clone and setup local WebVOWL (requires Node.js)",
+    )
+
     args = parser.parse_args()
-    
+
     print("=" * 70)
     print("TwinShip Ontology - WebVOWL Setup")
     print("=" * 70)
-    
+
     # Convert to WebVOWL JSON
     output_dir = Path(args.output)
-    json_file = convert_to_webvowl_json(
-        args.input,
-        output_dir / "ontology.json"
-    )
-    
+    json_file = convert_to_webvowl_json(args.input, output_dir / "ontology.json")
+
     # Create viewer HTML
     create_viewer_html(output_dir, json_file)
-    
+
     print("\n" + "=" * 70)
     print("WebVOWL setup complete!")
     print("=" * 70)
     print(f"\nOutput directory: {output_dir.resolve()}")
-    print(f"\nTo visualize:")
+    print("\nTo visualize:")
     print(f"  1. Open: {output_dir.resolve() / 'index.html'}")
-    print(f"  2. Follow the instructions to load ontology.json")
-    
+    print("  2. Follow the instructions to load ontology.json")
+
     if args.install_local:
         print("\n⚠️  Local WebVOWL installation not yet implemented.")
         print("   Please use the online version or clone manually.")
-    
+
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

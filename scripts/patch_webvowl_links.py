@@ -38,7 +38,10 @@ def patch(js_path):
 
     href_pattern = re.compile(r'\.attr\("href",\s*iri\s*\)')
     if "function appendIriLabel(" not in js or not href_pattern.search(js):
-        print(f"Error: appendIriLabel not found in {js_path}; WebVOWL version changed?", file=sys.stderr)
+        print(
+            f"Error: appendIriLabel not found in {js_path}; WebVOWL version changed?",
+            file=sys.stderr,
+        )
         return False
 
     js = js.replace("function appendIriLabel(", HELPER, 1)
@@ -53,7 +56,7 @@ def fingerprint(js_path):
     index_path = js_path.parent.parent / "index.html"
     html = index_path.read_text(encoding="utf-8")
 
-    script_pattern = re.compile(r'js/webvowl\.app(?:\.[0-9a-f]{8})?\.js')
+    script_pattern = re.compile(r"js/webvowl\.app(?:\.[0-9a-f]{8})?\.js")
     if not script_pattern.search(html):
         print(f"Error: webvowl.app.js script tag not found in {index_path}", file=sys.stderr)
         return False
