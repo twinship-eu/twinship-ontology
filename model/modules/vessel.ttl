@@ -2015,7 +2015,10 @@
     rdfs:subClassOf :TwinShipQuality,
         [ a owl:Restriction ;
             owl:onProperty :twDisplacementInMT ;
-            owl:someValuesFrom xsd:decimal ] .
+            owl:someValuesFrom xsd:decimal ],
+        [ a owl:Restriction ;
+            owl:onProperty :twLoadingConditionLogged ;
+            owl:someValuesFrom xsd:boolean ] .
 
 :LoadingPreset a owl:Class ;
     rdfs:label "Loading Preset" ;

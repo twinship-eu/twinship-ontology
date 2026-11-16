@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Class restrictions for `hasVoyage` (on `VesselSystem`), `hasDraftCondition`, `hasTrimCondition` and `hasLoadingPreset` (on `Voyage` and `VoyageLeg`, like the draft and trim modes), and `twLoadingConditionLogged` (on `LoadingCondition`). `operational-context.ttl` now imports `vessel.ttl` for these restrictions (vessel imports only base, so there is no cycle)
 - `CompositeExhaustGasBoiler` (subclass of `Boiler`) with class restrictions for the 11 `twCompositeExhaustGasBoiler…` properties, which had none; other boiler characteristics and QUDT restrictions are inherited from `Boiler`
 - Draft and trim mode ranges in `operational-modes.ttl`: `twDraftModeReferenceDraftInM`, `twDraftModeLowerBoundInM`, `twDraftModeUpperBoundInM` on `DraftMode`, and `twTrimModeLowerBoundInM`, `twTrimModeUpperBoundInM` on `TrimMode` (trim as in `twTrimInM`: aft minus forward draft, positive = stern trim), with `hasQuantityLength` restrictions
 - `twSpeedBinPropellerSpeedInRevPerMin` on `VesselSpeedBin` (optional representative propeller speed), with a `hasQuantityRotationalVelocity` restriction

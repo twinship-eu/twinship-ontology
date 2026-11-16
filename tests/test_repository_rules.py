@@ -73,18 +73,12 @@ def test_version_in_sync(file: str, pattern: str) -> None:
 # Properties without a class restriction, pending a modelling decision. Remove a name
 # from this list when its restriction is added; do not add new names.
 UNRESTRICTED_ALLOWED = {
-    # Object properties: owner class to be decided (or treated as generic)
-    "componentOf",
-    "hasComponent",
-    "hasDraftCondition",
-    "hasLoadingPreset",
-    "hasTrimCondition",
-    "hasVoyage",
-    "ownedBy",
-    # Owner unclear from the comment
-    "twEmergencyMassRetInKgPerHr",
-    "twLoadingConditionLogged",
+    "ownedBy",  # owner class to be decided
+    "twEmergencyMassRetInKgPerHr",  # owner unclear from the comment
 }
+
+# Generic structural properties, intentionally without a class restriction
+GENERIC_PROPERTIES = {"componentOf", "hasComponent"}
 
 
 @pytest.fixture(scope="module")
@@ -110,6 +104,7 @@ def test_properties_have_class_restrictions(source_graph: Graph) -> None:
             if any(source_graph.subjects(RDFS.subPropertyOf, prop)):
                 continue  # superproperty: grouping only
             missing.add(str(prop)[len(tws) :])
+    missing -= GENERIC_PROPERTIES
     assert (
         not missing - UNRESTRICTED_ALLOWED
     ), f"Add a class restriction: {sorted(missing - UNRESTRICTED_ALLOWED)}"
