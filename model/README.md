@@ -341,7 +341,7 @@ https://twin-ship.eu/twinship/qudt-vocabulary
 https://twin-ship.eu/twinship/core
 ```
 
-Version IRIs append `/<semver>`, e.g., `https://twin-ship.eu/twinship/base/0.1.2`.
+Version IRIs append `/<semver>`, e.g., `https://twin-ship.eu/twinship/base/0.1.3`.
 
 ## Upper Ontology (TOP)
 
@@ -398,9 +398,9 @@ The `modules/` directory contains five fully implemented modules. To add a new m
 
 ## Version Information
 
-- **Version**: 0.1.2
+- **Version**: 0.1.3
 - **Created**: 2025-01-21
-- **Last Updated**: 2026-10-29
+- **Last Updated**: 2026-11-23
 
 ## Usage Examples
 
