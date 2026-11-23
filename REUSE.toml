@@ -16,6 +16,7 @@ path = [
     "pyproject.toml",
     "uv.lock",
     ".github/**",
+    ".claude/**",
     ".vscode/**",
     ".env",
     ".gitignore",
