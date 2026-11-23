@@ -1,6 +1,6 @@
 # TwinShip Ontology — Test Suite
 
-This directory contains automated tests for the TwinShip ontology. Tests are run with [pytest](https://docs.pytest.org/) using [rdflib](https://rdflib.readthedocs.io/) to execute SPARQL queries directly against the merged ontology.
+This directory contains automated tests for the TwinShip ontology. Tests are run with [pytest](https://docs.pytest.org/) using [rdflib](https://rdflib.readthedocs.io/) to execute SPARQL queries directly against the merged ontology. It also checks the SHACL shapes (`test_shapes.py`) and repository rules (`test_repository_rules.py`).
 
 ## Directory Structure
 
@@ -14,6 +14,9 @@ tests/
     ...
     cq36_digital_twin_api_interfaces.rq
   test_kg_queries.py             — runner for the KG retrieval queries in kg/
+  test_shapes.py                 — SHACL shapes: referenced terms exist, sh:datatype matches rdfs:range, test instances conform
+  test_repository_rules.py       — no rdfs:domain in model/ sources, version sync, class restrictions for properties
+  data/twinship-test-instances.ttl — synthetic instance data for the shape tests
   kg/                            — retrieval queries against a populated KG (not competency questions)
     kg01_voyage_overview.rq
     ...
@@ -43,6 +46,10 @@ uv run pytest tests/test_competency_questions.py -v
 # Show a brief summary of xfailed (not-yet-covered) CQs
 uv run pytest tests/ -v --tb=no
 ```
+
+## Repository rules
+
+`test_repository_rules.py` needs no build. It checks that `model/` source modules have no `rdfs:domain`, that version numbers match `pyproject.toml`, and that every TwinShip property that is not a superproperty has a class restriction. Its lists: `UNRESTRICTED_ALLOWED` (properties awaiting a modelling decision; only remove names), `GENERIC_PROPERTIES` (`componentOf`, `hasComponent`) and `UNUSED_QUDT_PROPERTIES` (`hasQuantityForce`). `test_shapes.py` skips unless `build/twinship-core-complete.ttl` exists.
 
 ## Test Modes: xfail vs STRICT
 
@@ -99,7 +106,7 @@ In test-repo mode **all 35 CQs** (CQ-01..CQ-35) are treated as **strict
 assertions** — they must return at least one result row or the test fails.
 CQ-36 is exempt because the API-interface concept is not yet modelled.
 
-This mode is suitable for CI: it validates that the full ontology (schema +
+This mode could be used in CI (the CI workflow currently runs schema-only `uv run pytest tests/`): it validates that the full ontology (schema +
 instance data) correctly answers every defined competency question.
 
 ## Testing with Live GraphDB Instance Data
@@ -216,8 +223,8 @@ No changes to the `.rq` query files are required.
 | Unmanned / Future Vessel Simulation | CQ-32–33 | xfail | strict ✓ |
 | System Connectivity & Integration | CQ-34–35 | xfail | strict ✓ |
 | Digital Twin API (future) | CQ-36 | xfail | xfail (not yet modelled) |
-| Current State and Observations | CQE-01–02 | xfail | n/a |
-| Estimation, Prediction and Forecasting | CQE-09–10 | xfail | n/a |
+| Current State and Observations | CQE-01–03 | xfail | n/a |
+| Estimation, Prediction and Forecasting | CQE-07–10, CQE-12 | xfail | n/a |
 | Observation and Prediction Provenance | CQE-20–22, CQE-26–28, CQE-30–31 | xfail | n/a |
 
 ## KG Retrieval Queries

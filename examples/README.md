@@ -2,8 +2,8 @@
 
 Public, synthetic (non-proprietary) instance data for the TwinShip ontology.
 
-This is the opposite of [`data/`](../data/README.md): everything here is tracked
-and committed normally. Use this folder for fictional/synthetic Knowledge Graph
+This is the opposite of [`data/`](../data/README.md): datasets here are meant to be
+committed (currently withheld via `.gitignore` until published; only this README is tracked). Use this folder for fictional/synthetic Knowledge Graph
 (KG) individuals that are safe to publish alongside the ontology — e.g.
 demonstrator vessels, sample component graphs, or data used in documentation
 and papers.
@@ -37,8 +37,9 @@ related components, linked via `ido:connectedTo`/`ido:partOf`.
   this example from the pipeline is planned.
 - **Scope/limitations**: component/mechanical specs and one simulated voyage
   series (timestamps are `Estimated`, not logged operation). Propeller/shaft
-  power, fuel and emission rates, draft and trim are not mapped (no matching
-  ontology property), nor are VesselSpeedBin or SpeedReference individuals.
+  power, fuel and emission rates are not mapped (no matching ontology
+  property); draft and trim are not mapped either (the voyage file has a mean
+  draft only), nor are VesselSpeedBin or SpeedReference individuals.
   Hand-authored placeholder individuals for EngineMode (per genset),
   EngineSpeedBin, DraftMode and TrimMode come from the pipeline's
   `RoRo Futuristic Vessel Operational Modes.ttl`; all their numeric values are

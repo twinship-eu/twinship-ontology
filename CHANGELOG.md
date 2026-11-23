@@ -6,8 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-23
+
+### Added
+- Pull-request review: a reviewer agent for Claude Code (`.claude/agents/pr-reviewer.md`, read-only, on Claude Fable), review guidelines (`docs/review-guidelines.md`), a pull-request template and a *Review* section in `CONTRIBUTING.md`
+- `twMeanDraftInM` (mean draft in metres, `xsd:decimal`) on `DraftCondition`, for data that reports a single draft value, such as the futuristic vessel's voyages; `DraftCondition` already has the `hasQuantityLength` restriction
+- Class restrictions for `hasVoyage` (on `VesselSystem`), `hasDraftCondition`, `hasTrimCondition` and `hasLoadingPreset` (on `Voyage` and `VoyageLeg`, like the draft and trim modes), and `twLoadingConditionLogged` (on `LoadingCondition`). `operational-context.ttl` now imports `vessel.ttl` for these restrictions (vessel imports only base, so there is no cycle)
+- `CompositeExhaustGasBoiler` (subclass of `Boiler`) with class restrictions for the 11 `twCompositeExhaustGasBoiler…` properties, which had none; other boiler characteristics and QUDT restrictions are inherited from `Boiler`
+- Draft and trim mode ranges in `operational-modes.ttl`: `twDraftModeReferenceDraftInM`, `twDraftModeLowerBoundInM`, `twDraftModeUpperBoundInM` on `DraftMode`, and `twTrimModeLowerBoundInM`, `twTrimModeUpperBoundInM` on `TrimMode` (trim as in `twTrimInM`: aft minus forward draft, positive = stern trim), with `hasQuantityLength` restrictions
+- `twSpeedBinPropellerSpeedInRevPerMin` on `VesselSpeedBin` (optional representative propeller speed), with a `hasQuantityRotationalVelocity` restriction
+- SHACL shapes for operational modes and bins (`shapes/operational_modes.ttl`): engine, draft and trim modes and vessel speed bins have at most one value per bound, non-negative where physical, and lower bound ≤ upper bound; draft–trim modes have exactly one draft and one trim mode; speed bins exactly one speed reference
+
 ### Changed
+- Class restrictions for 41 datatype properties that had none, so the documentation shows their domains: bow-thruster, stern-thruster, boiler and emergency-diesel-generator fuel and flow properties on `BowThruster`, `Maneuvering`, `Boiler` and `EmergencyEquipment` (following their already-restricted siblings and the SHACL shapes); bow, stern, aft and fore draft on `DraftCondition`, `twTrimInM` on `TrimCondition`, `twDisplacementInMT` on `LoadingCondition`, `twGearboxEfficiency` on `GearboxSystem`. Matching QUDT restrictions added on `Maneuvering`, `Boiler` and `EmergencyEquipment`
+- `tests/test_repository_rules.py`: every TwinShip property that is not a superproperty must have a class restriction; properties awaiting a modelling decision are allow-listed (now `ownedBy` and `twEmergencyMassRetInKgPerHr`), generic ones (`hasComponent`, `componentOf`) and unused QUDT ones (`hasQuantityForce`) are listed separately
 - `operational-modes.ttl` comments and `examples/README.md` now point to the futuristic vessel's operational modes in twinship-data-pipeline (`data/RoRo Futuristic Vessel Operational Modes.ttl`); the `twinship-futuristic-vessel` generator is archived
+- Repository workflow: `develop` is the default and integration branch, `main` holds releases; CI workflow `lint-and-test` (ruff, black, REUSE lint, module merge, pytest) required on pull requests into `develop`; `uv.lock` is tracked and CI installs with `uv sync --frozen`; dev dependencies moved to `[dependency-groups]`
+
+### Fixed
+- Website build: `generate_viz_ontology.py` now also derives documentation domains from qualified-cardinality and union restrictions, so the documentation shows domains for `hasSpeedReference` (`VesselSpeedBin`), `hasDraftMode` and `hasTrimMode` (`DraftTrimMode`) and `documentsModel` (`ModelCard`)
+- `ElectricMotorShaft`: the QUDT restriction used `hasQuantityForce`/`TwinShipQuantityForce`, but its property `twEMSHTorqueInKN` holds a torque; now `hasQuantityTorque`/`TwinShipQuantityTorque`. The Force family stays in the vocabulary although no class uses it now; the restriction test lists `hasQuantityForce` as such
+- `twFuelConsumptionRateInMTPerHr` is now also restricted on `EngineSystem`, so gensets and auxiliary engines are covered, not only `MainEngineSystem` (whose restriction is kept)
+- Removed `rdfs:domain ido:InanimatePhysicalObject` from `ido:directlyConnectedTo` in `twinship-base.ttl`, the only `rdfs:domain` in a source module (restriction-based modelling rule); the range is kept, and since the property is symmetric in IDO, both ends are still typed as `ido:InanimatePhysicalObject`. The seven class restrictions on the property are unchanged: WebVOWL shows the same connections, and the generated documentation lists the restriction-derived domains (`MainEngineSystem`, `PropellerSystem`, `PTO`, `ElectricMotorSystem`, `ElectricMotorShaft`) without the generic `InanimatePhysicalObject` one
 
 ## [0.1.2] - 2026-10-29
 

@@ -5,13 +5,14 @@ Welcome to the TwinShip Ontology repository! This project provides a modular, ex
 ## Repository Structure
 
 - `model/`   — Source ontology files (base, modules, external references)
-- `shapes/`  — SHACL shapes: closed-world validation profile for vessel component instance data ([shapes/README.md](shapes/README.md))
+- `shapes/`  — SHACL shapes: closed-world validation profile for vessel component and operational-mode instance data ([shapes/README.md](shapes/README.md))
 - `build/`   — Auto-generated build artifacts (gitignored)
 - `docs/`    — Documentation, diagrams, design decisions, and generated website
 - `scripts/` — Build and processing scripts (Python + shell)
 - `queries/` — SPARQL validation queries
 - `data/`    — Vessel instance data (gitignored; may contain sensitive data)
-- `tests/`   — pytest test suite: competency question SPARQL tests
+- `examples/` — Synthetic example datasets (withheld until published; only the README is tracked)
+- `tests/`   — pytest test suite: competency question SPARQL tests, SHACL shape checks, repository rules (no `rdfs:domain`, version sync, class restrictions) and KG retrieval queries
 - `tools/`   — Downloaded WIDOCO JAR (gitignored)
 - `papers/`  — SWJ paper planning files (gitignored; local only, never committed)
 
@@ -147,6 +148,8 @@ For a local GraphDB without authentication, omit the credentials and pass only `
 
 Credentials and repository IDs are not stored in this repository. See [tests/README.md](tests/README.md) for full setup instructions.
 
+Pull requests and pushes to `develop` and `main` run the CI workflow ([.github/workflows/ci.yml](.github/workflows/ci.yml), job `lint-and-test`): `uv sync --frozen`, `ruff check`, `black --check`, `reuse lint`, the module merge and `pytest`. It is a required check on `develop`.
+
 Each `.rq` file in `tests/competency/` encodes one competency question. Tests default to **reporting-only** (`xfail`) until instance data is loaded; add `# STRICT` to a query to make it a hard requirement.
 
 Separately, `tests/kg/` holds retrieval queries against a populated KG (voyages, legs, weather). They are not competency questions, run only with `--graphdb-url`, and are described in [tests/README.md](tests/README.md).
@@ -159,7 +162,7 @@ The human-readable competency question catalogue is at [docs/ontology/competency
 - **[Python Setup Guide](docs/PYTHON_SETUP.md)** - Using uv for dependency management
 - **[Scripts Documentation](scripts/README.md)** - All available processing scripts
 - **[Model Structure](model/README.md)** - Ontology architecture and design patterns
-- **[Competency Questions](docs/ontology/competency-questions.md)** - Full catalogue of 36 CQs with status and test links
+- **[Competency Questions](docs/ontology/competency-questions.md)** - Full catalogue of 36 CQs and 32 extension CQs (CQE) with status and test links
 
 ### IMO Standards Alignment
 

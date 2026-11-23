@@ -24,18 +24,16 @@ import sys
 import urllib.request
 from pathlib import Path
 
-IMO_EXCEL_URL = (
-    "https://imocompendium.imo.org/public/IMO-Compendium/Current/IMO%20Compendium.xlsx"
-)
+IMO_EXCEL_URL = "https://imocompendium.imo.org/public/IMO-Compendium/Current/IMO%20Compendium.xlsx"
 
 # Columns in the "IMO Data Set" sheet (0-based)
-COL_PATH       = 0
-COL_LEVEL      = 1
-COL_KIND       = 2   # "BBIE" = Basic Business Information Entity (a data element)
-COL_DATA_NUM   = 4   # "IMO0001", "IMO0628", etc.
-COL_NAME       = 5   # Human-readable name
-COL_DEFINITION = 6   # Definition text
-COL_FORMAT     = 40  # Format (e.g., "an..35", "n..10")
+COL_PATH = 0
+COL_LEVEL = 1
+COL_KIND = 2  # "BBIE" = Basic Business Information Entity (a data element)
+COL_DATA_NUM = 4  # "IMO0001", "IMO0628", etc.
+COL_NAME = 5  # Human-readable name
+COL_DEFINITION = 6  # Definition text
+COL_FORMAT = 40  # Format (e.g., "an..35", "n..10")
 
 SHEET_NAME = "IMO Data Set"
 
@@ -43,6 +41,7 @@ SHEET_NAME = "IMO Data Set"
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
+
 
 def download_excel(dest: Path) -> None:
     print(f"⬇  Downloading IMO Compendium from {IMO_EXCEL_URL} ...")
@@ -59,29 +58,30 @@ def load_elements(xlsx_path: Path) -> list[dict]:
 
     wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
     if SHEET_NAME not in wb.sheetnames:
-        print(f"ERROR: sheet '{SHEET_NAME}' not found. Available: {wb.sheetnames}",
-              file=sys.stderr)
+        print(f"ERROR: sheet '{SHEET_NAME}' not found. Available: {wb.sheetnames}", file=sys.stderr)
         sys.exit(1)
 
     ws = wb[SHEET_NAME]
     elements = []
     for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True)):
-        kind      = row[COL_KIND]
-        data_num  = row[COL_DATA_NUM]
-        name      = row[COL_NAME]
-        defn      = row[COL_DEFINITION]
-        fmt       = row[COL_FORMAT] if len(row) > COL_FORMAT else None
+        kind = row[COL_KIND]
+        data_num = row[COL_DATA_NUM]
+        name = row[COL_NAME]
+        defn = row[COL_DEFINITION]
+        fmt = row[COL_FORMAT] if len(row) > COL_FORMAT else None
 
         # Only keep BBIE rows that have an IMO data number
         if kind != "BBIE" or not data_num:
             continue
 
-        elements.append({
-            "imo_code":   str(data_num).strip(),
-            "name":       str(name).strip()      if name else "",
-            "definition": str(defn).strip()      if defn else "",
-            "format":     str(fmt).strip()        if fmt  else "",
-        })
+        elements.append(
+            {
+                "imo_code": str(data_num).strip(),
+                "name": str(name).strip() if name else "",
+                "definition": str(defn).strip() if defn else "",
+                "format": str(fmt).strip() if fmt else "",
+            }
+        )
 
     print(f"✓  Extracted {len(elements)} data elements from '{SHEET_NAME}'")
     return elements
@@ -114,6 +114,7 @@ def write_csv(rows: list[dict], dest: Path) -> None:
 # alignment gap analysis
 # ---------------------------------------------------------------------------
 
+
 def extract_imo_codes_from_ttl(ttl_path: Path) -> dict[str, str]:
     """Return {imo_code: property_iri} for all skos:notation IMO codes in a .ttl file."""
     pattern = re.compile(
@@ -128,7 +129,7 @@ def find_unlinked_properties(ttl_path: Path) -> list[str]:
     """Return property IRIs that have no skos:notation IMO code annotation."""
     text = ttl_path.read_text(encoding="utf-8")
     # find all DatatypeProperty declarations
-    all_props = re.findall(r'(:\w+)\s+a\s+owl:DatatypeProperty', text)
+    all_props = re.findall(r"(:\w+)\s+a\s+owl:DatatypeProperty", text)
     # find those that already have an IMO notation
     linked = re.findall(
         r'(:\w+)\s+a\s+owl:DatatypeProperty.*?skos:notation\s+"IMO\d+"',
@@ -148,8 +149,9 @@ def match_ttl_to_imo(ttl_path: Path, elements: list[dict], out_path: Path) -> No
 
     # Build {prop: label} from rdfs:label
     label_map: dict[str, str] = {}
-    for m in re.finditer(r'(:\w+)\s+a\s+owl:DatatypeProperty.*?rdfs:label\s+"([^"]+)"',
-                         text, re.DOTALL):
+    for m in re.finditer(
+        r'(:\w+)\s+a\s+owl:DatatypeProperty.*?rdfs:label\s+"([^"]+)"', text, re.DOTALL
+    ):
         label_map[m.group(1)] = m.group(2)
 
     def tokenize(s: str) -> set[str]:
@@ -170,31 +172,43 @@ def match_ttl_to_imo(ttl_path: Path, elements: list[dict], out_path: Path) -> No
             # Jaccard-like score weighted toward name hits
             name_tokens = tokenize(el["name"])
             name_overlap = len(query_tokens & name_tokens)
-            score = round(overlap / math.sqrt(len(query_tokens) * len(el_tokens))
-                          + 0.5 * name_overlap, 3)
+            score = round(
+                overlap / math.sqrt(len(query_tokens) * len(el_tokens)) + 0.5 * name_overlap, 3
+            )
             scored.append((score, el))
         # Keep top 3 candidates per property
         for score, el in sorted(scored, key=lambda x: x[0], reverse=True)[:3]:
-            rows.append({
-                "tw_property":    prop,
-                "tw_label":       label,
-                "imo_code":       el["imo_code"],
-                "imo_name":       el["name"],
-                "imo_definition": el["definition"],
-                "score":          score,
-                "action":         "",  # fill in: confirm / reject
-            })
+            rows.append(
+                {
+                    "tw_property": prop,
+                    "tw_label": label,
+                    "imo_code": el["imo_code"],
+                    "imo_name": el["name"],
+                    "imo_definition": el["definition"],
+                    "score": score,
+                    "action": "",  # fill in: confirm / reject
+                }
+            )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=["tw_property", "tw_label", "imo_code",
-                        "imo_name", "imo_definition", "score", "action"],
+            fieldnames=[
+                "tw_property",
+                "tw_label",
+                "imo_code",
+                "imo_name",
+                "imo_definition",
+                "score",
+                "action",
+            ],
         )
         writer.writeheader()
         writer.writerows(rows)
-    print(f"✓  Candidate matches ({len(unlinked)} properties → {len(rows)} candidates) → {out_path}")
+    print(
+        f"✓  Candidate matches ({len(unlinked)} properties → {len(rows)} candidates) → {out_path}"
+    )
     print("    Review: set action='confirm' for correct matches, then apply with:")
     print("        uv run python scripts/align_imo.py --apply --dry-run")
 
@@ -206,28 +220,37 @@ def alignment_gap_report(ttl_path: Path, elements: list[dict], out_path: Path) -
     # Read property labels to help manual matching
     text = ttl_path.read_text(encoding="utf-8")
     label_map: dict[str, str] = {}
-    for m in re.finditer(r'(:\w+)\s+a\s+owl:DatatypeProperty.*?rdfs:label\s+"([^"]+)"',
-                         text, re.DOTALL):
+    for m in re.finditer(
+        r'(:\w+)\s+a\s+owl:DatatypeProperty.*?rdfs:label\s+"([^"]+)"', text, re.DOTALL
+    ):
         label_map[m.group(1)] = m.group(2)
 
     rows = []
     for prop in unlinked:
         label = label_map.get(prop, "")
-        rows.append({
-            "tw_property":  prop,
-            "tw_label":     label,
-            "imo_code":     "",
-            "imo_name":     "",
-            "imo_definition": "",
-            "note": "review needed",
-        })
+        rows.append(
+            {
+                "tw_property": prop,
+                "tw_label": label,
+                "imo_code": "",
+                "imo_name": "",
+                "imo_definition": "",
+                "note": "review needed",
+            }
+        )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=["tw_property", "tw_label", "imo_code",
-                        "imo_name", "imo_definition", "note"],
+            fieldnames=[
+                "tw_property",
+                "tw_label",
+                "imo_code",
+                "imo_name",
+                "imo_definition",
+                "note",
+            ],
         )
         writer.writeheader()
         writer.writerows(rows)
@@ -239,6 +262,7 @@ def alignment_gap_report(ttl_path: Path, elements: list[dict], out_path: Path) -
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -296,10 +320,7 @@ def main() -> None:
     # 2 & 3. Load elements — reuse existing CSV when it is already newer than the
     # Excel file (i.e. the cached xlsx has not changed since last extraction).
     csv_path = out_dir / "imo_compendium_all.csv"
-    csv_is_fresh = (
-        csv_path.exists()
-        and csv_path.stat().st_mtime >= xlsx_path.stat().st_mtime
-    )
+    csv_is_fresh = csv_path.exists() and csv_path.stat().st_mtime >= xlsx_path.stat().st_mtime
     if csv_is_fresh:
         print(f"📂 {csv_path} is up to date — skipping extraction")
         with open(csv_path, encoding="utf-8") as _f:
@@ -345,7 +366,7 @@ def main() -> None:
         '\n      skos:notation "IMO####" ;'
         '\n      skos:altLabel "<IMO name>" ;'
         '\n      dcterms:description "<IMO definition>" ;'
-        '\n      dcterms:source <https://www.imo.org/> ;'
+        "\n      dcterms:source <https://www.imo.org/> ;"
     )
 
 

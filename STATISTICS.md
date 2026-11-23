@@ -1,17 +1,17 @@
 # TwinShip Ontology — Statistics
 
-> **Version:** 0.1.2  
-> **Ontology last updated:** 2026-10-29  
-> **Statistics generated:** 2026-10-29  
+> **Version:** 0.1.3  
+> **Ontology last updated:** 2026-11-23  
+> **Statistics generated:** 2026-11-23  
 > **Source:** `build/twinship-core-complete-docs-viz.ttl`
 
 ## Summary
 
 | Metric              | Count | Illustrative examples |
 | ------------------- | ----- | --------------------- |
-| Classes             | 212   | TwinShipInformationObject<br>Voyage<br>TwinShipInanimatePhysicalObject<br>VoyageLeg<br>MainEngineSystem<br>Fuel<br>PropellerSystem<br>ShaftGeneratorSystem<br>GenSetSystem<br>EngineSystem |
+| Classes             | 213   | TwinShipInformationObject<br>Voyage<br>VoyageLeg<br>TwinShipInanimatePhysicalObject<br>Boiler<br>MainEngineSystem<br>Maneuvering<br>EmergencyEquipment<br>Fuel<br>PropellerSystem |
 | Object properties   | 88    | hasInformationObject<br>twinshipObjectProperties<br>hasQuality<br>hasProcess<br>hasWeatherCondition<br>partOf<br>connectedTo<br>documentsModel<br>hasComponent<br>hasEstimation |
-| Data properties     | 237   | twDocumentationSummary<br>twMeanSpeedInKnots<br>twNumericValue<br>twDieselEnginePowerMaxInKW<br>twDieselEngineSpeedInRevPerMin<br>twDistanceInNm<br>twEMPowerInMWh<br>twEngineLoadPercentage<br>twEngineSpeedInRevPerMin<br>twEstimatedMeanFuelConsumption |
+| Data properties     | 244   | twDocumentationSummary<br>twMeanSpeedInKnots<br>twNumericValue<br>twCommonFuelMode<br>twDieselEnginePowerMaxInKW<br>twDieselEngineSpeedInRevPerMin<br>twDistanceInNm<br>twEMPowerInMWh<br>twEngineLoadPercentage<br>twEngineSpeedInRevPerMin |
 | Imported ontologies | 5     | IDO (LIS14)<br>PAV<br>QUDT QuantityKind<br>QUDT Unit<br>qudt-vocabulary |
 
 ## Object Properties

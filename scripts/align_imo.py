@@ -115,17 +115,36 @@ def load_compendium() -> list[dict]:
 def tokenize(s: str) -> set[str]:
     """Lowercase word tokens, excluding common stopwords."""
     stopwords = {
-        "the", "of", "in", "a", "an", "and", "or", "is", "at", "to",
-        "by", "for", "be", "as", "its", "that", "this", "with", "since",
-        "last", "reporting", "measure", "measured", "value",
+        "the",
+        "of",
+        "in",
+        "a",
+        "an",
+        "and",
+        "or",
+        "is",
+        "at",
+        "to",
+        "by",
+        "for",
+        "be",
+        "as",
+        "its",
+        "that",
+        "this",
+        "with",
+        "since",
+        "last",
+        "reporting",
+        "measure",
+        "measured",
+        "value",
     }
     tokens = set(re.sub(r"[^a-z0-9 ]", " ", s.lower()).split())
     return tokens - stopwords
 
 
-def score_candidates(
-    label: str, elements: list[dict]
-) -> list[tuple[float, dict]]:
+def score_candidates(label: str, elements: list[dict]) -> list[tuple[float, dict]]:
     """Return (score, element) pairs sorted descending for a property label."""
     query_tokens = tokenize(label)
     if not query_tokens:
@@ -140,8 +159,7 @@ def score_candidates(
         name_tokens = tokenize(el["name"])
         name_overlap = len(query_tokens & name_tokens)
         score = round(
-            overlap / math.sqrt(len(query_tokens) * max(len(el_tokens), 1))
-            + 0.5 * name_overlap,
+            overlap / math.sqrt(len(query_tokens) * max(len(el_tokens), 1)) + 0.5 * name_overlap,
             3,
         )
         scored.append((score, el))
@@ -180,7 +198,7 @@ def analyse_module(ttl_path: Path) -> tuple[list[dict], list[dict]]:
         # Only consider TwinShip-namespaced properties
         if not prop_str.startswith(TS_PREFIX):
             continue
-        local = prop_str[len(TS_PREFIX):]
+        local = prop_str[len(TS_PREFIX) :]
         local_name = f":{local}"
 
         label_obj = g.value(prop, RDFS.label)
@@ -244,8 +262,7 @@ def cmd_prepare(args) -> None:
             if key in existing:
                 prop_rows = existing[key]
                 has_decision = any(
-                    r.get("action", "").strip().lower() in DECIDED_ACTIONS
-                    for r in prop_rows
+                    r.get("action", "").strip().lower() in DECIDED_ACTIONS for r in prop_rows
                 )
                 if has_decision:
                     output_rows.extend(prop_rows)
@@ -257,40 +274,46 @@ def cmd_prepare(args) -> None:
 
             if candidates:
                 for score, el in candidates:
-                    output_rows.append({
-                        "module":          module,
-                        "tw_property":     item["local_name"],
-                        "tw_label":        item["label"],
-                        "imo_code":        el["imo_code"],
-                        "imo_name":        el["name"],
-                        "imo_definition":  el["definition"],
-                        "score":           score,
-                        "action":          "",
-                    })
+                    output_rows.append(
+                        {
+                            "module": module,
+                            "tw_property": item["local_name"],
+                            "tw_label": item["label"],
+                            "imo_code": el["imo_code"],
+                            "imo_name": el["name"],
+                            "imo_definition": el["definition"],
+                            "score": score,
+                            "action": "",
+                        }
+                    )
                 with_candidates += 1
             else:
                 # No plausible IMO match found
-                output_rows.append({
-                    "module":          module,
-                    "tw_property":     item["local_name"],
-                    "tw_label":        item["label"],
-                    "imo_code":        "",
-                    "imo_name":        "",
-                    "imo_definition":  "",
-                    "score":           "",
-                    "action":          "",
-                })
+                output_rows.append(
+                    {
+                        "module": module,
+                        "tw_property": item["local_name"],
+                        "tw_label": item["label"],
+                        "imo_code": "",
+                        "imo_name": "",
+                        "imo_definition": "",
+                        "score": "",
+                        "action": "",
+                    }
+                )
                 without_candidates += 1
 
-        module_stats.append({
-            "module":             module,
-            "total":              len(linked) + len(unlinked),
-            "annotated":          len(linked),
-            "unlinked":           len(unlinked),
-            "preserved":          preserved_count,
-            "with_candidates":    with_candidates,
-            "without_candidates": without_candidates,
-        })
+        module_stats.append(
+            {
+                "module": module,
+                "total": len(linked) + len(unlinked),
+                "annotated": len(linked),
+                "unlinked": len(unlinked),
+                "preserved": preserved_count,
+                "with_candidates": with_candidates,
+                "without_candidates": without_candidates,
+            }
+        )
 
     # Write the review CSV
     REVIEW_CSV.parent.mkdir(parents=True, exist_ok=True)
@@ -316,9 +339,7 @@ def cmd_prepare(args) -> None:
         )
 
     review_rel = REVIEW_CSV.relative_to(REPO_ROOT)
-    total_new = sum(
-        s["with_candidates"] + s["without_candidates"] for s in module_stats
-    )
+    total_new = sum(s["with_candidates"] + s["without_candidates"] for s in module_stats)
     total_preserved = sum(s["preserved"] for s in module_stats)
     print(f"\n✓  Review CSV written → {review_rel}")
     print(
@@ -368,7 +389,7 @@ def inject_annotations(
 
     # Inspect a window large enough to contain any property block (2000 chars)
     window_start = prop_match.start()
-    window = ttl_text[window_start: window_start + 2000]
+    window = ttl_text[window_start : window_start + 2000]
 
     # Skip if already annotated with any notation
     if "skos:notation" in window:
@@ -388,7 +409,7 @@ def inject_annotations(
         f'    skos:notation "{imo_code}" ;\n'
         f'    skos:altLabel "{safe_name}" ;\n'
         f'    dcterms:description "{safe_def}" ;\n'
-        f'    dcterms:source {IMO_SOURCE_URI} ;\n'
+        f"    dcterms:source {IMO_SOURCE_URI} ;\n"
     )
 
     # Absolute insert position in the full text
@@ -485,13 +506,9 @@ def cmd_apply(args) -> None:
         )
         print("   Re-run without --dry-run to apply changes.")
     else:
-        print(
-            f"\n✓  Done: {total_applied} properties annotated, {total_skipped} skipped"
-        )
+        print(f"\n✓  Done: {total_applied} properties annotated, {total_skipped} skipped")
         if total_applied > 0:
-            print(
-                "   Re-run --prepare to refresh the review CSV and check remaining gaps."
-            )
+            print("   Re-run --prepare to refresh the review CSV and check remaining gaps.")
 
 
 # ---------------------------------------------------------------------------
@@ -517,10 +534,7 @@ def main() -> None:
     group.add_argument(
         "--prepare",
         action="store_true",
-        help=(
-            "Analyse all modules and generate/update "
-            f"{REVIEW_CSV.relative_to(REPO_ROOT)}."
-        ),
+        help=("Analyse all modules and generate/update " f"{REVIEW_CSV.relative_to(REPO_ROOT)}."),
     )
     group.add_argument(
         "--apply",

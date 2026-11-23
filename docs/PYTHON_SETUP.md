@@ -36,7 +36,7 @@ uv sync
 # This is equivalent to:
 #   python -m venv .venv
 #   source .venv/bin/activate
-#   pip install -r requirements.txt
+#   pip install -r scripts/requirements.txt
 # But MUCH faster!
 ```
 
@@ -60,11 +60,11 @@ uv sync
 # Add a new package
 uv add <package-name>
 
-# Add a dev dependency
+# Add a dev dependency (goes to [dependency-groups] dev)
 uv add --dev <package-name>
 
-# Run a script without activating venv
-uv run python scripts/generate_website.sh
+# Run the website build (a shell script that calls uv itself)
+./scripts/generate_website.sh
 
 # Update all dependencies
 uv sync --upgrade
@@ -76,7 +76,8 @@ uv pip list
 ## Project Structure
 
 - **pyproject.toml** - Modern Python project configuration (uv native)
-- **requirements.txt** - Legacy format (for compatibility)
+- **uv.lock** - Locked dependency versions (tracked; CI installs with `uv sync --frozen`)
+- **scripts/requirements.txt** - Legacy format (for compatibility)
 - **.venv/** - Virtual environment (created by `uv sync`)
 
 ## For Traditional pip Users
@@ -86,7 +87,7 @@ If you prefer traditional pip, you can still use:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r scripts/requirements.txt
 ```
 
 But we **strongly recommend uv** for better performance and reliability.
@@ -97,10 +98,10 @@ But we **strongly recommend uv** for better performance and reliability.
 
 ```bash
 # Add to PATH (usually done automatically)
-export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # Add to ~/.zshrc or ~/.bashrc for persistence
-echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 ```
 
 ### Want to use system Python?
@@ -118,6 +119,7 @@ uv sync
 # Regenerate lock file
 uv lock
 uv sync
+# Commit the updated uv.lock; CI uses uv sync --frozen and fails if it is out of date
 ```
 
 ## Learn More

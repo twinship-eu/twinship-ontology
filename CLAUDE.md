@@ -56,6 +56,16 @@ After implementation:
 - list modified files
 - stop
 
+Before a pull request is approved, run the `pr-reviewer` agent (`.claude/agents/pr-reviewer.md`, on Fable) on it and fix or answer its findings. Checks: `docs/review-guidelines.md`.
+
+---
+
+## Branches
+
+- `develop` is the default branch. Work on a feature branch from `develop` and open PRs into `develop`.
+- `main` only receives release PRs from `develop` (merge commit, not squash), approved by the maintainer.
+- Releases: bump the version (see Common Pitfalls 10) and `CHANGELOG.md` on `develop` before the release PR; tag `vX.Y.Z` on `main` after merging. The tag triggers `deploy.yml`.
+
 ---
 
 ## Licensing
@@ -251,6 +261,8 @@ uv run ruff check scripts tests
 uv run black --check scripts tests    # line-length 100
 ```
 
+CI (`.github/workflows/ci.yml`, job `lint-and-test`) runs ruff, black, `reuse lint`, the module merge and `pytest` on PRs to `develop` and `main`. `tests/test_repository_rules.py` enforces no `rdfs:domain` in `model/` and the version sync below.
+
 Full build:
 
 ```bash
@@ -355,7 +367,7 @@ Never manually edit generated files in:
    - `.env` at repo root sets `PYTHONUTF8=1` — `uv run` loads it automatically.
    - All Python file I/O uses explicit `encoding='utf-8'` — never use bare `open(path)`.
    - WIDOCO Java is invoked with `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8`.
-10. **Version synchronization** — all version numbers must stay in sync (currently `0.1.2`): `pyproject.toml`, `CITATION.cff`, `CHANGELOG.md`, `STATISTICS.md`, `model/README.md`, `model/catalog-v001.xml`, all `model/*.ttl` and `model/modules/*.ttl`, `shapes/twinship-shapes.ttl`, `scripts/generate_website.sh`.
+10. **Version synchronization** — all version numbers must stay in sync (currently `0.1.3`): `pyproject.toml`, `CITATION.cff`, `CHANGELOG.md`, `STATISTICS.md`, `model/README.md`, `model/catalog-v001.xml`, all `model/*.ttl` and `model/modules/*.ttl`, `shapes/twinship-shapes.ttl`, `scripts/generate_website.sh`.
 
 ---
 
