@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-23
+
 ### Added
 - Pull-request review: a reviewer agent for Claude Code (`.claude/agents/pr-reviewer.md`, read-only, on Claude Fable), review guidelines (`docs/review-guidelines.md`), a pull-request template and a *Review* section in `CONTRIBUTING.md`
 - `twMeanDraftInM` (mean draft in metres, `xsd:decimal`) on `DraftCondition`, for data that reports a single draft value, such as the futuristic vessel's voyages; `DraftCondition` already has the `hasQuantityLength` restriction

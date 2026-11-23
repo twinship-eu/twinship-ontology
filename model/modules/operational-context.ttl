@@ -19,18 +19,18 @@
     dcterms:description "Ontology module for vessel operational context: voyages, voyage legs, routes, ports, fuel-consumption observations and summaries, operational profiles, speed bins, and frequency distributions. Extends twinship-base and imports operational-modes, weather-conditions and vessel for cross-module range constraints and restrictions."@en ;
     dcterms:creator "TwinShip Project" ;
     dcterms:created "2026-05-21"^^xsd:date ;
-    dcterms:modified "2026-10-29"^^xsd:date ;
+    dcterms:modified "2026-11-23"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     dcterms:rightsHolder "TwinShip Consortium" ;
     pav:createdOn "2026-05-21T00:00:00+00:00"^^xsd:dateTime ;
-    pav:lastUpdateOn "2026-10-29T00:00:00+00:00"^^xsd:dateTime ;
-    pav:version "0.1.2" ;
+    pav:lastUpdateOn "2026-11-23T00:00:00+00:00"^^xsd:dateTime ;
+    pav:version "0.1.3" ;
     rdfs:comment "Operational context module for TwinShip ontology. Imports twinship-base and twinship-operational-modes. The import of operational-modes enables range constraints on properties that reference OperatingState (e.g. summarisesOperatingState). No circular imports are introduced: operational-modes imports only base, and operational-context imports base + operational-modes. It also imports vessel, for restrictions that use vessel classes (VesselSystem, DraftCondition, TrimCondition, LoadingPreset); vessel imports only base." ;
     owl:imports <https://twin-ship.eu/twinship/base>,
         <https://twin-ship.eu/twinship/operational-modes>,
         <https://twin-ship.eu/twinship/weather-conditions>,
         <https://twin-ship.eu/twinship/vessel> ;
-    owl:versionIRI <https://twin-ship.eu/twinship/operational-context/0.1.2> .
+    owl:versionIRI <https://twin-ship.eu/twinship/operational-context/0.1.3> .
 
 # #################################################################
 # #
