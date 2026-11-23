@@ -12,10 +12,11 @@ PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?prediction ?assumption ?weatherCondition
 WHERE {
-	?prediction a :Prediction ;
+	?prediction a ?predictionType ;
 							:hasAssumption ?assumption .
 	?assumption a :Assumption ;
 							:hasWeatherCondition ?weatherCondition .
 	?weatherCondition a :WeatherCondition .
+	?predictionType rdfs:subClassOf :Prediction .
 }
 ORDER BY ?prediction ?weatherCondition

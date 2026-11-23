@@ -13,12 +13,12 @@ PREFIX owl:      <http://www.w3.org/2002/07/owl#>
 PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
 
 
-SELECT ?voyageLeg
+SELECT ?voyageLegA ?voyageLegB
 			 ?predictionA ?engineModeA ?emissionRateA
 			 ?predictionB ?engineModeB ?emissionRateB
 WHERE {
 	?predictionA a :FuelEmissionRateCo2InGPerHourPrediction ;
-							 :isPredictionForVoyageLeg ?voyageLeg ;
+							 :isPredictionForVoyageLeg ?voyageLegA ;
 							 :hasAssumption ?assumptionA ;
 							 :hasPredictionResult ?resultA .
 	?assumptionA a :Assumption ;
@@ -33,7 +33,7 @@ WHERE {
 					 :twNumericValue ?emissionRateA .
 
 	?predictionB a :FuelEmissionRateCo2InGPerHourPrediction ;
-							 :isPredictionForVoyageLeg ?voyageLeg ;
+							 :isPredictionForVoyageLeg ?voyageLegB ;
 							 :hasAssumption ?assumptionB ;
 							 :hasPredictionResult ?resultB .
 	?assumptionB a :Assumption ;
@@ -48,7 +48,6 @@ WHERE {
 					 :twNumericValue ?emissionRateB .
 
 	FILTER (?engineModeA != ?engineModeB)
-	FILTER (?predictionA != ?predictionB)
 }
-ORDER BY ?voyageLeg ?predictionA ?predictionB
+ORDER BY ?predictionA ?predictionB
 
