@@ -56,6 +56,8 @@ After implementation:
 - list modified files
 - stop
 
+Before a pull request is approved, run the `pr-reviewer` agent (`.claude/agents/pr-reviewer.md`, on Fable) on it and fix or answer its findings. Checks: `docs/review-guidelines.md`.
+
 ---
 
 ## Branches

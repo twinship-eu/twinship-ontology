@@ -22,6 +22,15 @@ Pull requests must pass the CI check `lint-and-test` (ruff, black, REUSE lint, m
 - Add or update SHACL shapes in `shapes/` or SPARQL tests in `tests/` if relevant.
 - Contributions to the ontology (`model/`) and other knowledge artefacts are made under CC BY 4.0; code contributions (`scripts/`, Python tests, shell scripts) are made under MIT. See `REUSE.toml`.
 
+## Review
+
+Every pull request is reviewed against [docs/review-guidelines.md](docs/review-guidelines.md) before it is approved: correctness, what the pull request includes, the modelling rules, traceability, confidentiality and licences.
+
+- **The reviewer agent:** whoever uses Claude Code runs the reviewer agent ([`.claude/agents/pr-reviewer.md`](.claude/agents/pr-reviewer.md)) on the pull request, for example by asking Claude Code to "run the pr-reviewer agent on pull request <number>". It reads the change and reports findings without changing anything; that is an instruction, not a technical restriction. It runs on Claude Fable (`model: fable`, an alias that follows the current version), usually a different model from the one that wrote the change; if the author used the same model, say so in the pull request.
+- **The author fixes what holds up** and answers the rest in the pull request. Posting the findings as a comment is optional.
+- **Without Claude Code,** check your own pull request against the guidelines and ask a maintainer to run the reviewer agent before approving it.
+- The review is advisory: CI (`lint-and-test`) is the required check, and the maintainer approves.
+
 ## Code of Conduct
 
 Please be respectful and constructive in all interactions.
