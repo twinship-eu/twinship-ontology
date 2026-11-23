@@ -73,7 +73,7 @@ build/                          # Auto-generated build artifacts (gitignored)
 
 3. **modules/vessel.ttl**
    - Vessel types: `VesselSystem`, `RoRo`, `RoPax`, `Tanker`
-   - Hull properties: displacement, draft (aft, fore, mid port/starboard), depth of water; observed draft, trim and displacement (`twBowDraftInM`, `twSternDraftInM`, `twTrimInM`, `twDisplacementInMT`, ...)
+   - Hull properties: displacement, draft (aft, fore, mid port/starboard), depth of water; observed draft, trim and displacement (`twBowDraftInM`, `twSternDraftInM`, `twMeanDraftInM`, `twTrimInM`, `twDisplacementInMT`, ...)
    - Engine systems: `EngineSystem` (with `twEngineModeCount`), `MainEngineSystem`, `AuxiliaryEngineSystem`
    - Engine types: `DieselEngine`, `FourStroke`, `TwoStroke`, `Boiler` (with subclass `CompositeExhaustGasBoiler`)
    - Propulsion: `PropellerSystem`, `CPP`, `FPP`
