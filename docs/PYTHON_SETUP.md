@@ -90,6 +90,8 @@ source .venv/bin/activate
 pip install -r scripts/requirements.txt
 ```
 
+This installs what the scripts need. For the development tools (pytest, black, ruff, pyshacl), also run `pip install --group dev` (pip 25.1 or later).
+
 But we **strongly recommend uv** for better performance and reliability.
 
 ## Troubleshooting
