@@ -1,6 +1,6 @@
 # CQ-13 — What is the Lower Heating Value (LHV in kJ/kg) and sulphur content (%) of each Fuel type used across the fleet?
 #
-# Coverage: Partially covered: :AMM and :BF exist with LHV data. Most fuel types (HFO, MGO, MDO) not yet defined as named individuals.
+# Coverage: Partially covered: :AMM, :BF, :HFO, :MDO and :MGO are named Fuel individuals; only :AMM and :BF have LHV data.
 # Module:   vessel
 
 PREFIX :         <https://twin-ship.eu/twinship#>

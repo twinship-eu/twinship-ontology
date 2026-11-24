@@ -2161,6 +2161,18 @@
     rdfs:comment "Bio-diesel / Bio-fuel. A renewable fuel alternative for maritime applications." ;
     :twFuelLHVKJPerKg "40000"^^xsd:double .
 
+:HFO a owl:NamedIndividual, :Fuel ;
+    rdfs:label "Heavy fuel oil" ;
+    rdfs:comment "Heavy fuel oil (HFO), a residual marine fuel." .
+
+:MDO a owl:NamedIndividual, :Fuel ;
+    rdfs:label "Marine diesel oil" ;
+    rdfs:comment "Marine diesel oil (MDO), a distillate marine fuel that may contain some residual fuel." .
+
+:MGO a owl:NamedIndividual, :Fuel ;
+    rdfs:label "Marine gas oil" ;
+    rdfs:comment "Marine gas oil (MGO), a pure distillate marine fuel." .
+
 
 # #################################################################
 # #

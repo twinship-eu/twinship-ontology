@@ -80,7 +80,7 @@ build/                          # Auto-generated build artifacts (gitignored)
    - Transmission: `GearboxSystem`, `DirectDrive`, `Reduction`, `TISO`
    - Power: `ShaftGeneratorSystem`, `RGShaftGenerator`, `PTO`
    - Equipment: `Maneuvering`, `EmergencyEquipment`
-   - Fuel: `Fuel` class + named individuals `:AMM` (Ammonia), `:BF` (Bio-fuel)
+   - Fuel: `Fuel` class + named individuals `:AMM` (Ammonia), `:BF` (Bio-fuel), `:HFO` (Heavy fuel oil), `:MDO` (Marine diesel oil), `:MGO` (Marine gas oil)
    - 130+ engine and vessel properties
    - Imports: `twinship-base`
 

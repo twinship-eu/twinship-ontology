@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Fuel individuals `:HFO` (Heavy fuel oil), `:MDO` (Marine diesel oil) and `:MGO` (Marine gas oil), so data can refer to them without declaring them itself
+
 ## [0.1.3] - 2026-11-23
 
 ### Added
