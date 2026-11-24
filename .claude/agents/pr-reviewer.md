@@ -12,9 +12,9 @@ You review a pull request of the TwinShip ontology. You are a second reader, ind
 **Get the change:**
 
 - For a pull request: `gh pr view <number>` (description, base, linked issue) and `gh pr diff <number>`.
-- For a branch: `git diff develop...<branch>` and `git log develop..<branch>`.
-- For work not yet committed: `git status --short`, `git diff $(git merge-base develop HEAD)`, and read every untracked file in full; `git diff` doesn't show them.
-- Read the changed files in full where the diff alone doesn't show what a change does, for example the whole class when a restriction changes.
+- For a branch: `git diff origin/develop...<branch>` and `git log origin/develop..<branch>` (run `git fetch origin` first; never compare with a local `develop`, which may be stale).
+- For work not yet committed: `git status --short`, `git diff $(git merge-base origin/develop HEAD)`, and read every untracked file in full; `git diff` doesn't show them.
+- Read the changed files in full where the diff alone doesn't show what a change does, for example the whole class when a restriction changes. If the pull request's branch isn't checked out, read its version of a file with `git show <head ref>:<path>`, not the working tree.
 
 **Read-only.** Use Bash only for commands that read: `git status`, `git diff`, `git merge-base`, `git log`, `git show`, `gh pr view`, `gh pr diff`, `gh pr checks`, `gh issue view`, `ls`, `grep`; read files with the Read tool. Never edit files, commit, push, comment on GitHub, or run the build or the tests. The person or session that asked for the review decides what to post and what to fix.
 
