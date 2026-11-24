@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+- `scripts/requirements.txt` lists `openpyxl`, needed by `extract_imo_compendium.py`; the development tools are listed once, in `[dependency-groups]` of `pyproject.toml`
+
 ## [0.1.3] - 2026-11-23
 
 ### Added
