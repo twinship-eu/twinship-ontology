@@ -40,8 +40,9 @@ td:TestFleet a :Fleet ;
 
 # =============================================================================
 # Fuel named individuals for test data
-# (HFO, MGO, MDO are not yet defined as named individuals in the ontology;
-#  they are provided here as test instances only.)
+# (Separate from the ontology's :HFO, :MGO and :MDO: these test individuals
+#  carry synthetic LHV, sulphur and emission-factor values the ontology's
+#  fuels don't have.)
 # =============================================================================
 
 td:HFO a :Fuel, owl:NamedIndividual ;

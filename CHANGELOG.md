@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Fuel individuals `:HFO` (Heavy fuel oil), `:MDO` (Marine diesel oil) and `:MGO` (Marine gas oil), so data can refer to them without declaring them itself
+
 ### Fixed
 - `scripts/requirements.txt` lists `openpyxl`, needed by `extract_imo_compendium.py`; the development tools are listed once, in `[dependency-groups]` of `pyproject.toml`
 
