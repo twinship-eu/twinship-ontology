@@ -2,6 +2,8 @@
 
 Welcome to the TwinShip Ontology repository! This project provides a modular, extensible ontology for the TwinShip project, supporting semantic interoperability, data integration, and knowledge representation in the maritime domain.
 
+**Documentation:** the latest release is published at <https://ontology.twin-ship.eu/index-en.html>, with a [WebVOWL visualisation](https://ontology.twin-ship.eu/webvowl/index.html).
+
 ## Repository Structure
 
 - `model/`   — Source ontology files (base, modules, external references)
