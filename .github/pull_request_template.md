@@ -7,7 +7,7 @@
 - [ ] Branched from `develop`, and this pull request targets `develop` (or `main` for a release)
 - [ ] `CHANGELOG.md` has a line under Unreleased (if users would notice the change)
 - [ ] `model/README.md`, the other READMEs and `CLAUDE.md` match the change (if affected)
-- [ ] Reviewed against `docs/review-guidelines.md`: the reviewer agent's findings are answered, or a maintainer is asked to run it (see *Review* in CONTRIBUTING.md)
+- [ ] Reviewed against `docs/review-guidelines.md` before opening: the reviewer agent's report is posted as the first comment, with how each finding was handled (or the maintainer is asked to run it and post it) (see *Review* in CONTRIBUTING.md)
 
 ## Checks run
 

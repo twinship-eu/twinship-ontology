@@ -28,7 +28,7 @@ Every pull request is reviewed against [docs/review-guidelines.md](docs/review-g
 
 - **Before opening:** your Claude Code session runs the reviewer agent ([`.claude/agents/pr-reviewer.md`](.claude/agents/pr-reviewer.md)) on the branch, for example by asking it to "run the pr-reviewer agent on branch <name>". It reads the change and reports findings without changing anything; that is an instruction, not a technical restriction. It runs on Claude Fable (`model: fable`, an alias that follows the current version), usually a different model from the one that wrote the change; if the author used the same model, say so in the pull request. The author fixes what holds up and answers the rest.
 - **When opening:** the session posts the report as the pull request's first comment, starting with a status line (all findings handled, or which are open), with a line under each finding saying how it was handled; the description gets one line saying who reviewed, on which model, and that the report is in the comments. Details: [docs/review-guidelines.md](docs/review-guidelines.md#procedure).
-- **Without Claude Code,** check your own pull request against the guidelines and ask a maintainer to run the reviewer agent and post its report before approving it.
+- **Without Claude Code,** check your own pull request against the guidelines and ask the maintainer to run the reviewer agent and post its report before approving it.
 - The review is advisory: CI (`lint-and-test`) is the required check, and the maintainer approves.
 
 ## Code of Conduct
