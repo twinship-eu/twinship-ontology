@@ -1,6 +1,6 @@
 # CQE-21 — Which estimation belongs to Voyage?
 #
-# Coverage: Instance-level. Requires a Prediction, a VoyageLeg and a Voyage individual.
+# Coverage: Instance-level. Requires a Estimation, a VoyageLeg and a Voyage individual.
 # Module:   statistics
 
 PREFIX :         <https://twin-ship.eu/twinship#>

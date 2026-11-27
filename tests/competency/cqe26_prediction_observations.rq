@@ -11,10 +11,11 @@ PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?prediction ?observation
 WHERE {
-	?prediction a :Prediction ;
-							:wasGeneratedByPredictionProcess ?process .
+		?prediction a ?predictionType ;
+		:wasGeneratedByPredictionProcess ?process .
 	?process a :PredictionProcess ;
-					 :usesObservation ?observation .
-	?observation a :Observation .
+		:usesObservation ?observation .
+	?observation a :Observation .	
+	?predictionType rdfs:subClassOf :Prediction .
 }
 ORDER BY ?prediction ?observation
