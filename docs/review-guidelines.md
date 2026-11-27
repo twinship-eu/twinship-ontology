@@ -1,6 +1,15 @@
 # Review guidelines
 
-What a review of a pull request checks before it is approved. The guidelines are for everyone who reviews: a person, the reviewer agent ([`.claude/agents/pr-reviewer.md`](../.claude/agents/pr-reviewer.md)) or another agent. Authors can use them to check their own work first. The procedure is in [CONTRIBUTING.md](../CONTRIBUTING.md#review); the rules themselves are in [CLAUDE.md](../CLAUDE.md).
+What a review of a pull request checks before it is approved. The guidelines are for everyone who reviews: a person, the reviewer agent ([`.claude/agents/pr-reviewer.md`](../.claude/agents/pr-reviewer.md)) or another agent. Authors can use them to check their own work first. The procedure is below and, in short, in [CONTRIBUTING.md](../CONTRIBUTING.md#review); the rules themselves are in [CLAUDE.md](../CLAUDE.md).
+
+## Procedure
+
+- **The reviewer agent:** a Claude Code session runs the reviewer agent on every branch before it opens the pull request, for example by asking Claude Code to "run the pr-reviewer agent on branch <name>". It reads the change and reports findings without changing anything; that is an instruction, not a technical restriction. It runs on Claude Fable (`model: fable`, an alias that follows the current version), usually a different model from the one that wrote the change; if the author used the same model, say so in the pull request.
+- **The author fixes what holds up** before opening the pull request, and answers the rest.
+- **The review is posted** as the first comment on the pull request, once it is opened. The comment starts with a status line: either all findings were handled before opening, or which are still open. Then comes the reviewer's report, unchanged, except that anything it quotes that may not be in the repository (see the confidentiality rules below) is replaced with a description, for example "a real project name". Under each finding, a line says how it was handled: fixed in which commit, answered, or left and why. A review without findings is posted too. The description gets one line: who reviewed, on which model, and that the report is in the comments. A later review, after larger changes, is posted as a new comment.
+- **Posting is part of opening the pull request:** a Claude Code session asked to open one also posts the review (`gh pr comment <number> --body-file <file>`). Without access, it gives the author the text to paste.
+- **Without Claude Code,** check your own pull request against these guidelines and ask the maintainer to run the reviewer agent and post its report before approving it.
+- The review is advisory: CI (`lint-and-test`) is the required check, and the maintainer approves.
 
 ## How to review
 

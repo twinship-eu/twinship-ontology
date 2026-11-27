@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Fuel individuals `:HFO` (Heavy fuel oil), `:MDO` (Marine diesel oil) and `:MGO` (Marine gas oil), so data can refer to them without declaring them itself
 
+### Changed
+- Pull-request review: the reviewer agent runs on the branch before the pull request is opened, and its report is posted as the pull request's first comment with how each finding was handled; a `/pr-review-standard` skill checks the review setup against the standard
+
 ### Fixed
 - `scripts/requirements.txt` lists `openpyxl`, needed by `extract_imo_compendium.py`; the development tools are listed once, in `[dependency-groups]` of `pyproject.toml`
 

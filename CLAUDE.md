@@ -56,7 +56,7 @@ After implementation:
 - list modified files
 - stop
 
-Before a pull request is approved, run the `pr-reviewer` agent (`.claude/agents/pr-reviewer.md`, on Fable) on it and fix or answer its findings. Checks: `docs/review-guidelines.md`.
+Before opening a pull request, run the `pr-reviewer` agent (`.claude/agents/pr-reviewer.md`, on Fable) on the branch and fix or answer its findings. When opening the pull request, post its report as the first comment, with a status line and how each finding was handled. Checks and procedure: `docs/review-guidelines.md`. `/pr-review-standard` (`.claude/skills/`) checks the review setup against the standard; run it when the standard changes.
 
 ---
 
