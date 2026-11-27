@@ -10,12 +10,17 @@ PREFIX owl:      <http://www.w3.org/2002/07/owl#>
 PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
 
 
-SELECT ?prediction ?assumption ?engineMode
+SELECT ?prediction ?assumption ?engineMode ?voyageLeg ?voyage
 WHERE {
-	?prediction a :Prediction ;
-							:hasAssumption ?assumption .
+	?prediction a ?predictionType ;
+							:hasAssumption ?assumption ;
+							:isPredictionForVoyageLeg ?voyageLeg .
+	?voyageLeg a :VoyageLeg .
+	?voyage a :Voyage ;
+					 :hasVoyageLeg ?voyageLeg .
 	?assumption a :Assumption ;
 							:hasEngineMode ?engineMode .
 	?engineMode a :EngineMode .
+	?predictionType rdfs:subClassOf :Prediction .
 }
 ORDER BY ?prediction ?engineMode

@@ -11,9 +11,10 @@ PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?prediction ?voyageLeg
 WHERE {
-	?prediction a :Prediction ;
-							:isPredictionForVoyageLeg ?voyageLeg .
+	?prediction a ?predictionType ;
+						:isPredictionForVoyageLeg ?voyageLeg .
 	?voyageLeg a :VoyageLeg .
+	?predictionType rdfs:subClassOf :Prediction .
 }
 ORDER BY ?prediction
 
